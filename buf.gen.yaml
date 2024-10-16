@@ -1,0 +1,16 @@
+version: v2
+plugins:
+  # - local: protoc-gen-es
+  #   out: proto
+  #   opt: target=dts
+  - remote: buf.build/community/stephenh-ts-proto
+    out: proto
+    opt:
+      - useOptionals=all
+      - exportCommonSymbols=false
+      - snakeToCamel=false
+      - removeEnumPrefix=true
+      - unrecognizedEnum=false
+      - onlyTypes=true
+inputs:
+  - directory: open-simulation-interface

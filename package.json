@@ -1,0 +1,18 @@
+{
+  "name": "asam-osi-types",
+  "version": "3.1.2",
+  "description": "Open Simulation Interface types for Typescript",
+  "scripts": {
+    "setup": "pip install open-simulation-interface && rm -rf open-simulation-interface/osi3 proto",
+    "generate": "buf generate",
+    "build": "npm run setup && npm run generate",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@bufbuild/buf": "^1.45.0",
+    "@bufbuild/protobuf": "^2.2.0",
+    "@bufbuild/protoc-gen-es": "^2.2.0"
+  }
+}
