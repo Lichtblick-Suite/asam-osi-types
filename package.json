@@ -1,15 +1,25 @@
 {
   "name": "asam-osi-types",
   "version": "3.7.0",
-  "description": "Open Simulation Interface types for Typescript",
+  "license": "MIT",
+  "productName": "ASAM OSI Types",
+  "productDescription": "Lichtblick Suite",
+  "description": "ASAM Open Simulation Interface (ASAM OSI) types for Typescript",
+  "author": {
+    "name": "Lichtblick",
+    "email": "lichtblick@bmwgroup.com"
+  },
+  "homepage": "https://www.asam.net/standards/detail/osi/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lichtblick-Suite/asam-osi-types.git"
+  },
   "scripts": {
     "setup": "cd open-simulation-interface && pip install ./ && cd .. && rm -rf open-simulation-interface/osi3 proto",
     "generate": "buf generate",
     "build": "npm run setup && npm run generate && tsup index.ts --format cjs,esm --dts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
