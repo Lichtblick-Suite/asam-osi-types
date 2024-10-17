@@ -17,8 +17,6 @@ export interface DetectedOccupant {
   /**
    * A list of candidates for this occupant as estimated by the
    * sensor.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
   candidate?: DetectedOccupant_CandidateOccupant[] | undefined;
 }
@@ -35,7 +33,10 @@ export interface DetectedOccupant_CandidateOccupant {
    * given under the condition of
    * \c DetectedItemHeader::existence_probability.
    *
-   * Range: [0,1]
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   probability?:
     | number

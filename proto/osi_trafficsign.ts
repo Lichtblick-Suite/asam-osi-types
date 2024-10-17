@@ -5,7 +5,7 @@
 // source: osi_trafficsign.proto
 
 /* eslint-disable */
-import { type BaseStationary, type Identifier } from "./osi_common";
+import { type BaseStationary, type ExternalReference, type Identifier, type LogicalLaneAssignment } from "./osi_common";
 
 /**
  * \brief Additional value associated with a traffic sign or road marking,
@@ -41,96 +41,122 @@ export enum TrafficSignValue_Unit {
   UNKNOWN = 0,
   /** OTHER - Other (unspecified but known) unit of the sign's value. */
   OTHER = 1,
-  /**
-   * NO_UNIT - Value without unit.
-   *
-   * Unit: []
-   */
+  /** NO_UNIT - Value without unit. */
   NO_UNIT = 2,
   /**
    * KILOMETER_PER_HOUR - Velocity.
    * Kilometers per hour.
    *
-   * Unit: [km/h]
+   * Unit: km/h
    */
   KILOMETER_PER_HOUR = 3,
   /**
    * MILE_PER_HOUR - Velocity.
    * Miles per hour.
    *
-   * Unit: [mph]
+   * Unit: mph
    */
   MILE_PER_HOUR = 4,
   /**
    * METER - Length.
    * Meter.
    *
-   * Unit: [m]
+   * Unit: m
    */
   METER = 5,
   /**
    * KILOMETER - Length.
    * Kilometer.
    *
-   * Unit: [km]
+   * Unit: km
    */
   KILOMETER = 6,
   /**
    * FEET - Length.
    * Feet.
    *
-   * Unit: [ft]
+   * Unit: ft
    */
   FEET = 7,
   /**
    * MILE - Length.
    * Mile.
    *
-   * Unit: [mile]
+   * Unit: mile
    */
   MILE = 8,
   /**
    * METRIC_TON - Weight.
    * Ton.
    *
-   * Unit: [t]
+   * Unit: t
    */
   METRIC_TON = 9,
   /**
    * LONG_TON - Weight.
-   * Long ton UK 1,016.047 [kg].
+   * Long ton UK 1,016.047 kg.
    *
-   * Unit: [tn. l.]
+   * Unit: tn. l.
    */
   LONG_TON = 10,
   /**
    * SHORT_TON - Weight.
-   * Short ton USA 907.1847 [kg].
+   * Short ton USA 907.1847 kg.
    *
-   * Unit: [tn. sh.]
+   * Unit: tn. sh.
    */
   SHORT_TON = 11,
   /**
-   * MINUTES - Time of day.
-   * Hour since midnight.
+   * HOUR - Time of day.
+   * Hours since midnight. Starting with 0.
    *
-   * Unit: [min]
+   * Unit: h
+   */
+  HOUR = 15,
+  /**
+   * MINUTES - Time of day.
+   * Minutes since last hour. Starting with 0.
+   *
+   * Unit: min
    */
   MINUTES = 12,
+  /**
+   * DAY_OF_MONTH - Day of the month.
+   * Starting with 1.
+   */
+  DAY_OF_MONTH = 16,
   /**
    * DAY - Day of the week.
    * Days since Monday. Monday = 0; Tuesday = 1; ...
    *
-   * Unit: []
+   * \note For consistency this field will be renamed to UNIT_DAY_OF_WEEK in v4.0.0 .
    */
   DAY = 13,
   /**
    * PERCENTAGE - Percentage.
    * Value.
    *
-   * Unit: [%]
+   * Unit: %
    */
   PERCENTAGE = 14,
+  /**
+   * DURATION_DAY - Duration in days.
+   *
+   * Unit: day
+   */
+  DURATION_DAY = 17,
+  /**
+   * DURATION_HOUR - Duration in hours.
+   *
+   * Unit: h
+   */
+  DURATION_HOUR = 18,
+  /**
+   * DURATION_MINUTE - Duration in minutes.
+   *
+   * Unit: min
+   */
+  DURATION_MINUTE = 19,
 }
 
 /**
@@ -140,21 +166,53 @@ export enum TrafficSignValue_Unit {
  * coordinate system.
  */
 export interface TrafficSign {
-  /** The ID of the traffic sign. */
+  /**
+   * The ID of the traffic sign.
+   *
+   * \rules
+   * is_globally_unique
+   * is_set
+   * \endrules
+   */
   id?:
     | Identifier
     | undefined;
-  /** Main sign, e.g. speed limit 30 [km/h] */
+  /** Main sign, e.g. speed limit 30 km/h */
   main_sign?:
     | TrafficSign_MainSign
     | undefined;
   /**
    * Additional supplementary signs, e.g. time limits, modifying the traffic
    * sign.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
-  supplementary_sign?: TrafficSign_SupplementarySign[] | undefined;
+  supplementary_sign?:
+    | TrafficSign_SupplementarySign[]
+    | undefined;
+  /**
+   * Optional external reference to the traffic sign source.
+   *
+   * The external reference point to the source of the traffic sign, if it is
+   * derived from one or more objects or external references.
+   *
+   * For example, to reference a signal defined in an OpenDRIVE map
+   * the items should be set as follows:
+   * * reference = URI to map, can remain empty if identical with definition
+   *               in \c GroundTruth::map_reference
+   * * type = "net.asam.opendrive"
+   * * identifier[0] = id of t_road_signals_signal
+   *
+   * \note For non-ASAM Standards, it is implementation-specific how
+   *       source_reference is resolved.
+   *
+   * \note If an individual identification of MainSign and SupplementarySign
+   *       is necessary, this should be done via multiple individual
+   *       entries of this source_reference.
+   *
+   * \note The value has to be repeated, because one lane segment may be
+   *       derived from more than one origin segment. Multiple sources
+   *       may be added as reference as well, for example, a map and sensors.
+   */
+  source_reference?: ExternalReference[] | undefined;
 }
 
 /** Definition of the variability of a traffic sign. */
@@ -166,10 +224,37 @@ export enum TrafficSign_Variability {
   UNKNOWN = 0,
   /** OTHER - Other (unspecified but known) variability. */
   OTHER = 1,
-  /** FIXED - Fixed sign, i.e. always present. */
+  /**
+   * FIXED - Sign that can change neither semantically nor positionally, e.g. a
+   * fixed, immutable, non-temporary traffic sign.
+   */
   FIXED = 2,
-  /** VARIABLE - Temporary or variable sign, e.g. on a sign bridge. */
+  /**
+   * VARIABLE - Sign that can change semantically and/or positionally, i.e. it is
+   * left unspecified in which way the sign may change.
+   *
+   * \note This value represents a legacy definition. If possible, please
+   * use the more specific values below to indicate the exact nature of
+   * variability.
+   */
   VARIABLE = 3,
+  /**
+   * MOVABLE - Sign that can change positionally but not semantically, e.g. a
+   * temporary, immutable traffic sign at construction site.
+   */
+  MOVABLE = 4,
+  /**
+   * MUTABLE - Sign that can change semantically but not positionally, e.g. a
+   * digital traffic sign on traffic sign gantry, or an analog prism
+   * sign.
+   */
+  MUTABLE = 5,
+  /**
+   * MOVABLE_AND_MUTABLE - Sign that can change both semantically and positionally, e.g. a
+   * temporary, digital traffic sign at a construction site, or a digital
+   * traffic sign attached to a road works vehicle.
+   */
+  MOVABLE_AND_MUTABLE = 6,
 }
 
 /**
@@ -195,7 +280,16 @@ export interface TrafficSign_MainSign {
     | BaseStationary
     | undefined;
   /** The classification of the traffic sign. */
-  classification?: TrafficSign_MainSign_Classification | undefined;
+  classification?:
+    | TrafficSign_MainSign_Classification
+    | undefined;
+  /**
+   * Opaque reference of an associated 3D model of the traffic sign.
+   *
+   * \note It is implementation-specific how model_references are resolved to
+   * 3d models.
+   */
+  model_reference?: string | undefined;
 }
 
 /**
@@ -228,13 +322,22 @@ export interface TrafficSign_MainSign {
  */
 export interface TrafficSign_MainSign_Classification {
   /**
-   * The traffic sign is not stationary, for example a temporary
-   * traffic sign in a street construction.
+   * This value indicates if a sign is static or dynamic regarding its
+   * content (e.g., electronic sign bridge) and/or regarding its
+   * position on the road.
    */
   variability?:
     | TrafficSign_Variability
     | undefined;
-  /** The type of the traffic sign. */
+  /**
+   * The type of the traffic sign.
+   *
+   * \attention Deprecated: A revision is planned for version 4.0.0 to
+   * replace the type enum with a more semantically defined enumeration,
+   * with the exact sign specification being relegated to the newly
+   * introduced 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   */
   type?:
     | TrafficSign_MainSign_Classification_Type
     | undefined;
@@ -269,6 +372,12 @@ export interface TrafficSign_MainSign_Classification {
    * and not a traffic sign. Actual traffic signs lying on the ground
    * might have been intentionally unmounted and, hence, not be in
    * effect.
+   *
+   * \attention Deprecated: A revision is planned for version 4.0.0 to
+   * replace the type enum with a more semantically defined enumeration,
+   * with the exact sign specification being relegated to the newly
+   * introduced 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
    */
   direction_scope?:
     | TrafficSign_MainSign_Classification_DirectionScope
@@ -279,6 +388,10 @@ export interface TrafficSign_MainSign_Classification {
    *
    * \note OSI uses singular instead of plural for repeated field
    * names.
+   *
+   * \rules
+   * refers_to: Lane
+   * \endrules
    */
   assigned_lane_id?:
     | Identifier[]
@@ -293,8 +406,84 @@ export interface TrafficSign_MainSign_Classification {
    * by setting the \c #vertically_mirrored boolean to \c true.
    * As for every boolean in the protocol buffers language, the
    * default value of \c #vertically_mirrored is \c false.
+   *
+   * \attention Deprecated: A revision is planned for version 4.0.0 to
+   * replace the type enum with a more semantically defined enumeration,
+   * with the exact sign specification being relegated to the newly
+   * introduced 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
    */
-  vertically_mirrored?: boolean | undefined;
+  vertically_mirrored?:
+    | boolean
+    | undefined;
+  /**
+   * Boolean flag to indicate that a traffic sign is taken out of service.
+   * This can be achieved by visibly crossing the sign or covering it completely.
+   */
+  is_out_of_service?:
+    | boolean
+    | undefined;
+  /**
+   * Country specification of the traffic sign catalog specification
+   * that identifies the actual traffic sign. This is part of the
+   * 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   *
+   * Country is specified using the ISO 3166-1, alpha-2 code
+   * https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2, or the
+   * special OpenDRIVE country for generic signs.<br>
+   */
+  country?:
+    | string
+    | undefined;
+  /**
+   * Revision specification of the traffic sign catalog specification
+   * that identifies the actual traffic sign. This is part of the
+   * 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   *
+   * The year the traffic rules came into force. <br>
+   * e.g. "2017"
+   */
+  country_revision?:
+    | string
+    | undefined;
+  /**
+   * Code specification of the traffic sign catalog specification
+   * that identifies the actual traffic sign. This is part of the
+   * 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   *
+   * Code identifier according to country and country revision,
+   * corresponds to the type field of OpenDRIVE. <br>
+   * code is only unique in combination with #country and #country_revision.  <br>
+   * e.g. http://www.vzkat.de/2017/VzKat.htm
+   */
+  code?:
+    | string
+    | undefined;
+  /**
+   * Sub-code specification of the traffic sign catalog specification
+   * that identifies the actual traffic sign. This is part of the
+   * 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   *
+   * Sub-code identifier according to country, country revision and code,
+   * corresponds to the subtype field of OpenDRIVE. <br>
+   * sub_code is only unique in combination with #country, #country_revision,
+   * and #code.  <br>
+   * e.g. http://www.vzkat.de/2017/VzKat.htm
+   */
+  sub_code?:
+    | string
+    | undefined;
+  /**
+   * Assignment of this object to logical lanes.
+   *
+   * \note OSI uses singular instead of plural for repeated field
+   * names.
+   */
+  logical_lane_assignment?: LogicalLaneAssignment[] | undefined;
 }
 
 /**
@@ -316,6 +505,12 @@ export interface TrafficSign_MainSign_Classification {
  * (Richtzeichen) \arg
  * https://www.gesetze-im-internet.de/stvo_2013/anlage_4.html
  * (Verkehrseinrichtungen) \arg https://traffic-rules.com/
+ *
+ * \attention Deprecated: A revision is planned for version 4.0.0 to
+ * replace the type enum with a more semantically defined enumeration,
+ * with the exact sign specification being relegated to the newly
+ * introduced 4-tupel traffic sign catalog specification as used in
+ * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
  */
 export enum TrafficSign_MainSign_Classification_Type {
   /**
@@ -1349,7 +1544,7 @@ export enum TrafficSign_MainSign_Classification_Type {
    * </tr>
    * </table>
    *
-   * Left: \c #TYPE_PRESCRIBED_LEFT_TURN_AND_RIGHT_TURN
+   * Left: \c #TYPE_PRESCRIBED_LEFT_TURN_AND_STRAIGHT
    *
    * As symbolic road marking \c
    * RoadMarking::Classification::TYPE_SYMBOLIC_TRAFFIC_SIGN
@@ -1457,10 +1652,10 @@ export enum TrafficSign_MainSign_Classification_Type {
    * <table cellspacing="0" cellpadding="0">
    * <tr>
    * <td>
-   * \image html 222.png
+   * \image html 222-10.png
    * </td>
    * <td>
-   * StVO 222
+   * StVO 222-10
    * </td>
    * </tr>
    * </table>
@@ -1473,10 +1668,10 @@ export enum TrafficSign_MainSign_Classification_Type {
    * <table cellspacing="0" cellpadding="0">
    * <tr>
    * <td>
-   * \image html 222-10.png
+   * \image html 222.png
    * </td>
    * <td>
-   * StVO 222-10
+   * StVO 222
    * </td>
    * </tr>
    * </table>
@@ -1881,7 +2076,7 @@ export enum TrafficSign_MainSign_Classification_Type {
    * </table>
    *
    * \note In the German StVO, trucks are defined as motorized
-   * vehicles that are heavier than 3.5 [t].
+   * vehicles that are heavier than 3.5 t.
    */
   TRUCKS_PROHIBITED = 39,
   /**
@@ -2039,7 +2234,7 @@ export enum TrafficSign_MainSign_Classification_Type {
    *
    * \note In the German StVO, tractors are defined as motorized
    * vehicles that are not allowed to, or cannot, drive faster
-   * than 25 [km/h].
+   * than 25 km/h.
    */
   TRACTORS_PROHIBITED = 163,
   /**
@@ -3322,7 +3517,7 @@ export enum TrafficSign_MainSign_Classification_Type {
    * -->
    * </td>
    * <td>
-   * StVO 353  - Valid only until october 2022.
+   * StVO 353  - Valid only until October 2022.
    * </td>
    * </tr>
    * </table>
@@ -3692,7 +3887,7 @@ export enum TrafficSign_MainSign_Classification_Type {
    * -->
    * </td>
    * <td>
-   * StVO 380 - Valid only until october 2022.
+   * StVO 380 - Valid only until October 2022.
    * </td>
    * </tr>
    * </table>
@@ -3711,7 +3906,7 @@ export enum TrafficSign_MainSign_Classification_Type {
    * -->
    * </td>
    * <td>
-   * StVO 381 - Valid only until october 2022
+   * StVO 381 - Valid only until October 2022
    * </td>
    * </tr>
    * </table>
@@ -3798,7 +3993,7 @@ export enum TrafficSign_MainSign_Classification_Type {
    * -->
    * </td>
    * <td>
-   * StVO 388 - Valid only until october 2022
+   * StVO 388 - Valid only until October 2022
    * </td>
    * </tr>
    * </table>
@@ -3806,7 +4001,7 @@ export enum TrafficSign_MainSign_Classification_Type {
   SHOULDER_NOT_PASSABLE_MOTOR_VEHICLES = 220,
   /**
    * SHOULDER_UNSAFE_TRUCKS_TRACTORS - Shoulder unsafe for vehicles with a permitted gross weight
-   * over 3.5 [t] and for tractors.
+   * over 3.5 t and for tractors.
    * <table cellspacing="0" cellpadding="0">
    * <tr>
    * <td>
@@ -3815,7 +4010,7 @@ export enum TrafficSign_MainSign_Classification_Type {
    * -->
    * </td>
    * <td>
-   * StVO 389 - Valid only until october 2022
+   * StVO 389 - Valid only until October 2022
    * </td>
    * </tr>
    * </table>
@@ -4456,7 +4651,7 @@ export enum TrafficSign_MainSign_Classification_Type {
    */
   HIGHWAY_PREANNOUNCEMENT_DIRECTIONS = 126,
   /**
-   * POLE_EXIT - Pole indicating highways exit in ... [m].
+   * POLE_EXIT - Pole indicating highways exit in ... m.
    * <table cellspacing="0" cellpadding="0">
    * <tr>
    * <td>
@@ -4475,7 +4670,7 @@ export enum TrafficSign_MainSign_Classification_Type {
    * </table>
    *
    * Use \c TrafficSignValue::value and \c
-   * TrafficSignValue::value_unit to specify the distance in [m]
+   * TrafficSignValue::value_unit to specify the distance in m
    * or the displayed number of stripes (in that case, set \c
    * TrafficSignValue::value_unit to \c
    * TrafficSignValue::UNIT_NO_UNIT.).
@@ -5249,7 +5444,7 @@ export enum TrafficSign_MainSign_Classification_Type {
    * </tr>
    * </table>
    *
-   * \note Additional traffic signs are modelled as separate main
+   * \note Additional traffic signs are modeled as separate main
    * signs.
    */
   MOBILE_LANE_CLOSURE = 139,
@@ -5462,7 +5657,16 @@ export interface TrafficSign_SupplementarySign {
     | BaseStationary
     | undefined;
   /** The classification of the supplementary traffic sign. */
-  classification?: TrafficSign_SupplementarySign_Classification | undefined;
+  classification?:
+    | TrafficSign_SupplementarySign_Classification
+    | undefined;
+  /**
+   * Opaque reference of an associated 3D model of the supplementary traffic sign.
+   *
+   * \note It is implementation-specific how model_references are resolved to
+   * 3d models.
+   */
+  model_reference?: string | undefined;
 }
 
 /**
@@ -5487,7 +5691,15 @@ export interface TrafficSign_SupplementarySign_Classification {
   variability?:
     | TrafficSign_Variability
     | undefined;
-  /** Type of the supplementary sign. */
+  /**
+   * Type of the supplementary sign.
+   *
+   * \attention Deprecated: A revision is planned for version 4.0.0 to
+   * replace the type enum with a more semantically defined enumeration,
+   * with the exact sign specification being relegated to the newly
+   * introduced 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   */
   type?:
     | TrafficSign_SupplementarySign_Classification_Type
     | undefined;
@@ -5510,6 +5722,10 @@ export interface TrafficSign_SupplementarySign_Classification {
    *
    * \note OSI uses singular instead of plural for repeated field
    * names.
+   *
+   * \rules
+   * refers_to: Lane
+   * \endrules
    */
   assigned_lane_id?:
     | Identifier[]
@@ -5518,12 +5734,96 @@ export interface TrafficSign_SupplementarySign_Classification {
    * This enumerator indicates a traffic actor (e.g.
    * bikes, cars, trucks and so on), that the supplementary sign
    * makes reference to.
+   *
+   * \attention Deprecated: A revision is planned for version 4.0.0 to
+   * replace the type enum with a more semantically defined enumeration,
+   * with the exact sign specification being relegated to the newly
+   * introduced 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
    */
   actor?:
     | TrafficSign_SupplementarySign_Classification_Actor[]
     | undefined;
-  /** A direction arrow shown on the supplementary sign. */
-  arrow?: TrafficSign_SupplementarySign_Classification_Arrow[] | undefined;
+  /**
+   * A direction arrow shown on the supplementary sign.
+   *
+   * \attention Deprecated: A revision is planned for version 4.0.0 to
+   * replace the type enum with a more semantically defined enumeration,
+   * with the exact sign specification being relegated to the newly
+   * introduced 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   */
+  arrow?:
+    | TrafficSign_SupplementarySign_Classification_Arrow[]
+    | undefined;
+  /**
+   * Boolean flag to indicate that the supplementary traffic sign is taken out of service.
+   * This can be achieved by visibly crossing the sign or covering it completely.
+   */
+  is_out_of_service?:
+    | boolean
+    | undefined;
+  /**
+   * Country specification of the traffic sign catalog specification
+   * that identifies the actual traffic sign. This is part of the
+   * 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   *
+   * Country is specified using the ISO 3166-1, alpha-2 code
+   * https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2, or the
+   * special OpenDRIVE country for generic signs.<br>
+   */
+  country?:
+    | string
+    | undefined;
+  /**
+   * Revision specification of the traffic sign catalog specification
+   * that identifies the actual traffic sign. This is part of the
+   * 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   *
+   * The year the traffic rules came into force. <br>
+   * e.g. "2017"
+   */
+  country_revision?:
+    | string
+    | undefined;
+  /**
+   * Code specification of the traffic sign catalog specification
+   * that identifies the actual traffic sign. This is part of the
+   * 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   *
+   * Code identifier according to country and country revision,
+   * corresponds to the type field of OpenDRIVE. <br>
+   * code is only unique in combination with #country and #country_revision.  <br>
+   * e.g. http://www.vzkat.de/2017/VzKat.htm
+   */
+  code?:
+    | string
+    | undefined;
+  /**
+   * Sub-code specification of the traffic sign catalog specification
+   * that identifies the actual traffic sign. This is part of the
+   * 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   *
+   * Sub-code identifier according to country, country revision and code,
+   * corresponds to the subtype field of OpenDRIVE. <br>
+   * sub_code is only unique in combination with #country, #country_revision,
+   * and #code.  <br>
+   * e.g. http://www.vzkat.de/2017/VzKat.htm
+   */
+  sub_code?:
+    | string
+    | undefined;
+  /**
+   * Assignment of this object to logical lanes.
+   *
+   * \note OSI uses singular instead of plural for repeated field
+   * names.
+   */
+  logical_lane_assignment?: LogicalLaneAssignment[] | undefined;
 }
 
 /**
@@ -5540,6 +5840,12 @@ export interface TrafficSign_SupplementarySign_Classification {
  * text, \c Type is used in descending order in the following
  * sequence: \c #TYPE_EXCEPT, \c #TYPE_CONSTRAINED_TO, \c
  * #TYPE_ARROW, \c #TYPE_TIME, \c #TYPE_SPACE, \c #TYPE_TEXT.
+ *
+ * \attention Deprecated: A revision is planned for version 4.0.0 to
+ * replace the type enum with a more semantically defined enumeration,
+ * with the exact sign specification being relegated to the newly
+ * introduced 4-tupel traffic sign catalog specification as used in
+ * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
  */
 export enum TrafficSign_SupplementarySign_Classification_Type {
   /**
@@ -6016,7 +6322,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * All green signals ("green wave") at certain speed.
    * <br>
    * Use \c TrafficSignValue::value and \c
-   * TrafficSignValue::value_unit (e.g. [km/h]) to indicate the
+   * TrafficSignValue::value_unit (e.g. km/h) to indicate the
    * speed.
    * </td>
    * </tr>
@@ -6302,7 +6608,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * - Use \c TrafficSignValue::value to include the distance
    * indicated in the sign. Accompany this value with an
    * indication of its unit of measure given by \c
-   * TrafficSignValue::value_unit (e.g. [m]),
+   * TrafficSignValue::value_unit (e.g. m),
    * - Use \c TrafficSignValue::text to indicate the sign's
    * specific text,
    *
@@ -6335,7 +6641,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * "STOP" + distance
    * </td>
    * <td>
-   * Stop in e.g. ... [m]
+   * Stop in e.g. ... m
    * </td>
    * </tr>
    * <tr>
@@ -6349,7 +6655,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * &rdquo;Rei&szlig;verschluss erst in&rdquo; + distance
    * </td>
    * <td>
-   * Zipper merge in e.g. ... [m]
+   * Zipper merge in e.g. ... m
    * </td>
    * </tr>
    * <tr>
@@ -6363,7 +6669,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * "Ende Seitenstreifen in" + distance
    * </td>
    * <td>
-   * End of the side strip in e.g. ... [m]
+   * End of the side strip in e.g. ... m
    * </td>
    * </tr>
    * <tr>
@@ -6377,7 +6683,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * "Ende in" + distance
    * </td>
    * <td>
-   * End in .. [m]
+   * End in .. m
    * </td>
    * </tr>
    * <tr>
@@ -6397,7 +6703,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * still be used up to a certain point. To indicate the point,
    * use one of the following alternatives:
    * - A numerical value described by \c TrafficSignValue::value
-   * and \c TrafficSignValue::value_unit (e.g. [m]) to indicate
+   * and \c TrafficSignValue::value_unit (e.g. m) to indicate
    * the point as a distance from the sign.
    * - A text described by \c TrafficSignValue::text in order to
    * describe the point's location verbally, e.g. "Baugebiet ...".
@@ -6414,7 +6720,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * - Use one or more \c TrafficSignValue messages to include
    * the times indicated in the sign. Accompany each value with an
    * indication of its unit of measure given by \c
-   * TrafficSignValue::value_unit, e.g. [h].
+   * TrafficSignValue::value_unit, e.g. h.
    * - For each \c TrafficSignValue, \c TrafficSignValue::value
    * indicates the time elapsed since midnight every day.
    * - Use the \c TrafficSignValue::text member of the
@@ -6504,7 +6810,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * TrafficSignValue::value indicates the time elapsed since
    * midnight of the corresponding day, and \c
    * TrafficSignValue::value_unit indicates the unit this time is
-   * expressed in, e.g. in [min].
+   * expressed in, e.g. in min.
    * </td>
    * </tr>
    * <tr>
@@ -6649,7 +6955,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * [\c rules above](\ref TYPE_TIME).
    * <br>
    * See also: [\c Two time ranges](\ref StVO_1040-31),
-   * [\c Working days except saturdays](\ref StVO_1042-38).
+   * [\c Working days except Saturdays](\ref StVO_1042-38).
    * </td>
    * </tr>
    * <tr>
@@ -6678,7 +6984,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * &rdquo;werktags au&szlig;er samstags&rdquo;
    * </td>
    * <td>
-   * Working days except saturdays.
+   * Working days except Saturdays.
    * </td>
    * </tr>
    * <tr>
@@ -6931,10 +7237,10 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * Trucks.
    * \note
    * - In the German StVO, trucks are defined as motorized
-   * vehicles that are heavier than 3.5 [t].
+   * vehicles that are heavier than 3.5 t.
    * - This supplementary sign also denotes the trucks' tractor
    * units and trailers.
-   * - Cars and buses with a total weight superior to 3.5 [t] are
+   * - Cars and buses with a total weight superior to 3.5 t are
    * not denoted by this. sign.
    * </td>
    * </tr>
@@ -7078,7 +7384,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * Tractors.
    * \note In the German StVO, tractors are defined as motorized
    * vehicles that are not allowed to, or cannot, drive faster
-   * than 25 [km/h].
+   * than 25 km/h.
    * </td>
    * </tr>
    * <tr>
@@ -7201,7 +7507,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * &rdquo;d&uuml;rfen &uuml;berholt werden&rdquo;.
    * \note In the German StVO, tractors are defined as motorized
    * vehicles that are not allowed to, or cannot, drive faster
-   * than 25 [km/h].
+   * than 25 km/h.
    * </td>
    * </tr>
    * <tr>
@@ -7438,7 +7744,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * Only trucks with trailers and trucks with semi-trailers.
    * \note
    * - In the German StVO, trucks are defined as motorized
-   * vehicles that are heavier than 3.5 [t].
+   * vehicles that are heavier than 3.5 t.
    * - This supplementary sign also denotes the trucks'
    * tractor units and trailers.
    * - This supplementary sign excludes passenger cars and
@@ -7475,7 +7781,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * <br>
    * \note
    * - In the German StVO, trucks are defined as motorized
-   * vehicles that are heavier than 3.5 [t].
+   * vehicles that are heavier than 3.5 t.
    * - This supplementary sign also denotes the trucks' tractor
    * units and trailers.
    * </td>
@@ -7614,7 +7920,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * each \c TrafficSignValue, \c TrafficSignValue::value
    * indicates the time elapsed since midnight every day, and \c
    * TrafficSignValue::value_unit indicates the unit this time is
-   * expressed in, e.g. in [min].
+   * expressed in, e.g. in min.
    * </td>
    * </tr>
    * <tr>
@@ -7940,10 +8246,10 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * Except trucks, their tractor unit and their trailers.
    * \note
    * - In the German StVO, trucks are defined as motorized
-   * vehicles that are heavier than 3.5 [t].
+   * vehicles that are heavier than 3.5 t.
    * - This supplementary sign also denotes the trucks' tractor
    * units and trailers.
-   * - Cars and buses with a total weight superior to 3.5 [t] are
+   * - Cars and buses with a total weight superior to 3.5 t are
    * not exempted of a rule by this sign.
    * </td>
    * </tr>
@@ -7961,10 +8267,10 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * Except trucks with trailers.
    * \note
    * - In the German StVO, trucks are defined as motorized
-   * vehicles that are heavier than 3.5 [t].
+   * vehicles that are heavier than 3.5 t.
    * - This supplementary sign also denotes the trucks' tractor
    * units and trailers.
-   * - Cars and buses with a total weight superior to 3.5 [t] are
+   * - Cars and buses with a total weight superior to 3.5 t are
    * not exempted of a rule by this sign.
    * </td>
    * </tr>
@@ -8024,7 +8330,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * Except tractors.
    * \note In the German StVO, tractors are defined as motorized
    * vehicles that are not allowed to, or cannot, drive faster
-   * than 25 [km/h].
+   * than 25 km/h.
    * </td>
    * </tr>
    * <tr>
@@ -8055,7 +8361,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * Except campers with a maximum allowed mass.
    * <br>
    * Use \c TrafficSignValue::value and \c
-   * TrafficSignValue::value_unit (e.g. [t]) to indicate the mass.
+   * TrafficSignValue::value_unit (e.g. t) to indicate the mass.
    * </td>
    * </tr>
    * <tr>
@@ -8086,7 +8392,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * \c #ACTOR_BUSES
    * </td>
    * <td>
-   * Except buses in ocasional service.
+   * Except buses in occasional service.
    * <br>
    * Set \c TrafficSignValue::text as "im Gelegenheitsverkehr".
    * </td>
@@ -8392,7 +8698,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * </table>
    *
    * Use \c TrafficSignValue::value and \c
-   * TrafficSignValue::value_unit (e.g. [m]) to indicate the
+   * TrafficSignValue::value_unit (e.g. m) to indicate the
    * distance.
    */
   VALID_FOR_DISTANCE = 3,
@@ -8547,14 +8853,14 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * </table>
    *
    * Use \c TrafficSignValue::value and \c
-   * TrafficSignValue::value_unit (e.g. [m]) to indicate the
+   * TrafficSignValue::value_unit (e.g. m) to indicate the
    * distance.
    *
    * \note For OSI 4.0 compatibility use \c #TYPE_SPACE instead.
    */
   VALID_IN_DISTANCE = 4,
   /**
-   * STOP_IN - Stop in e.g. .. [m].
+   * STOP_IN - Stop in e.g. .. m.
    * <table cellspacing="0" cellpadding="0">
    * <tr>
    * <td>
@@ -8566,7 +8872,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * </table>
    *
    * Use \c TrafficSignValue::value and \c
-   * TrafficSignValue::value_unit (e.g. [m]) to indicate the
+   * TrafficSignValue::value_unit (e.g. m) to indicate the
    * distance.
    *
    * \note For OSI 4.0 compatibility use \c #TYPE_SPACE instead.
@@ -8739,7 +9045,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * TrafficSignValue, \c TrafficSignValue::value indicates
    * the time elapsed since midnight each day, and \c
    * TrafficSignValue::value_unit indicates the unit this time is
-   * expressed in, e.g. in [min].
+   * expressed in, e.g. in min.
    * - If including start and end days of the week, include two
    * additional \c TrafficSignValue messages. For these messages,
    * use \c TrafficSignValue::value_unit as \c
@@ -8765,7 +9071,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * </td>
    * <td>
    * Use \c TrafficSignValue::value and \c
-   * TrafficSignValue::value_unit (e.g. [min]) to indicate the
+   * TrafficSignValue::value_unit (e.g. min) to indicate the
    * allowed duration of parking.
    * </td>
    * </tr>
@@ -8781,7 +9087,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * </td>
    * <td>
    * Use \c TrafficSignValue::value and \c
-   * TrafficSignValue::value_unit (e.g. [min]) to indicate the
+   * TrafficSignValue::value_unit (e.g. min) to indicate the
    * allowed duration of parking. Set \c TrafficSignValue::text
    * to &rdquo;in gekennzeichneten Fl&auml;chen&rdquo;.
    * </td>
@@ -8804,7 +9110,7 @@ export enum TrafficSign_SupplementarySign_Classification_Type {
    * </table>
    *
    * Use \c TrafficSignValue::value and \c
-   * TrafficSignValue::value_unit (e.g. in [t]) to indicate the
+   * TrafficSignValue::value_unit (e.g. in t) to indicate the
    * weight.
    */
   WEIGHT = 6,
@@ -9032,7 +9338,7 @@ export enum TrafficSign_SupplementarySign_Classification_Actor {
    *
    * \note In the German StVO, tractors are defined as
    * motorized vehicles that are not allowed to, or cannot,
-   * drive faster than 25 [km/h]
+   * drive faster than 25 km/h
    */
   TRACTORS = 37,
   /** TRAILERS - Trailers */
@@ -9044,7 +9350,7 @@ export enum TrafficSign_SupplementarySign_Classification_Actor {
    *
    * \note
    * In the German StVO, trucks are defined as
-   * motorized vehicles that are heavier than 3.5 [t]
+   * motorized vehicles that are heavier than 3.5 t
    */
   TRUCKS = 40,
   /** TRUCKS_WITH_SEMITRAILERS - Trucks with semi-trailers */
@@ -9065,7 +9371,13 @@ export enum TrafficSign_SupplementarySign_Classification_Actor {
 
 /** \brief An arrow denoting a direction shown on the traffic sign. */
 export interface TrafficSign_SupplementarySign_Classification_Arrow {
-  /** The IDs of the lanes the arrow applies to */
+  /**
+   * The IDs of the lanes the arrow applies to
+   *
+   * \rules
+   * refers_to: Lane
+   * \endrules
+   */
   lane_id?:
     | Identifier[]
     | undefined;
@@ -9120,7 +9432,7 @@ export enum TrafficSign_SupplementarySign_Classification_Arrow_Direction {
    */
   DIRECT_135_DEG_LEFT = 9,
   /**
-   * DIRECT_180_DEG - A straight arrow pointing oposite to the direction of
+   * DIRECT_180_DEG - A straight arrow pointing opposite to the direction of
    * driving.
    */
   DIRECT_180_DEG = 10,
@@ -9202,7 +9514,7 @@ export enum TrafficSign_SupplementarySign_Classification_Arrow_Direction {
   CIRCLE_135_DEG_LEFT = 25,
   /**
    * CIRCLE_180_DEG - An arrow that includes a fraction of a circle and points
-   * in the oposite to the direction of driving. Can be used
+   * in the opposite to the direction of driving. Can be used
    * in detours in roundabouts.
    */
   CIRCLE_180_DEG = 26,

@@ -5,7 +5,7 @@
 // source: osi_detectedroadmarking.proto
 
 /* eslint-disable */
-import { type BaseStationary } from "./osi_common";
+import { type BaseStationary, type ColorDescription } from "./osi_common";
 import { type DetectedItemHeader } from "./osi_detectedobject";
 import { type RoadMarking_Classification } from "./osi_roadmarking";
 
@@ -20,6 +20,15 @@ import { type RoadMarking_Classification } from "./osi_roadmarking";
  * RoadMarking::Classification::TYPE_TEXTUAL_TRAFFIC_SIGN is marked, STOP \c
  * RoadMarking::Classification::type == \c
  * RoadMarking::Classification::TYPE_SYMBOLIC_TRAFFIC_SIGN is not marked.
+ *
+ * The parent frame of a detected road marking is the virtual sensor coordinate
+ * system.
+ *
+ * /note The virtual sensor coordinate system is relative to the vehicle coordinate
+ * system which has its origin in the center of the rear axle of the ego
+ * vehicle. This means if virtual sensor mounting position and orientation are
+ * set to (0,0,0) the virtual sensor coordinate system coincides with the
+ * vehicle coordinate system.
  */
 export interface DetectedRoadMarking {
   /** Common information of one detected item. */
@@ -59,10 +68,18 @@ export interface DetectedRoadMarking {
   /**
    * A list of candidates for this road marking as estimated by the
    * sensor.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
-  candidate?: DetectedRoadMarking_CandidateRoadMarking[] | undefined;
+  candidate?:
+    | DetectedRoadMarking_CandidateRoadMarking[]
+    | undefined;
+  /**
+   * The visual color of the material of the road marking.
+   *
+   * \note This does not represent the semantic classification but the visual
+   * appearance. For semantic classification of the road marking use the color
+   * field in \c CandidateRoadMarking::classification.
+   */
+  color_description?: ColorDescription | undefined;
 }
 
 /**
@@ -77,7 +94,10 @@ export interface DetectedRoadMarking_CandidateRoadMarking {
    * given under the condition of
    * \c DetectedItemHeader::existence_probability.
    *
-   * Range: [0,1]
+   * \rules
+   * is_less_than_or_equal_to: 1
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   probability?:
     | number

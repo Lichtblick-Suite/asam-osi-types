@@ -4,26 +4,26 @@
  *
  * The coordinate system is defined as right-handed.
  *
- * Units are [m] for positions, [m/s] for velocities and [m/s^2] for
+ * Units are m for positions, m/s for velocities, and m/s^2 for
  * accelerations.
  */
 interface Vector3d {
     /**
-     * The x coordinate.
+     * The x-coordinate.
      *
-     * Unit: [m] [m/s] or [m/s^2]
+     * Unit: m, m/s, or m/s^2
      */
     x?: number | undefined;
     /**
-     * The y coordinate.
+     * The y-coordinate.
      *
-     * Unit: [m] [m/s] or [m/s^2]
+     * Unit: m, m/s, or m/s^2
      */
     y?: number | undefined;
     /**
-     * The z coordinate.
+     * The z-coordinate.
      *
-     * Unit: [m] [m/s] or [m/s^2]
+     * Unit: m, m/s, or m/s^2
      */
     z?: number | undefined;
 }
@@ -31,20 +31,20 @@ interface Vector3d {
  * \brief A cartesian 2D vector for positions, velocities or accelerations or
  * its uncertainties.
  *
- * Units are [m] for positions, [m/s] for velocities and [m/s^2] for
+ * Units are m for positions, m/s for velocities, and m/s^2 for
  * accelerations.
  */
 interface Vector2d {
     /**
-     * The x coordinate.
+     * The x-coordinate.
      *
-     * Unit: [m] [m/s] or [m/s^2]
+     * Unit: m, m/s, or m/s^2
      */
     x?: number | undefined;
     /**
-     * The y coordinate.
+     * The y-coordinate.
      *
-     * Unit: [m] [m/s] or [m/s^2]
+     * Unit: m, m/s, or m/s^2
      */
     y?: number | undefined;
 }
@@ -62,7 +62,11 @@ interface Timestamp {
      * The number of seconds since the start of e.g. the simulation / system /
      * vehicle.
      *
-     * Unit: [s]
+     * Unit: s
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     seconds?: number | undefined;
     /**
@@ -70,7 +74,12 @@ interface Timestamp {
      *
      * Range: [0, 999.999.999]
      *
-     * Unit: [ns]
+     * Unit: ns
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 999999999
+     * \endrules
      */
     nanos?: number | undefined;
 }
@@ -89,19 +98,31 @@ interface Dimension3d {
     /**
      * The length of the box.
      *
-     * Unit: [m]
+     * Unit: m
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     length?: number | undefined;
     /**
      * The width of the box.
      *
-     * Unit: [m]
+     * Unit: m
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     width?: number | undefined;
     /**
      * The height of the box.
      *
-     * Unit: [m]
+     * Unit: m
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     height?: number | undefined;
 }
@@ -109,52 +130,50 @@ interface Dimension3d {
  * \brief A 3D orientation, orientation rate or orientation acceleration (i.e.
  * derivatives) or its uncertainties denoted in euler angles.
  *
- * Units are [rad] for orientation [rad/s] for rates and [rad/s^2] for
+ * Units are rad for orientation, rad/s for rates, and rad/s^2 for
  * accelerations
  *
- * The preferred angular range is (-pi, pi]. The coordinate system is defined as
- * right-handed.
+ * The coordinate system is defined as right-handed.
  * For the sense of each rotation, the right-hand rule applies.
  *
  * The rotations are to be performed \b yaw \b first (around the z-axis),
  * \b pitch \b second (around the new y-axis) and \b roll \b third (around the
  * new x-axis) to follow the definition according to [1] (Tait-Bryan / Euler
- * convention z-y'-x'').
+ * convention z-y'-x''). The preferred angular range is [-pi, pi] for roll
+ * and yaw and [-pi/2, pi/2] for pitch.
  *
  * Roll/Pitch are 0 if the objects xy-plane is parallel to its parent's
  * xy-plane. Yaw is 0 if the object's local x-axis is parallel to its parent's
  * x-axis.
  *
  * \f$ Rotation_{yaw,pitch,roll} =
- * Rotation_{roll}*Rotation_{pitch}*Rotation_{yaw} \f$
+ * Rotation_{yaw}*Rotation_{pitch}*Rotation_{roll} \f$
  *
- * \f$ vector_{\text{global coord system}} :=
- * Rotation_{yaw,pitch,roll}^{-1}( \f$ \c Orientation3d \f$
- * )*vector_{\text{local coord system}} + local_{origin}\text{::position} \f$
+ * \f$ vector_{global coord system} := Rotation_{yaw, pitch, roll} * vector_{local coord system} +local_{origin::position} \f$
  *
  * \attention This definition changed in OSI version 3.0.0. Previous OSI
  * versions  (V2.xx) had an other definition.
  *
- * \par References:
- * - [1] DIN ISO 8855:2013-11
+ * \par Reference:
+ * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
  */
 interface Orientation3d {
     /**
      * The roll angle/rate/acceleration.
      *
-     * Unit: [rad] [rad/s] or [rad/s^2]
+     * Unit: rad, rad/s, or rad/s^2
      */
     roll?: number | undefined;
     /**
      * The pitch angle/rate/acceleration.
      *
-     * Unit: [rad] [rad/s] or [rad/s^2]
+     * Unit: rad, rad/s, or rad/s^2
      */
     pitch?: number | undefined;
     /**
      * The yaw angle/rate/acceleration.
      *
-     * Unit: [rad] [rad/s] or [rad/s^2]
+     * Unit: rad, rad/s, or rad/s^2
      */
     yaw?: number | undefined;
 }
@@ -165,16 +184,90 @@ interface Orientation3d {
  * truth, the identifier of an item (object, lane, sign, etc.) must remain
  * stable over its lifetime. \c Identifier values may be only be reused if the
  * available address space is exhausted and the specific values have not been in
- * use for several timesteps. Sensor specific tracking IDs have no restrictions
+ * use for several time steps. Sensor specific tracking IDs have no restrictions
  * and should behave according to the sensor specifications.
+ * Purely simulation technical IDs, like sensor IDs, are not required to be
+ * unique among all simulated items, but rather unique within the context of the
+ * given message type.
  *
  * The value MAX(uint64) = 2^(64) -1 =
  * 0b1111111111111111111111111111111111111111111111111111111111111111 is
  * reserved and indicates an invalid ID or error.
  */
 interface Identifier {
-    /** The identifier's value. */
+    /**
+     * The value of the identifier.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
+     */
     value?: number | undefined;
+}
+/**
+ * \brief References to external objects.
+ *
+ * The external reference is an optional recommendation to refer to objects defined outside of OSI.
+ * This could be other OpenX standards, 3rd-party standards or user-defined objects.
+ *
+ * \note ExternalReference is optional and can be left empty.
+ */
+interface ExternalReference {
+    /**
+     * The source of the external references.
+     *
+     * Defines the original source of an object as uniquely identifiable reference.
+     * In case of using \c GroundTruth::map_reference or
+     * \c GroundTruth::model_reference, the reference can be left empty.
+     * If not otherwise required, an URI is suggested. The syntax should follow
+     * \link https://tools.ietf.org/html/rfc3986 RFC 3986\endlink.
+     */
+    reference?: string | undefined;
+    /**
+     * The type of the external references.
+     *
+     * Mandatory value describing the type of the original source.
+     *
+     * For OpenX/ASAM standards it is specified as follows:
+     * - net.asam.opendrive
+     * - net.asam.openscenario
+     *
+     * For third-party standards and user-defined objects,
+     * reverse domain name notation with lower-case type field
+     * is recommended to guarantee unique and interoperable identification.
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    type?: string | undefined;
+    /**
+     * The external identifier reference value.
+     *
+     * The repeated string is chosen as a common description of the external
+     * identifier, because a variety of identifier types could be
+     * involved .
+     *
+     * For example, referencing a unique lane in OpenDRIVE requires the
+     * following identifiers:
+     * * RoadId: String
+     * * S-Value of LaneSection: Double
+     * * LaneId: Int
+     *
+     * \note The detailed description of the identifiers and how they are
+     *       used for referencing external objects is given in the individual
+     *       messages where the external identifier is used.
+     *
+     * \see EnvironmentalConditions::source_reference
+     * \see Lane::source_reference
+     * \see LaneBoundary::source_reference
+     * \see StationaryObject::source_reference
+     * \see MovingObject::source_reference
+     * \see RoadMarking::source_reference
+     * \see TrafficLight::source_reference
+     * \see TrafficSign::source_reference
+     */
+    identifier?: string[] | undefined;
 }
 /**
  * \brief Specifies the mounting position of a sensor.
@@ -215,21 +308,157 @@ interface Spherical3d {
     /**
      * The radial distance.
      *
-     * Unit: [m]
+     * Unit: m
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     distance?: number | undefined;
     /**
      * The azimuth (horizontal) angle.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     azimuth?: number | undefined;
     /**
      * The elevation (vertical) angle.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     elevation?: number | undefined;
+}
+/**
+ * \brief Assignment of an object to a logical lane
+ *
+ * An object is assigned to a logical lane if it overlaps the logical lane.
+ * Assignment happens even if the reference point is outside the lane, and only
+ * a part of the object overlaps (any object overlapping the lane more than 5cm
+ * has to be assigned to the lane).
+ *
+ * As an exception to this, \c TrafficSign and \c TrafficLight are assigned to
+ * a logical lane if they control traffic on that lane. For \c TrafficSign and
+ * \c TrafficLight , #s_position refers to the position where the sign or light
+ * is valid (e.g. where vehicles should stop in case of a red traffic light),
+ * not the physical position (where the sign or light is in the world).
+ * Typically, t_position and angle_to_lane do not have any meaning in this
+ * case, and will be 0.
+ */
+interface LogicalLaneAssignment {
+    /**
+     * ID of the LogicalLane the object is assigned to.
+     *
+     * \rules
+     * refers_to: LogicalLane
+     * \endrules
+     */
+    assigned_lane_id?: Identifier | undefined;
+    /**
+     * S position of the object reference point on the lane, in the ST
+     * coordinate system of the lane.
+     *
+     * #s_position might be outside [s_start,s_end] of the lane (and even
+     * outside [startS,endS] of the reference line) if the reference point is
+     * outside the lane, but the object overlaps the lane or a TrafficSign or
+     * TrafficLight is assigned to a lane.
+     */
+    s_position?: number | undefined;
+    /**
+     * T position of the object reference point on the lane, in the ST
+     * coordinate system of the lane.
+     */
+    t_position?: number | undefined;
+    /**
+     * Angle of the object relative to the lane.
+     * See the ReferenceLine description how the angle is calculated.
+     *
+     * Unit: rad
+     */
+    angle_to_lane?: number | undefined;
+}
+/**
+ * \brief A bounding box description.
+ *
+ * A bounding box representing a sub-section of its parent's overall
+ * dimension, either that of a \c BaseMoving or \c BaseStationary .
+ *
+ * The parent frame of the \c BoundingBox is identical to the parent frame
+ * of the \c MovingObject or \c StationaryObject it is associated to. For
+ * example, if the parent object coordinates are given relative to the
+ * global coordinate system, then the \c BoundingBox coordinates are also
+ * given relative to the global coordinate system.
+ *
+ * \note The overall bounding box of the object is still defined using the
+ * dimension, position and orientation of the \c BaseMoving or
+ * \c BaseStationary .
+ */
+interface BoundingBox {
+    /** The 3D dimensions of the bounding box. */
+    dimension?: Dimension3d | undefined;
+    /**
+     * The 3D position of the bounding box. The position is the center
+     * of the bounding box and the pivot for the \c dimension and \c orientation.
+     *
+     * \note The position should be within the same coordinate frame as
+     * its parent, not relative to coordinate frame of the parent object.
+     * The position becomes global/absolute if the parent frame is inertial
+     * (all parent frames up to ground truth).
+     */
+    position?: Vector3d | undefined;
+    /**
+     * The 3D orientation of the bounding box.
+     *
+     * \note The orientation should be within the same coordinate frame as
+     * its parent, not relative to the coordinate frame of the parent object.
+     * The orientation becomes global/absolute if the parent frame is inertial
+     * (all parent frames up to ground truth).
+     */
+    orientation?: Orientation3d | undefined;
+    /** The type of object contained in the bounding box. */
+    contained_object_type?: BoundingBox_Type | undefined;
+    /**
+     * Opaque reference of an associated 3D model of the bounding box.
+     *
+     * \note It is implementation-specific how model_references are resolved to
+     * 3d models. This means the coordinate system, model origin, and model
+     * orientation are also implementation-specific.
+     */
+    model_reference?: string | undefined;
+}
+/** Definition of different types of object contained within the bounding box */
+declare enum BoundingBox_Type {
+    /** UNKNOWN - Object of unknown type (must not be used in ground truth). */
+    UNKNOWN = 0,
+    /** OTHER - Any other type of object. */
+    OTHER = 1,
+    /**
+     * BASE_STRUCTURE - The main structure of an object, e.g. a chassis of a vehicle,
+     * or the central structure of a building, a tree trunk, etc.
+     */
+    BASE_STRUCTURE = 2,
+    /**
+     * PROTRUDING_STRUCTURE - A protruding, integral part of an object, which is not
+     * temporarily attached, e.g. a tree crown, a light pole arm, or a
+     * parking house gate. The protruding structure is meant to be an
+     * additional part to a base structure.
+     */
+    PROTRUDING_STRUCTURE = 3,
+    /** CARGO - Additional, temporarily attached cargo to an object. */
+    CARGO = 4,
+    /**
+     * DOOR - The door of an object.
+     *
+     * For vehicles, this includes driver and passenger doors, trunk
+     * and front hoods, and fuel or charging port covers.
+     */
+    DOOR = 5,
+    /**
+     * SIDE_MIRROR - The side mirror of a vehicle.
+     *
+     * \note The side mirror is not included in the overall bounding box
+     * of the parent object.
+     */
+    SIDE_MIRROR = 6
 }
 /**
  * \brief The base attributes of a stationary object or entity.
@@ -248,6 +477,9 @@ interface BaseStationary {
     /**
      * The 3D dimensions of the stationary object (bounding box), e.g. a
      * landmark.
+     *
+     * \note The \c #dimension must completely enclose the geometry of the
+     * \c BaseStationary .
      */
     dimension?: Dimension3d | undefined;
     /**
@@ -291,6 +523,23 @@ interface BaseStationary {
      * The polygon is defined counter-clockwise.
      */
     base_polygon?: Vector2d[] | undefined;
+    /**
+     * Sub-divisions of the overall bounding box of the \c BaseStationary object.
+     *
+     * The bounding box sections can include separate parts on partially-opaque
+     * objects such as trees with a distinction between trunk and crown.
+     *
+     * \note The bounding box sub-divisions can extend beyond the overall
+     * bounding box, however no actual geometry must reside outside of the
+     * overall bounding box.
+     *
+     * \note If any sub-divisions are provided, then they must cover all
+     * occupied space of the overall bounding box. In other words, a consumer
+     * of this data is guaranteed that any part of the overall bounding box
+     * that is not covered by any sub-division is free of physical objects,
+     * and thus no collisions can occur there.
+     */
+    bounding_box_section?: BoundingBox[] | undefined;
 }
 /**
  * \brief The base attributes of an object that is moving.
@@ -298,6 +547,8 @@ interface BaseStationary {
  * This includes the \c MovingObject messages.
  *
  * \image html OSI_BaseMoving.svg
+ *
+ * \image html OSI_BaseMoving_Top.svg
  *
  * E.g. a vehicle is a base moving object.
  *
@@ -307,7 +558,14 @@ interface BaseStationary {
  * (see: \c MovingObject vehicle reference point).
  */
 interface BaseMoving {
-    /** The 3D dimension of the moving object (its bounding box). */
+    /**
+     * The 3D dimension of the moving object (its bounding box).
+     *
+     * \note The \c #dimension must completely enclose the geometry of the
+     * \c BaseMoving with the exception of the side mirrors for vehicles.
+     *
+     * \note The bounding box does NOT include side mirrors for vehicles.
+     */
     dimension?: Dimension3d | undefined;
     /**
      * The reference point for position and orientation: the center (x,y,z) of
@@ -406,6 +664,377 @@ interface BaseMoving {
      * The polygon is defined counter-clockwise.
      */
     base_polygon?: Vector2d[] | undefined;
+    /**
+     * Sub-divisions of the overall bounding box of the \c BaseMoving object.
+     *
+     * The bounding box sections can include side mirrors, cargo, etc. for
+     * vehicles, as well as body-part sections for pedestrians. Note that for
+     * more precise pedestrian information \c PedestrianAttributes can be used.
+     *
+     * \note The bounding box sub-divisions can extend beyond the overall
+     * bounding box, however no actual geometry must reside outside of the
+     * overall bounding box, with the specific exception of the side mirrors.
+     *
+     * \note If any sub-divisions are provided, then they must cover all
+     * occupied space of the overall bounding box. In other words, a consumer
+     * of this data is guaranteed that any part of the overall bounding box
+     * that is not covered by any sub-division is free of physical objects,
+     * and thus no collisions can occur there.
+     */
+    bounding_box_section?: BoundingBox[] | undefined;
+}
+/**
+ * \brief The StatePoint definition
+ *
+ * A reference to a time and pose.  Typically used in a repeated field to define
+ * a trajectory.
+ *
+ * \note The StatePoint definition does not define mandatory fields.
+ * The context defines how and what fields are used.  For example, in some cases
+ * only the pose variables are relevant and the timestamp is ignored.
+ */
+interface StatePoint {
+    /**
+     * The timestamp of a StatePoint.
+     *
+     * \note Zero time does not need to coincide with the UNIX epoch.
+     */
+    timestamp?: Timestamp | undefined;
+    /**
+     * Position in the global coordinate system.
+     *
+     * \note Remark: The definition of the reference point follows the
+     * specification of the \c BaseMoving message, if not specified otherwise
+     * in the message the StatePoint is used in.
+     */
+    position?: Vector3d | undefined;
+    /** Orientation in the global coordinate system. */
+    orientation?: Orientation3d | undefined;
+}
+/**
+ * \brief Detailed WavelengthRange message.
+ *
+ * Defines the start (minimum) and the end (maximum) values of the wavelength.
+ * Additionally, the number of samples within this range is defined in this message.
+ */
+interface WavelengthData {
+    /**
+     * The start, or the minimum wavelength value.
+     *
+     * Unit: m
+     */
+    start?: number | undefined;
+    /**
+     * The end, or the maximum wavelength value.
+     *
+     * Unit: m
+     */
+    end?: number | undefined;
+    /**
+     * Number of samples to be considered within the defined wavelength range.
+     * The number of samples includes the start and the end values that are defined in this message, starting from the "start" value.
+     * \note This defines the number of wavelengths to be computed during simulation, not to be confused with samples_per_pixel.
+     */
+    samples_number?: number | undefined;
+}
+/**
+ * \brief Definition of a spatial signal strength distribution
+ * for an emitting / transmitting / receiving entity
+ * with a horizontal and a vertical angle
+ * and the corresponding signal strength in dBm (decibels per milliwatt).
+ */
+interface SpatialSignalStrength {
+    /**
+     * Horizontal angle (azimuth) of emission / transmission / reception
+     * in the entity's coordinate system.
+     *
+     * Unit: rad
+     */
+    horizontal_angle?: number | undefined;
+    /**
+     * Vertical angle (elevation) of emission / transmission / reception
+     * in the entity's coordinate system.
+     *
+     * Unit: rad
+     */
+    vertical_angle?: number | undefined;
+    /**
+     * Emitted / transmitted /received signal strength
+     * of the emitting / transmitting / receiving entity
+     * at the previously defined horizontal and
+     * vertical angle for one specific wavelength.
+     * The value for the signal strength
+     * is given in dBm (decibels per milliwatt).
+     *
+     * Unit: dBm
+     */
+    signal_strength?: number | undefined;
+}
+/**
+ * \brief The description of a color within available color spaces.
+ *
+ * ColorDescription represents the visual, non-semantic appearance of an object, structure or feature within various available color spaces.
+ *
+ * Depending on the context, this may define the color of an object or structure a priori (e.g. GroundTruth objects)
+ * or describe a perceived color (e.g. CameraDetections).
+ */
+interface ColorDescription {
+    /** Grayscale color model */
+    grey?: ColorGrey | undefined;
+    /** RGB (Red, Green, Blue) color model */
+    rgb?: ColorRGB | undefined;
+    /** RGBIR (Red, Green, Blue, Infrared) color model */
+    rgbir?: ColorRGBIR | undefined;
+    /** HSV (Hue, Saturation, Value) color model */
+    hsv?: ColorHSV | undefined;
+    /** LUV (Luminance, U-coordinate, V-coordinate) color model */
+    luv?: ColorLUV | undefined;
+    /** CMYK (Cyan, Magenta, Yellow, Key) color model */
+    cmyk?: ColorCMYK | undefined;
+}
+/**
+ * \brief Grayscale color model
+ *
+ * ColorGrey defines a grayscale.
+ */
+interface ColorGrey {
+    /**
+     * Definition of a grayscale
+     *
+     * Range: [0,1]
+     */
+    grey?: number | undefined;
+}
+/**
+ * \brief RGB color model
+ *
+ * ColorRGB provides values for red, green and blue.
+ */
+interface ColorRGB {
+    /**
+     * Red ratio
+     *
+     * Range: [0,1]
+     */
+    red?: number | undefined;
+    /**
+     * Green ratio
+     *
+     * Range: [0,1]
+     */
+    green?: number | undefined;
+    /**
+     * Blue ratio
+     *
+     * Range: [0,1]
+     */
+    blue?: number | undefined;
+}
+/**
+ * \brief RGBIR color model
+ *
+ * ColorRGBIR provides values for red, green, blue and infrared.
+ */
+interface ColorRGBIR {
+    /**
+     * Red ratio
+     *
+     * Range: [0,1]
+     */
+    red?: number | undefined;
+    /**
+     * Green ratio
+     *
+     * Range: [0,1]
+     */
+    green?: number | undefined;
+    /**
+     * Blue ratio
+     *
+     * Range: [0,1]
+     */
+    blue?: number | undefined;
+    /**
+     * Infrared
+     *
+     * Range: [0,1]
+     */
+    infrared?: number | undefined;
+}
+/**
+ * \brief HSV color model
+ *
+ * ColorHSV provides values for hue, saturation and value/brightness.
+ */
+interface ColorHSV {
+    /**
+     * Hue
+     *
+     * Unit: deg
+     * Range: [0,360[
+     */
+    hue?: number | undefined;
+    /**
+     * Saturation
+     *
+     * Range: [0,1]
+     */
+    saturation?: number | undefined;
+    /**
+     * Value
+     *
+     * Range: [0,1]
+     */
+    value?: number | undefined;
+}
+/**
+ * \brief LUV color model
+ *
+ * ColorLUV provides values for luminance, U- and V-coordinate.
+ */
+interface ColorLUV {
+    /**
+     * Luminance
+     *
+     * Range: [0,1]
+     */
+    luminance?: number | undefined;
+    /**
+     * U-coordinate
+     *
+     * Range: [0,1]
+     */
+    u?: number | undefined;
+    /**
+     * V-Coordinate
+     *
+     * Range: [0,1]
+     */
+    v?: number | undefined;
+}
+/**
+ * \brief CMYK colors model
+ *
+ * ColorCMYK provides values for cyan, magenta, yellow and key/black.
+ */
+interface ColorCMYK {
+    /**
+     * Cyan ratio
+     *
+     * Range: [0,1]
+     */
+    cyan?: number | undefined;
+    /**
+     * Magenta ratio
+     *
+     * Range: [0,1]
+     */
+    magenta?: number | undefined;
+    /**
+     * Yellow ratio
+     *
+     * Range: [0,1]
+     */
+    yellow?: number | undefined;
+    /**
+     * Black ratio
+     *
+     * Range: [0,1]
+     */
+    key?: number | undefined;
+}
+/** \brief A description for the positions of the pedals. */
+interface Pedalry {
+    /**
+     * Position of the acceleration pedal.
+     * Range: 0-1 (Unpressed - fully pressed)
+     */
+    pedal_position_acceleration?: number | undefined;
+    /**
+     * Position of the brake pedal.
+     * Range: 0-1 (Unpressed - fully pressed)
+     */
+    pedal_position_brake?: number | undefined;
+    /**
+     * Position of the clutch pedal.
+     * Range: 0-1 (Unpressed - fully pressed)
+     */
+    pedal_position_clutch?: number | undefined;
+}
+/** \brief A description of the steering wheel. */
+interface VehicleSteeringWheel {
+    /**
+     * Angle of the steering wheel.
+     * Zero means the steering wheel is in its center position. A positive value
+     * means the steering wheel is turned to the left. A negative value
+     * means the steering wheel is turned to the right of the center position.
+     *
+     * Unit: rad
+     */
+    angle?: number | undefined;
+    /**
+     * Angular speed of the steering wheel.
+     * Zero means the steering wheel stays in its position. A positive value
+     * means the steering wheel is turned to the left. A negative value
+     * means the steering wheel is turned to the right.
+     *
+     * Unit: rad/s
+     */
+    angular_speed?: number | undefined;
+    /**
+     * Torque of the steering wheel to the hand.
+     * Zero means there is no force from the steering wheel to the hand of the driver.
+     * A positive value means that the steering wheel would turn to the left without driver intervention.
+     * A negative value means that the steering wheel would turn to the right without driver intervention.
+     *
+     * Unit: N*m
+     */
+    torque?: number | undefined;
+}
+/** \brief The geodetic position of an object, that is, the center of the 3D bounding box. */
+interface GeodeticPosition {
+    /**
+     * Longitude in decimal degrees regarding WGS84.
+     *
+     * Unit: Degree
+     * Range: [-180; 180]
+     */
+    longitude?: number | undefined;
+    /**
+     * Latitude in decimal degrees regarding WGS84.
+     *
+     * Unit: Degree
+     * Range: [-90; 90]
+     */
+    latitude?: number | undefined;
+    /**
+     * Height above sea level regarding EGM96.
+     *
+     * Unit: m
+     * Range: [-300; 10000]
+     */
+    altitude?: number | undefined;
+}
+/**
+ * \brief Generic key-value pair structure
+ *
+ * A generic key-value pair structure which can be used to capture information
+ * which is opaque to the general OSI interface.
+ */
+interface KeyValuePair {
+    /** A generic string key. */
+    key?: string | undefined;
+    /** A generic string value. */
+    value?: string | undefined;
+}
+/**
+ * \brief Polygon in 3 dimensions
+ *
+ * A polygon in 3 dimensions which contains a list of vertices.
+ */
+interface Polygon3d {
+    /** A list of vertices */
+    vertex?: Vector3d[] | undefined;
 }
 
 /**
@@ -418,7 +1047,14 @@ interface BaseMoving {
  * \c StationaryObject excludes traffic lights, traffic signs and road marking
  */
 interface StationaryObject {
-    /** The ID of the object. */
+    /**
+     * The ID of the object.
+     *
+     * \rules
+     * is_globally_unique
+     * is_set
+     * \endrules
+     */
     id?: Identifier | undefined;
     /** The base parameters of the stationary object. */
     base?: BaseStationary | undefined;
@@ -431,6 +1067,43 @@ interface StationaryObject {
      * 3d models.
      */
     model_reference?: string | undefined;
+    /**
+     * External reference to the stationary-object source.
+     *
+     * The external reference points to the source of a stationary object, if it
+     * is derived from an external sources like OpenDRIVE or OpenSCENARIO.
+     *
+     * For example, to reference an object defined in an OpenDRIVE map
+     * the items should be set as follows:
+     * * reference = URI to map, can remain empty if identical with definition
+     *               in \c GroundTruth::map_reference
+     * * type = "net.asam.opendrive"
+     * * identifier[0] = "object" for t_road_objects_object and
+     *                   "bridge" for t_road_objects_bridge
+     * * identifier[1] = id of t_road_objects_object or t_road_objects_bridge
+     *
+     * For example, to reference OpenSCENARIO entities of the type MiscObject,
+     * which describe partly stationary objects, the items should be set as
+     * follows:
+     * * reference = URI to the OpenSCENARIO File
+     * * type = "net.asam.openscenario"
+     * * identifier[0] = Entity-Type ("MiscObject")
+     * * identifier[1] = name of MiscObject in Entity
+     *
+     * \note The following rule, described in OpenDRIVE, also applies:
+     * * Objects derived from OpenSCENARIO shall not be mixed with objects
+     *   described in OpenDRIVE.
+     *
+     * \note For non-ASAM Standards, it is implementation-specific how
+     *       source_reference is resolved.
+     *
+     * \note The value has to be repeated because one object may be derived
+     *       from more than one origin source, for example, from a scenario file
+     *       and from sensors.
+     */
+    source_reference?: ExternalReference[] | undefined;
+    /** The dominating color of the material of the structure. */
+    color_description?: ColorDescription | undefined;
 }
 /** \brief Classification data for a stationary object. */
 interface StationaryObject_Classification {
@@ -440,8 +1113,38 @@ interface StationaryObject_Classification {
     material?: StationaryObject_Classification_Material | undefined;
     /** The dominating density of the material of the structure. */
     density?: StationaryObject_Classification_Density | undefined;
-    /** The dominating color of the material of the structure. */
+    /**
+     * The dominating color of the material of the structure.
+     *
+     * \attention DEPRECATED: This color enum will be removed in version
+     * 4.0.0. Use the field \c #color_description (\c ColorDescription) of
+     * \c StationaryObject instead.
+     */
     color?: StationaryObject_Classification_Color | undefined;
+    /** The attributes of the emitting structure if stationary object is classified as such. */
+    emitting_structure_attribute?: StationaryObject_Classification_EmittingStructureAttribute | undefined;
+    /**
+     * The IDs of the lanes that the object is assigned to.
+     *
+     * \note Might be multiple IDs if the object stretches over multiple lanes.
+     *
+     * \note OSI uses singular instead of plural for repeated field names.
+     */
+    assigned_lane_id?: Identifier[] | undefined;
+    /**
+     * Percentage values of the object width in the corresponding lane.
+     *
+     * \note Might be multiple percentages if the object stretches over multiple lanes.
+     *
+     * \note OSI uses singular instead of plural for repeated field names.
+     */
+    assigned_lane_percentage?: number[] | undefined;
+    /**
+     * Assignment of this object to logical lanes.
+     *
+     * \note OSI uses singular instead of plural for repeated field names.
+     */
+    logical_lane_assignment?: LogicalLaneAssignment[] | undefined;
 }
 /** Definition of object types. */
 declare enum StationaryObject_Classification_Type {
@@ -485,16 +1188,23 @@ declare enum StationaryObject_Classification_Type {
      */
     OVERHEAD_STRUCTURE = 14,
     /**
-     * REFLECTIVE_STRUCTURE - Landmarks corresponding to light sources or reflective structures
-     * in the environment, like street lights or reflective poles on the
+     * REFLECTIVE_STRUCTURE - Landmarks corresponding to reflective structures
+     * in the environment, like reflective poles on the
      * road boarder.
      */
     REFLECTIVE_STRUCTURE = 15,
     /**
      * CONSTRUCTION_SITE_ELEMENT - Landmarks corresponding to construction site elements in the
-     * environment, like cones or beacons.
+     * environment, like beacons.
      */
-    CONSTRUCTION_SITE_ELEMENT = 16
+    CONSTRUCTION_SITE_ELEMENT = 16,
+    /** SPEED_BUMP - Object is a speed bump. */
+    SPEED_BUMP = 17,
+    /**
+     * EMITTING_STRUCTURE - Landmarks corresponding to sources of electromagnetic waves
+     * in the environment, like street lights.
+     */
+    EMITTING_STRUCTURE = 18
 }
 /** Definition of material types. */
 declare enum StationaryObject_Classification_Material {
@@ -515,7 +1225,13 @@ declare enum StationaryObject_Classification_Material {
     METAL = 5,
     /** STONE - Natural stone structure. */
     STONE = 6,
-    /** GLAS - Glas structure. */
+    /** GLASS - Glass structure. */
+    GLASS = 7,
+    /**
+     * GLAS - Glass structure.
+     *
+     * \note Deprecated variant spelling of MATERIAL_GLASS
+     */
     GLAS = 7,
     /** MUD - Mud structure. */
     MUD = 8
@@ -531,16 +1247,21 @@ declare enum StationaryObject_Classification_Density {
     OTHER = 1,
     /** SOLID - No perforation - solid; */
     SOLID = 2,
-    /** SMALL_MESH - Perforation max. ]0; 100] [mm] */
+    /** SMALL_MESH - Perforation max. ]0; 100] mm */
     SMALL_MESH = 3,
-    /** MEDIAN_MESH - Perforation max. ]100; 500] [mm] */
+    /** MEDIAN_MESH - Perforation max. ]100; 500] mm */
     MEDIAN_MESH = 4,
-    /** LARGE_MESH - Perforation max. ]500; 5000] [mm] */
+    /** LARGE_MESH - Perforation max. ]500; 5000] mm */
     LARGE_MESH = 5,
-    /** OPEN - Perforation max. ]5000; infinity] [mm] */
+    /** OPEN - Perforation max. ]5000; infinity[ mm */
     OPEN = 6
 }
-/** Definition of colors for structures. */
+/**
+ * Definition of colors for structures.
+ *
+ * \attention DEPRECATED: This color enum will be removed in version
+ * 4.0.0. Use \c ColorDescription instead.
+ */
 declare enum StationaryObject_Classification_Color {
     /** UNKNOWN - Color is unknown (must not be used in ground truth). */
     UNKNOWN = 0,
@@ -560,10 +1281,35 @@ declare enum StationaryObject_Classification_Color {
     ORANGE = 7,
     /** BLACK - Black. */
     BLACK = 8,
-    /** GREY - GREY. */
+    /** GRAY - GRAY. */
+    GRAY = 9,
+    /**
+     * GREY - GRAY.
+     *
+     * \note Deprecated variant spelling of COLOR_GRAY
+     */
     GREY = 9,
     /** WHITE - White. */
     WHITE = 10
+}
+/**
+ * \brief Attributes of type emitting structure. The horizontal_angle and the vertical_angle in
+ * emitted_spatial_intensity are symmetrical across the normal, which is defined by the mounting position
+ * of the emitting structure.
+ */
+interface StationaryObject_Classification_EmittingStructureAttribute {
+    /**
+     * This message determines the range of the emitted wavelength and its
+     * desired number of samples.
+     */
+    wavelength_data?: WavelengthData[] | undefined;
+    /**
+     * Spatial signal strength distribution of the emitted electromagnetic wave.
+     * For every sample in wavelength_data an emitted_spatial_signal_strength has to be defined.
+     *
+     * \note emitted_spatial_signal_strength.size() = WavelengthData.samples_number.size()
+     */
+    emitted_spatial_signal_strength?: SpatialSignalStrength[] | undefined;
 }
 /**
  * \brief A simulated object that is either a vehicle or another
@@ -574,16 +1320,26 @@ declare enum StationaryObject_Classification_Color {
  *
  * \image html OSI_HostVehicle.svg
  *
- * \note The field \c MovingObject::vehicle_extension has to be
- * filled if the \c MovingObject::Type is a vehicle.
+ * \note The fields \c MovingObject::vehicle_attributes and \c
+ * MovingObject::vehicle_classification have to be filled if the \c
+ * MovingObject::Type is set to #TYPE_VEHICLE.
  */
 interface MovingObject {
-    /** The ID of the object. */
+    /**
+     * The ID of the object.
+     *
+     * \rules
+     * is_globally_unique
+     * is_set
+     * \endrules
+     */
     id?: Identifier | undefined;
     /**
      * The base parameters of the vehicle.
      *
-     * \note The bounding box does NOT includes mirrors for vehicles.
+     * \note The bounding box does NOT include side mirrors for vehicles.
+     * \note The height includes the ground_clearance. It always goes from the
+     * top to the ground.
      */
     base?: BaseMoving | undefined;
     /** The type of the object. */
@@ -594,7 +1350,8 @@ interface MovingObject {
      * \note Might be multiple if the object is switching lanes or moving from
      * one lane into another following lane.
      *
-     * \note OSI uses singular instead of plural for repeated field names.
+     * \note DEPRECATED: Use assigned_lane_id in MovingObjectClassification
+     * instead.
      */
     assigned_lane_id?: Identifier[] | undefined;
     /**
@@ -602,6 +1359,10 @@ interface MovingObject {
      *
      * \note This field is mandatory if the \c #type is
      * #TYPE_VEHICLE .
+     *
+     * \rules
+     * check_if this.type is_equal_to 2 else do_check is_set
+     * \endrules
      */
     vehicle_attributes?: MovingObject_VehicleAttributes | undefined;
     /**
@@ -609,6 +1370,10 @@ interface MovingObject {
      *
      * \note This field is mandatory if the \c #type is
      * #TYPE_VEHICLE .
+     *
+     * \rules
+     * check_if this.type is_equal_to 2 else do_check is_set
+     * \endrules
      */
     vehicle_classification?: MovingObject_VehicleClassification | undefined;
     /**
@@ -618,6 +1383,55 @@ interface MovingObject {
      * 3d models.
      */
     model_reference?: string | undefined;
+    /**
+     * The trajectory that this moving object expects to follow in the future.
+     *
+     * This is not externally perceivable information, rather this is to aid
+     * realistic simulation of traffic participants that are not under test.
+     * This information should not be made available to the stack under test.
+     *
+     * \note Moving objects are not required to stick to this trajectory. It is
+     * indicative and equivalent to the output of a perception and prediction
+     * system.
+     */
+    future_trajectory?: StatePoint[] | undefined;
+    /** Specific information about the classification of the vehicle. */
+    moving_object_classification?: MovingObject_MovingObjectClassification | undefined;
+    /**
+     * Optional external reference to the moving-object source
+     *
+     * The external reference points to the source of an moving object, if it
+     * is derived from an external sources like OpenSCENARIO.
+     *
+     * For example, to reference OpenSCENARIO entities of the type Vehicle or
+     * Pedestrian, which describe moving objects, the items should be set as
+     * follows:
+     * * reference = URI to the OpenSCENARIO File
+     * * type = "net.asam.openscenario"
+     * * identifier[0] = Entity-Type ("Vehicle" or "Pedestrian")
+     * * identifier[1] = name of Vehicle/Pedestrian in Entity
+     *
+     * \note For non-ASAM Standards, it is implementation-specific how
+     *       source_reference is resolved.
+     *
+     * \note The value has to be repeated because one object may be derived
+     *       from more than one origin source, for example, from a scenario file
+     *       and from sensors.
+     */
+    source_reference?: ExternalReference[] | undefined;
+    /** The dominating color of the material of the moving object. */
+    color_description?: ColorDescription | undefined;
+    /**
+     * Specific information about the pedestrian.
+     *
+     * \note This field is mandatory if the \c #type is
+     * #TYPE_PEDESTRIAN.
+     *
+     * \rules
+     * check_if this.type is_equal_to 3 else do_check is_set
+     * \endrules
+     */
+    pedestrian_attributes?: MovingObject_PedestrianAttributes | undefined;
 }
 /** Definition of object types. */
 declare enum MovingObject_Type {
@@ -637,7 +1451,7 @@ declare enum MovingObject_Type {
  *
  * This is an extension to the \c MovingObject with additional attributes,
  * such as type and lights. The origin of the rear (front) axis coordinate
- * system in world coordinates is calculated as:
+ * system in global coordinates is calculated as:
  * \c MovingObject::base . \c BaseMoving::position + R * \c
  * MovingObject::VehicleAttributes::bbcenter_to_rear (front) for the host
  * vehicle (R rotates from vehicle to world frame, i.e. inverse orientation
@@ -653,8 +1467,8 @@ declare enum MovingObject_Type {
  * right-handed. Therefore the positive y-axis points to the left of the
  * vehicle.
  *
- * \par References:
- * - [1] DIN ISO 8855:2013-11
+ * \par Reference:
+ * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
  */
 interface MovingObject_VehicleAttributes {
     /**
@@ -665,16 +1479,23 @@ interface MovingObject_VehicleAttributes {
      */
     driver_id?: Identifier | undefined;
     /**
+     * Deprecated: Will be removed in next major release. Moved to WheelData.
      * Median radius of the wheels measured from a center of the wheel
      * including tire.
      *
-     * Unit: [m]
+     * Unit: m
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     radius_wheel?: number | undefined;
     /**
      * Number of independent wheels.
      *
-     * Unit: []
+     * \rules
+     * is_greater_than_or_equal_to: 1
+     * \endrules
      */
     number_wheels?: number | undefined;
     /**
@@ -692,13 +1513,144 @@ interface MovingObject_VehicleAttributes {
      */
     bbcenter_to_front?: Vector3d | undefined;
     /**
-     * Static minimal distance in [m] of under-body plane to ground
-     * surface plane (i.e. disregarding driving dynamic effects or road
-     * surface effects) under neutral load conditions. Can be useful to
-     * approximate the clear area under a vehicle that a sensor can see
-     * through.
+     * Static minimal distance or space from the lowest point of the vehicle's
+     * body to the surface plane below it under neutral load conditions. This
+     * distance disregards, for example, driving-dynamic effects or
+     * road-surface effects. Can be useful to approximate the clearance area
+     * under a vehicle that a sensor can see through.
+     * \note \c ground_clearance is included in the bounding box height.
      */
     ground_clearance?: number | undefined;
+    /**
+     * Description of each wheel.
+     *
+     * \note OSI uses singular instead of plural for repeated field names.
+     */
+    wheel_data?: MovingObject_VehicleAttributes_WheelData[] | undefined;
+    /**
+     * Angle of the steering wheel.
+     * Zero means the steering wheel is in its center position, a positive value
+     * means the steering wheel is turned to the left and a negative value
+     * means the steering wheel is turned to the right of the center position.
+     *
+     * Unit: rad
+     */
+    steering_wheel_angle?: number | undefined;
+}
+/**
+ * \brief Detailed wheel data.
+ * The focus is on the description of a wheel regarding the perceivable
+ * information from the outside.
+ * It is not intended to be used for dynamic calculations, for example.
+ */
+interface MovingObject_VehicleAttributes_WheelData {
+    /**
+     * The axle which contains this wheel. A value of 0 represents the
+     * front-most axle of the vehicle with higher numbers incrementing
+     * towards the rear-most axle.
+     */
+    axle?: number | undefined;
+    /**
+     * The index of the wheel on the axle, counting in the direction
+     * of positive-y, that is, right-to-left.
+     *
+     * For example, on a standard 2-axle, 4-wheel car, the rear-right
+     * wheel would be (axle=1, index=0).
+     * This concept works also for twin tires.
+     */
+    index?: number | undefined;
+    /**
+     * A vector pointing from the vehicle's reference system (center of bounding
+     * box) to the geometric center of the wheel.
+     */
+    position?: Vector3d | undefined;
+    /**
+     * Median radius of the wheel measured from the center of the wheel to
+     * the outer part of the tire.
+     *
+     * Unit: m
+     */
+    wheel_radius?: number | undefined;
+    /**
+     * Median radius of the rim measured from the center to the outer, visible part of the rim.
+     *
+     * Unit: m
+     */
+    rim_radius?: number | undefined;
+    /**
+     * Median width of the tire.
+     *
+     * Unit: m
+     */
+    width?: number | undefined;
+    /**
+     * Orientation of the wheel.
+     *
+     * The reference system is the vehicle frame (center of bounding box).
+     */
+    orientation?: Orientation3d | undefined;
+    /**
+     * Rotation rate of the wheel.
+     * The rotation rate around the y-axis with respect to the wheel's coordinate system.
+     *
+     * Unit: rad/s.
+     *
+     * The sign convention is defined using the right-hand rule.
+     * It is applied on the y-axis of the vehicle's reference system (center of bounding box).
+     * Counterclockwise is positive and clockwise is negative.
+     *
+     * \image html OSI_RotationRate.svg
+     * \note The vehicle's reference coordinate system is only used to determine the sign convention of the rotation rate.
+     */
+    rotation_rate?: number | undefined;
+    /**
+     * Opaque reference of an associated 3D model of the wheel.
+     *
+     * \note It is implementation-specific how model_references are resolved to
+     * 3d models.
+     */
+    model_reference?: string | undefined;
+    /**
+     * The value describes the kinetic friction of the tire's contact point.
+     * If different friction coefficients due to more than one contact points are available,
+     * this value contains the average.
+     *
+     * Unit: Dimensionless
+     *
+     * \par References:
+     * [1] Britannica, T. Editors of Encyclopaedia. (2020, June 24). <em>coefficient of friction</em>. Retrieved May 18, 2022, from https://www.britannica.com/science/coefficient-of-friction
+     */
+    friction_coefficient?: number | undefined;
+}
+/**
+ * \brief Information for the classification of moving objects regarding
+ * \c MovingObject (host or other).
+ */
+interface MovingObject_MovingObjectClassification {
+    /**
+     * The IDs of the lanes that this object is assigned to.
+     *
+     * \note Might be multiple if the object is switching lanes or moving from
+     * one lane into another following lane.
+     *
+     * \note OSI uses singular instead of plural for repeated field names.
+     */
+    assigned_lane_id?: Identifier[] | undefined;
+    /**
+     * Percentage value of the object width in the corresponding lane.
+     *
+     * \note Might be multiple if the object is switching lanes or moving from
+     * one lane into another following lane.
+     *
+     * \note OSI uses singular instead of plural for repeated field names.
+     */
+    assigned_lane_percentage?: number[] | undefined;
+    /**
+     * Assignment of this object to logical lanes.
+     *
+     * \note OSI uses singular instead of plural for repeated field names.
+     */
+    logical_lane_assignment?: LogicalLaneAssignment[] | undefined;
 }
 /**
  * \brief Information for the classification of vehicles regarding
@@ -716,10 +1668,36 @@ interface MovingObject_VehicleClassification {
      *
      * \note Field need not be set if has_Trailer is set to false or use
      * value for non valid id.
+     *
+     * \rules
+     * check_if this.has_trailer is_equal_to true else do_check is_set
+     * \endrules
      */
     trailer_id?: Identifier | undefined;
+    /** The role of the vehicle. */
+    role?: MovingObject_VehicleClassification_Role | undefined;
 }
-/** Definition of vehicle types. */
+/**
+ * Definition of vehicle types.
+ *
+ * \note OSI provides a richer set of vehicle types than is supported by some
+ * other OpenX standards (in particular, OpenScenario 1.x and 2.x, and OpenLabel).
+ * This is primarily for historical reasons.  Where a single type from a
+ * different standard can map to multiple OSI types it is left up to the
+ * discretion of the OSI implementer how that mapping is achieved. In previous
+ * versions, for example, a simulator might have used the dimensions of a provided
+ * 3d model of a vehicle with type "car" in OpenScenario, to determine whether it
+ * should be a TYPE_SMALL_CAR or TYPE_MEDIUM_CAR in OSI. As part of the harmonization
+ * effort, it should now map to TYPE_CAR, which is an alias of the old TYPE_MEDIUM_CAR,
+ * and all other car type enums have been deprecated in favor of TYPE_CAR.
+ *
+ * \note Vehicle type classification is a complex area and there are no
+ * universally recognized standards.  As such, the boundaries between some of the
+ * OSI vehicle types are not well-defined.  It is left to the implementer to
+ * decide how to distinguish between them and agree that with any applications which
+ * make use of that specific interface instance.  For example, how to distinguish
+ * between a HEAVY_TRUCK and a DELIVERY_VAN, or a TRAILER and a SEMITRAILER.
+ */
 declare enum MovingObject_VehicleClassification_Type {
     /** UNKNOWN - Type of vehicle is unknown (must not be used in ground truth). */
     UNKNOWN = 0,
@@ -729,37 +1707,77 @@ declare enum MovingObject_VehicleClassification_Type {
      * SMALL_CAR - Vehicle is a small car.
      *
      * Definition: Hatchback car with maximum length 4 m.
+     *
+     * \note Deprecated differentiation, use TYPE_CAR instead
      */
     SMALL_CAR = 2,
     /**
      * COMPACT_CAR - Vehicle is a compact car.
      *
      * Definition: Hatchback car with length between 4 and 4.5 m.
+     *
+     * \note Deprecated differentiation, use TYPE_CAR instead
      */
     COMPACT_CAR = 3,
     /**
+     * CAR - Vehicle is a car.
+     *
+     * This is to be used for all car-like vehicles, without any
+     * further differentiated type available.
+     */
+    CAR = 4,
+    /**
      * MEDIUM_CAR - Vehicle is a medium car.
      *
-     * Definition: Hatchback or sedan with lenght between 4.5 and 5 m.
+     * Definition: Hatchback or sedan with length between 4.5 and 5 m.
+     *
+     * \note Deprecated differentiation, use the alias TYPE_CAR instead
      */
     MEDIUM_CAR = 4,
     /**
      * LUXURY_CAR - Vehicle is a luxury  car.
      *
      * Definition: Sedan or coupe that is longer then 5 m.
+     *
+     * \note Deprecated differentiation, use TYPE_CAR instead
      */
     LUXURY_CAR = 5,
     /**
      * DELIVERY_VAN - Vehicle is a delivery van.
      *
-     * Definition: A delivery van.
+     * \image html OSI_TYPE_DELIVERY_VAN.svg
      */
     DELIVERY_VAN = 6,
-    /** HEAVY_TRUCK - Vehicle is a heavy truck. */
+    /**
+     * HEAVY_TRUCK - Vehicle is a (heavy) truck.
+     *
+     * \image html OSI_TYPE_HEAVY_TRUCK.svg
+     */
     HEAVY_TRUCK = 7,
-    /** SEMITRAILER - Vehicle is a truck with semitrailer. */
+    /**
+     * SEMITRACTOR - Vehicle is a tractor capable of pulling a semi-trailer.
+     *
+     * \image html OSI_TYPE_SEMITRACTOR.svg
+     */
+    SEMITRACTOR = 16,
+    /**
+     * SEMITRAILER - This vehicle is a semi-trailer that can be pulled by a
+     * semi-tractor.
+     *
+     * \note The vehicle can be, but doesn't need to be,
+     * attached to another vehicle.
+     *
+     * \image html OSI_TYPE_SEMITRAILER.svg
+     */
     SEMITRAILER = 8,
-    /** TRAILER - Vehicle is a trailer (possibly attached to another vehicle). */
+    /**
+     * TRAILER - Vehicle is a trailer.
+     *
+     * \note The vehicle can be, but doesn't need to be,
+     * attached to another vehicle.
+     *
+     * \image html OSI_TYPE_TRAILER.svg
+     */
     TRAILER = 9,
     /** MOTORBIKE - Vehicle is a motorbike or moped. */
     MOTORBIKE = 10,
@@ -772,7 +1790,49 @@ declare enum MovingObject_VehicleClassification_Type {
     /** TRAIN - Vehicle is a train. */
     TRAIN = 14,
     /** WHEELCHAIR - Vehicle is a wheelchair. */
-    WHEELCHAIR = 15
+    WHEELCHAIR = 15,
+    /**
+     * STANDUP_SCOOTER - Vehicle is a stand-up scooter, including
+     * motorized versions.
+     */
+    STANDUP_SCOOTER = 17
+}
+/**
+ * Definition of vehicle roles.
+ *
+ * The role specifies the perceived role of a vehicle. Therefore, a
+ * civil police car is set to ROLE_CIVIL as long as it cannot be
+ * perceived as a ROLE_POLICE.
+ * The normal use case will consist of 99% ROLE_CIVIL, as this role is
+ * used for normal vehicles.
+ * These roles may influence the behavior in traffic of the surrounding vehicles.
+ * To check whether a role is "active" (e.g. blue flashing light of an
+ * ambulance or an amber flashing light of a sweeper) can be looked up
+ * in message LightState.
+ */
+declare enum MovingObject_VehicleClassification_Role {
+    /** UNKNOWN - Role of vehicle is unknown (must not be used in ground truth). */
+    UNKNOWN = 0,
+    /** OTHER - Other (unspecified but known) role of vehicle. */
+    OTHER = 1,
+    /** CIVIL - The vehicle role is civil, e.g. a "normal" car. */
+    CIVIL = 2,
+    /** AMBULANCE - The vehicle role is ambulance. */
+    AMBULANCE = 3,
+    /** FIRE - The vehicle role is fire fighting, e.g. fire engine. */
+    FIRE = 4,
+    /** POLICE - The vehicle role is police. */
+    POLICE = 5,
+    /** PUBLIC_TRANSPORT - The vehicle role is public transport, e.g. a school bus. */
+    PUBLIC_TRANSPORT = 6,
+    /** ROAD_ASSISTANCE - The vehicle role is roadside assistance, e.g. tow truck. */
+    ROAD_ASSISTANCE = 7,
+    /** GARBAGE_COLLECTION - The vehicle role is garbage collection, e.g. a garbage truck or sweeper. */
+    GARBAGE_COLLECTION = 8,
+    /** ROAD_CONSTRUCTION - The vehicle role is road construction, e.g. a excavator or tipper truck. */
+    ROAD_CONSTRUCTION = 9,
+    /** MILITARY - The vehicle role is military, e.g. camouflaged truck. */
+    MILITARY = 10
 }
 /** \brief The state of the lights of a vehicle. */
 interface MovingObject_VehicleClassification_LightState {
@@ -871,6 +1931,154 @@ declare enum MovingObject_VehicleClassification_LightState_BrakeLightState {
      */
     STRONG = 4
 }
+/**
+ * \brief Additional pedestrian data in case the moving object is a human.
+ *
+ * This is an extension to the \c MovingObject with additional information
+ * describing a pedestrian in more detail.
+ */
+interface MovingObject_PedestrianAttributes {
+    /**
+     * Position offset from the center of the bounding box to the current position
+     * of the root point of the pedestrian skeleton model.
+     */
+    bbcenter_to_root?: Vector3d | undefined;
+    /**
+     * List of all bones of the pedestrian.
+     *
+     * The number of bones may vary, based on the detail level of
+     * the pedestrian model used. For example, some simulators will not include
+     * detailed data about the hands of a pedestrian.
+     *
+     * \note A bone of each type can be provided, or left out, depending
+     * on the desired level of detail, or available data. However, if a
+     * bone is defined, all bones in the chain from that bone back to
+     * the root point must be provided to create a complete chain.
+     */
+    skeleton_bone?: MovingObject_PedestrianAttributes_Bone[] | undefined;
+}
+/**
+ * \brief Bones in the skeleton of the pedestrian.
+ *
+ * Each point represents a joint, or otherwise important point in the skeleton
+ * of a pedestrian. For example pelvis, knee or shoulder. The naming convention
+ * should be followed for identifying bones.
+ */
+interface MovingObject_PedestrianAttributes_Bone {
+    /**
+     * Bones are identified by their type, combined with which body side
+     * they are on.
+     *
+     * To properly identify the bones the pre-defined naming convention
+     * must be used.
+     *
+     * \image html OSI_SkeletonNamingConvention.svg
+     *
+     * A bone's name, position, and orientation is defined by the end-point closer
+     * to the root. For example: the "LOWER_ARM_L" will define the point in the left
+     * elbow of the model.
+     *
+     * If a bone which is more than one layer detached from the
+     * root point is used, all bones between that bone and the root also
+     * need to be defined in order to create a complete chain!
+     *
+     * If information about bones are missing, they may be left empty.
+     */
+    type?: MovingObject_PedestrianAttributes_Bone_Type | undefined;
+    /**
+     * Position of the bone.
+     *
+     * Reference System is the root, defined by bbcenter_to_root
+     * (\c PedestrianAttributes::bbcenter_to_root).
+     */
+    position?: Vector3d | undefined;
+    /**
+     * Orientation of the bone.
+     *
+     * Reference System is the root, defined by bbcenter_to_root
+     * (\c PedestrianAttributes::bbcenter_to_root).
+     */
+    orientation?: Orientation3d | undefined;
+    /**
+     * Length of the bone.
+     *
+     * Measured along its major axis.
+     *
+     * Unit: m
+     */
+    length?: number | undefined;
+    /**
+     * Determines whether a bone is explicitly missing from the pedestrian model.
+     *
+     * In case a pedestrian has missing limbs this can be explicitly communicated
+     * by setting this boolean to TRUE.
+     */
+    missing?: boolean | undefined;
+    /**
+     * The velocity of the bone.
+     *
+     * Reference System is the root, defined by bbcenter_to_root
+     * (\c PedestrianAttributes::bbcenter_to_root).
+     */
+    velocity?: Vector3d | undefined;
+    /**
+     * The orientation rate of the bone.
+     *
+     * Reference System is the root, defined by bbcenter_to_root
+     * (\c PedestrianAttributes::bbcenter_to_root).
+     */
+    orientation_rate?: Orientation3d | undefined;
+}
+/**
+ * The type of the bone.
+ *
+ * \image html OSI_PedestrianModelHierarchy.jpg
+ */
+declare enum MovingObject_PedestrianAttributes_Bone_Type {
+    /**
+     * ROOT - Root point of the pedestrian. Defined by bbcenter_to_root
+     * (\c PedestrianAttributes::bbcenter_to_root).
+     */
+    ROOT = 0,
+    /** HIP - Bone defining the hip. */
+    HIP = 1,
+    /** LOWER_SPINE - Bone defining the lower part of the spine. */
+    LOWER_SPINE = 2,
+    /** UPPER_SPINE - Bone defining the upper part of the spine. */
+    UPPER_SPINE = 3,
+    /** NECK - Bone defining the neck. */
+    NECK = 4,
+    /** HEAD - Bone defining the head. */
+    HEAD = 5,
+    /** SHOULDER_L - Bone defining the left shoulder. */
+    SHOULDER_L = 6,
+    /** SHOULDER_R - Bone defining the right shoulder. */
+    SHOULDER_R = 7,
+    /** UPPER_ARM_L - Bone defining the left upper arm. */
+    UPPER_ARM_L = 8,
+    /** UPPER_ARM_R - Bone defining the right upper arm. */
+    UPPER_ARM_R = 9,
+    /** LOWER_ARM_L - Bone defining the left forearm. */
+    LOWER_ARM_L = 10,
+    /** LOWER_ARM_R - Bone defining the right forearm. */
+    LOWER_ARM_R = 11,
+    /** FULL_HAND_L - Bone defining the left hand. */
+    FULL_HAND_L = 12,
+    /** FULL_HAND_R - Bone defining the right hand. */
+    FULL_HAND_R = 13,
+    /** UPPER_LEG_L - Bone defining the left thigh. */
+    UPPER_LEG_L = 14,
+    /** UPPER_LEG_R - Bone defining the right thigh. */
+    UPPER_LEG_R = 15,
+    /** LOWER_LEG_L - Bone defining the left shin. */
+    LOWER_LEG_L = 16,
+    /** LOWER_LEG_R - Bone defining the right shin. */
+    LOWER_LEG_R = 17,
+    /** FULL_FOOT_L - Bone defining the left foot. */
+    FULL_FOOT_L = 18,
+    /** FULL_FOOT_R - Bone defining the right foot. */
+    FULL_FOOT_R = 19
+}
 
 /**
  * \brief Message encapsulates all data for detected objects that is specific to
@@ -880,7 +2088,7 @@ interface RadarSpecificObjectData {
     /**
      * The radar cross section (RCS) of the detected object.
      *
-     * Unit: [dB m^2]
+     * Unit: dB m^2
      */
     rcs?: number | undefined;
 }
@@ -905,14 +2113,23 @@ interface UltrasonicSpecificObjectData {
      * Maximum measured distance from one sensor which leads to the calculation
      * of this object.
      *
-     * Unit: [m]
+     * Unit: m
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     maximum_measurement_distance_sensor?: number | undefined;
     /**
-     * This value indicates the propability height for the classification in the
+     * This value indicates the probability height for the classification in the
      * calculated object.
      *
-     * Unit: [%]
+     * Unit: %
+     *
+     * \rules
+     * is_less_than_or_equal_to: 1
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     probability?: number | undefined;
     /**
@@ -984,14 +2201,14 @@ interface UltrasonicSpecificObjectData_Signalway {
 interface DetectedItemHeader {
     /**
      * Specific ID of the detected item as assigned by the sensor internally.
-     * Need not match with \c #ground_truth_id.
+     * Needs not to match with \c #ground_truth_id.
+     *
+     * \rules
+     * is_set
+     * \endrules
      */
     tracking_id?: Identifier | undefined;
-    /**
-     * The ID of the original detected item in the ground truth.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** The ID of the original detected item in the ground truth. */
     ground_truth_id?: Identifier[] | undefined;
     /**
      * The estimated probability that this detected item really exists, not
@@ -1000,7 +2217,10 @@ interface DetectedItemHeader {
      * \note Use as confidence measure where a low value means less confidence
      * and a high value indicates strong confidence.
      *
-     * Range: [0,1]
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     existence_probability?: number | undefined;
     /**
@@ -1011,7 +2231,7 @@ interface DetectedItemHeader {
      * \f$ Timestamp - Age := \f$ 'point in time' when the object has
      * been observed for the first time.
      *
-     * Unit: [s]
+     * Unit: s
      */
     age?: number | undefined;
     /** The measurement state. */
@@ -1026,8 +2246,6 @@ interface DetectedItemHeader {
      * \note This information can be determined via the detected entities'
      * detections ( \c ...Detection::object_id = 'this detected item' ) and
      * the sensors (their IDs) to which these detections belong.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     sensor_id?: Identifier[] | undefined;
 }
@@ -1040,10 +2258,10 @@ declare enum DetectedItemHeader_MeasurementState {
      * of this enum list).
      */
     OTHER = 1,
-    /** MEASURED - Entity has been measured by the sensor in the current timestep. */
+    /** MEASURED - Entity has been measured by the sensor in the current time step. */
     MEASURED = 2,
     /**
-     * PREDICTED - Entity has not been measured by the sensor in the current timestep.
+     * PREDICTED - Entity has not been measured by the sensor in the current time step.
      * Values provided by tracking only.
      */
     PREDICTED = 3
@@ -1053,6 +2271,15 @@ declare enum DetectedItemHeader_MeasurementState {
  * the sensor.
  *
  * \image html OSI_DetectedStationaryObject.svg
+ *
+ * The parent frame of a detected stationary object is the virtual sensor
+ * coordinate system.
+ *
+ * /note The virtual sensor coordinate system is relative to the vehicle coordinate
+ * system which has its origin in the center of the rear axle of the ego
+ * vehicle. This means if virtual sensor mounting position and orientation are
+ * set to (0,0,0) the virtual sensor coordinate system coincides with the
+ * vehicle coordinate system.
  */
 interface DetectedStationaryObject {
     /** Common information of one detected item. */
@@ -1068,10 +2295,38 @@ interface DetectedStationaryObject {
     /**
      * A list of candidates for this stationary object as estimated by the
      * sensor.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     candidate?: DetectedStationaryObject_CandidateStationaryObject[] | undefined;
+    /** The dominating color of the material of the structure. */
+    color_description?: ColorDescription | undefined;
+    /**
+     * Additional data that is specific to radar sensors.
+     *
+     * \note Field needs not to be set if simulated sensor is not a radar
+     * sensor.
+     */
+    radar_specifics?: RadarSpecificObjectData | undefined;
+    /**
+     * Additional data that is specific to lidar sensors.
+     *
+     * \note Field needs not to be set if simulated sensor is not a lidar
+     * sensor.
+     */
+    lidar_specifics?: LidarSpecificObjectData | undefined;
+    /**
+     * Additional data that is specific to camera sensors.
+     *
+     * \note Field needs not to be set if simulated sensor is not a camera
+     * sensor.
+     */
+    camera_specifics?: CameraSpecificObjectData | undefined;
+    /**
+     * Additional data that is specific to ultrasonic sensors.
+     *
+     * \note Field needs not to be set if simulated sensor is not an ultrasonic
+     * sensor.
+     */
+    ultrasonic_specifics?: UltrasonicSpecificObjectData | undefined;
 }
 /**
  * \brief A candidate for a detected stationary object as estimated
@@ -1085,15 +2340,27 @@ interface DetectedStationaryObject_CandidateStationaryObject {
      * given under the condition of
      * \c DetectedItemHeader::existence_probability.
      *
-     * Range: [0,1]
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     probability?: number | undefined;
     /** The classification of the stationary object (e.g. landmark). */
     classification?: StationaryObject_Classification | undefined;
 }
 /**
- * \brief Moving object in the environment as detected and perceived by
- * the sensor.
+ * \brief Moving object in the environment as detected and perceived by the
+ * sensor.
+ *
+ * The parent frame of a detected moving object is the virtual sensor coordinate
+ * system.
+ *
+ * /note The virtual sensor coordinate system is relative to the vehicle coordinate
+ * system which has its origin in the center of the rear axle of the ego
+ * vehicle. This means if virtual sensor mounting position and orientation are
+ * set to (0,0,0) the virtual sensor coordinate system coincides with the
+ * vehicle coordinate system.
  */
 interface DetectedMovingObject {
     /** Common information of one detected item. */
@@ -1101,16 +2368,15 @@ interface DetectedMovingObject {
     /**
      * The base parameters of the moving object.
      *
-     * \note The bounding box does NOT includes mirrors for vehicles.
-     * \note The parent frame of \c base is the sensor's vehicle frame.
+     * \note The bounding box does NOT include mirrors for vehicles.
+     * \note The height includes the ground_clearance. It always goes from the
+     * top to the ground.
      */
     base?: BaseMoving | undefined;
     /**
      * The root mean squared error of the base parameters of the detected
      * moving object (e.g. car). \c MovingObject::base has to be
      * identical for all \c #candidate moving objects.
-     *
-     * \note The parent frame of \c base is the sensor's vehicle frame.
      */
     base_rmse?: BaseMoving | undefined;
     /**
@@ -1129,46 +2395,62 @@ interface DetectedMovingObject {
      * Percentage side lane left.
      *
      * Percentage value of the object width in the corresponding lane.
+     *
+     * \note DEPRECATED: Use assigned_lane_percentage in MovingObjectClassification
+     * instead.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 100
+     * \endrules
      */
     percentage_side_lane_left?: number | undefined;
     /**
      * Percentage side lane right.
      *
      * Percentage value of the object width in the corresponding lane.
+     *
+     * \note DEPRECATED: Use assigned_lane_percentage in MovingObjectClassification
+     * instead.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 100
+     * \endrules
      */
     percentage_side_lane_right?: number | undefined;
     /**
      * A list of candidates for this moving object as estimated by the
      * sensor (e.g. pedestrian, car).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     candidate?: DetectedMovingObject_CandidateMovingObject[] | undefined;
+    /** The dominating color of the material of the moving object. */
+    color_description?: ColorDescription | undefined;
     /**
      * Additional data that is specific to radar sensors.
      *
-     * \note Field need not be set if simulated sensor is not a radar
+     * \note Field needs not to be set if simulated sensor is not a radar
      * sensor.
      */
     radar_specifics?: RadarSpecificObjectData | undefined;
     /**
      * Additional data that is specific to lidar sensors.
      *
-     * \note Field need not be set if simulated sensor is not a lidar
+     * \note Field needs not to be set if simulated sensor is not a lidar
      * sensor.
      */
     lidar_specifics?: LidarSpecificObjectData | undefined;
     /**
      * Additional data that is specific to camera sensors.
      *
-     * \note Field need not be set if simulated sensor is not a camera
+     * \note Field needs not to be set if simulated sensor is not a camera
      * sensor.
      */
     camera_specifics?: CameraSpecificObjectData | undefined;
     /**
      * Additional data that is specific to ultrasonic sensors.
      *
-     * \note Field need not be set if simulated sensor is not an ultrasonic
+     * \note Field needs not to be set if simulated sensor is not an ultrasonic
      * sensor.
      */
     ultrasonic_specifics?: UltrasonicSpecificObjectData | undefined;
@@ -1239,7 +2521,10 @@ interface DetectedMovingObject_CandidateMovingObject {
      * given under the condition of
      * \c DetectedItemHeader::existence_probability.
      *
-     * Range: [0,1]
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     probability?: number | undefined;
     /** The description of the moving object (e.g. car). */
@@ -1249,15 +2534,18 @@ interface DetectedMovingObject_CandidateMovingObject {
      *
      * \note This field is mandatory if the \c CandidateMovingObject::type
      * is \c MovingObject::TYPE_VEHICLE .
+     *
+     * \rules
+     * check_if this.type is_equal_to 2 else do_check is_set
+     * \endrules
      */
     vehicle_classification?: MovingObject_VehicleClassification | undefined;
     /**
      * Pedestrian head pose for behavior prediction. Describes the head
      * orientation w.r.t. the host vehicle orientation.
      * The x-axis of the right-handed head frame is pointing along the
-     * pedestrian's straight ahead viewing direction and the z-axis is
-     * pointing upwards (cranial direction [1] i.e. to pedestrian's skull
-     * cap).
+     * pedestrian's straight ahead viewing direction (anterior), the y-axis lateral to the left,
+     * and the z-axis is pointing upwards (superior) [1].
      *
      * ``View_normal_base_coord_system =
      * Inverse_Rotation(#head_pose)*Unit_vector_x``
@@ -1265,17 +2553,22 @@ interface DetectedMovingObject_CandidateMovingObject {
      * \note This field is mandatory if the \c CandidateMovingObject.type is
      * \c MovingObject::TYPE_PEDESTRIAN
      *
-     * \par References:
-     * - [1] https://en.wikipedia.org/wiki/Anatomical_terms_of_location
+     * \rules
+     * check_if this.type is_equal_to 3 else do_check is_set
+     * \endrules
+     *
+     * \par Reference:
+     *
+     * [1] Patton, K. T. & Thibodeau, G. A. (2015). <em>Anatomy & Physiology</em>. 9th Edition. Elsevier. Missouri, U.S.A. ISBN 978-0-323-34139-4. p. 1229.
      */
     head_pose?: Orientation3d | undefined;
     /**
      * Pedestrian upper body pose for behavior prediction. Describes the
      * upper body orientation w.r.t. the host vehicle orientation.
      * The x-axis of the right-handed upper body frame is pointing along the
-     * pedestrian's upper body ventral direction [2] (i.e. usually
-     * pedestrian's intended moving direction) and the z-axis is pointing
-     * upwards (to pedestrian's head).
+     * pedestrian's upper body ventral (anterior) direction (i.e. usually
+     * pedestrian's intended moving direction), the y-axis lateral to the left,
+     * and the z-axis is pointing upwards (superior, to the pedestrian's head) [1].
      *
      * ``View_normal_base_coord_system =
      * Inverse_Rotation(#upper_body_pose)*Unit_vector_x``
@@ -1283,10 +2576,16 @@ interface DetectedMovingObject_CandidateMovingObject {
      * \note This field is mandatory if the \c CandidateMovingObject::type
      * is \c MovingObject::TYPE_PEDESTRIAN
      *
-     * \par References:
-     * - [2] https://en.wikipedia.org/wiki/Anatomical_terms_of_location
+     * \rules
+     * check_if this.type is_equal_to 3 else do_check is_set
+     * \endrules
+     *
+     * \par Reference:
+     * [1] Patton, K. T. & Thibodeau, G. A. (2015). <em>Anatomy & Physiology</em>. 9th Edition. Elsevier. Missouri, U.S.A. ISBN 978-0-323-34139-4. p. 1229.
      */
     upper_body_pose?: Orientation3d | undefined;
+    /** Specific information about the classification of a moving object. */
+    moving_object_classification?: MovingObject_MovingObjectClassification | undefined;
 }
 
 /**
@@ -1322,10 +2621,39 @@ interface Lane {
      * Example: l4 (see reference picture HighwayExit).
      *
      * \note Note ID is global unique.
+     *
+     * \rules
+     * is_globally_unique
+     * is_set
+     * \endrules
      */
     id?: Identifier | undefined;
     /** The classification of the lane. */
     classification?: Lane_Classification | undefined;
+    /**
+     * Optional external reference to the lane source.
+     *
+     * The external reference points to the source of the lane, if it is derived
+     * from one or more objects or external references.
+     *
+     * For example, to reference a lane defined in an OpenDRIVE map
+     * the items should be set as follows:
+     * * reference = URI to map, can remain empty if identical with definition
+     *               in \c GroundTruth::map_reference
+     * * type = "net.asam.opendrive"
+     * * identifier[0] = id of t_road
+     * * identifier[1] = s of t_road_lanes_laneSection
+     * * identifier[2] = id of t_road_lanes_laneSection_left_lane,
+     *                         t_road_lanes_laneSection_right_lane
+     *
+     * \note For non-ASAM Standards, it is implementation-specific how
+     *       source_reference is resolved.
+     *
+     * \note The value has to be repeated, because one lane segment may be
+     *       derived from more than one origin segment. Multiple sources
+     *       may be added as reference as well, for example, a map and sensors.
+     */
+    source_reference?: ExternalReference[] | undefined;
 }
 /**
  * \brief \c Classification of a lane.
@@ -1441,7 +2769,7 @@ interface Lane_Classification {
     /**
      * Indicates that the host vehicle travels on this particular lane.
      * The host vehicle may travel on more than one lane at once. This does
-     * also apply for the \c CanditateLane in the \c DetectedLane .
+     * also apply for the \c CandidateLane in the \c DetectedLane .
      */
     is_host_vehicle_lane?: boolean | undefined;
     /**
@@ -1454,6 +2782,18 @@ interface Lane_Classification {
      * Example: In image \ref HighwayExit,
      * the centerline of lane l4 (black line) is given by
      * (cl4_1, cl4_2, cl4_3, cl4_4, cl4_5).
+     *
+     * \image html OSI_LaneBoundaries_And_CenterLine.svg "Centerline" width=500px
+     *
+     * \note
+     * cl: center line
+     * lb: lane boundary
+     *
+     * \attention The points describing the center line must be set in the
+     * same ordering (ascending or descending) as the points describing the
+     * lane boundaries. Example: If the points are deducted from a map format,
+     * the order of points is recommended to be in line with the road coordinate
+     * (e.g. s-coordinate in OpenDRIVE).
      *
      * \attention The points describing the center line might be set at
      * arbitrary distances. When the points are pairwise linearly connected,
@@ -1498,10 +2838,10 @@ interface Lane_Classification {
     centerline_is_driving_direction?: boolean | undefined;
     /**
      * List of IDs of all lane segments that are directly adjacent to the
-     * lane on the left side (w.r.t. intended driving direction). Note that
-     * lengths of lane segments are not synchronized and therefore there are
-     * multiple adjacent segments if there is a split/merge point in the
-     * adjacent lane.
+     * lane on the left side (w.r.t. ascending order of centerline points
+     * and lane boundary points). Note that lengths of lane segments are
+     * not synchronized and therefore there are multiple adjacent segments
+     * if there is a split/merge point in the adjacent lane.
      *
      * Example: The lane l3 is the only left adjacent lane for lane l4
      * in image \ref HighwayExit.
@@ -1510,14 +2850,18 @@ interface Lane_Classification {
      * \c #TYPE_INTERSECTION .
      *
      * \note OSI uses singular instead of plural for repeated field names.
+     *
+     * \rules
+     * check_if this.type is_different_to 4 else do_check is_set
+     * \endrules
      */
     left_adjacent_lane_id?: Identifier[] | undefined;
     /**
      * List of IDs of all lane segments that are directly adjacent to the
-     * lane on the right side (w.r.t. intended driving direction). Note that
-     * lengths of lane segments are not synchronized and therefore there are
-     * multiple adjacent segments if there is a split/merge point in the
-     * adjacent lane.
+     * lane on the right side (w.r.t. ascending order of centerline points
+     * and lane boundary points). Note that lengths of lane segments are
+     * not synchronized and therefore there are multiple adjacent segments
+     * if there is a split/merge point in the adjacent lane.
      *
      * Example: \c #right_adjacent_lane_id = (l5, l6)
      * for lane l4 in image \ref HighwayExit.
@@ -1526,6 +2870,10 @@ interface Lane_Classification {
      * \c #TYPE_INTERSECTION .
      *
      * \note OSI uses singular instead of plural for repeated field names.
+     *
+     * \rules
+     * check_if this.type is_different_to 4 else do_check is_set
+     * \endrules
      */
     right_adjacent_lane_id?: Identifier[] | undefined;
     /**
@@ -1555,6 +2903,16 @@ interface Lane_Classification {
      * \c #TYPE_INTERSECTION .
      *
      * \note OSI uses singular instead of plural for repeated field names.
+     *
+     * \note The boundary between adjacent lanes at different heights
+     *       (e.g. a curb between a driving lane and a sidewalk)
+     *       should not be shared, but modeled as two separate lane
+     *       boundaries with individual ids. One for the upper, the
+     *       other one for the lower lane.
+     *
+     * \rules
+     * check_if this.type is_different_to 4 else do_check is_set
+     * \endrules
      */
     right_lane_boundary_id?: Identifier[] | undefined;
     /**
@@ -1572,6 +2930,16 @@ interface Lane_Classification {
      * \c #TYPE_INTERSECTION .
      *
      * \note OSI uses singular instead of plural for repeated field names.
+     *
+     * \note The boundary between adjacent lanes at different heights
+     *       (e.g. a curb between a driving lane and a sidewalk)
+     *       should not be shared, but modeled as two separate lane
+     *       boundaries with individual ids. One for the upper, the
+     *       other one for the lower lane.
+     *
+     * \rules
+     * check_if this.type is_different_to 4 else do_check is_set
+     * \endrules
      */
     left_lane_boundary_id?: Identifier[] | undefined;
     /**
@@ -1584,10 +2952,20 @@ interface Lane_Classification {
      * lane boundaries.
      *
      * \note OSI uses singular instead of plural for repeated field names.
+     *
+     * \rules
+     * check_if this.type is_different_to 4 else do_check is_set
+     * \endrules
      */
     free_lane_boundary_id?: Identifier[] | undefined;
     /** The condition of the lane, e.g. influenced by weather. */
     road_condition?: Lane_Classification_RoadCondition | undefined;
+    /**
+     * The subtype of the lane.
+     *
+     * This subtype specifies a lane more concretely.
+     */
+    subtype?: Lane_Classification_Subtype | undefined;
 }
 /** Definition of available lane types. */
 declare enum Lane_Classification_Type {
@@ -1614,31 +2992,151 @@ declare enum Lane_Classification_Type {
      */
     INTERSECTION = 4
 }
+/** Definition of available lane subtypes, aligned with OpenDRIVE. */
+declare enum Lane_Classification_Subtype {
+    /** UNKNOWN - Lane of unknown subtype. Do not use in ground truth. */
+    UNKNOWN = 0,
+    /** OTHER - Any other subtype of lane. */
+    OTHER = 1,
+    /**
+     * NORMAL - A normal driving lane.
+     * Example: Lanes with IDs l1, l2, l3 and l4 in image \ref
+     * HighwayExit.
+     *
+     * Since it is intended to be used for normal automotive
+     * driving, it should be used in combination with TYPE_DRIVING.
+     */
+    NORMAL = 2,
+    /**
+     * BIKING - A lane that is designated for bicycles.
+     *
+     * Since it is not intended to be used for normal automotive
+     * driving, it should be used in combination with TYPE_NONDRIVING.
+     */
+    BIKING = 3,
+    /**
+     * SIDEWALK - A lane that is designated for pedestrians (sidewalk).
+     *
+     * Since it is not intended to be used for normal automotive
+     * driving, it should be used in combination with TYPE_NONDRIVING.
+     */
+    SIDEWALK = 4,
+    /**
+     * PARKING - A lane with parking spaces.
+     *
+     * Since it is not intended to be used for normal automotive
+     * driving, it should be used in combination with TYPE_NONDRIVING.
+     */
+    PARKING = 5,
+    /**
+     * STOP - A hard shoulder on motorways for emergency stops.
+     * Example: Lane l5 in image \ref
+     * HighwayExit.
+     *
+     * Since it is not intended to be used for normal automotive
+     * driving, it should be used in combination with TYPE_NONDRIVING.
+     */
+    STOP = 6,
+    /**
+     * RESTRICTED - A lane on which cars should not drive.
+     *
+     * Since it is not intended to be used for normal automotive
+     * driving, it should be used in combination with TYPE_NONDRIVING.
+     */
+    RESTRICTED = 7,
+    /**
+     * BORDER - A hard border on the edge of a road.
+     *
+     * Since it is not intended to be used for normal automotive
+     * driving, it should be used in combination with TYPE_NONDRIVING.
+     */
+    BORDER = 8,
+    /**
+     * SHOULDER - A soft border on the edge of a road.
+     *
+     * Since it is not intended to be used for normal automotive
+     * driving, it should be used in combination with TYPE_NONDRIVING.
+     */
+    SHOULDER = 9,
+    /**
+     * EXIT - A deceleration lane in parallel to the main road.
+     * Example: Lane l6 in image \ref
+     * HighwayExit.
+     *
+     * Since it is intended to be used for normal automotive
+     * driving, it should be used in combination with TYPE_DRIVING.
+     */
+    EXIT = 10,
+    /**
+     * ENTRY - An acceleration lane in parallel to the main road.
+     *
+     * Since it is intended to be used for normal automotive
+     * driving, it should be used in combination with TYPE_DRIVING.
+     */
+    ENTRY = 11,
+    /**
+     * ONRAMP - A ramp from rural or urban roads joining a motorway.
+     *
+     * Since it is intended to be used for normal automotive
+     * driving, it should be used in combination with TYPE_DRIVING.
+     */
+    ONRAMP = 12,
+    /**
+     * OFFRAMP - A ramp leading off a motorway onto rural or urban roads.
+     *
+     * Since it is intended to be used for normal automotive
+     * driving, it should be used in combination with TYPE_DRIVING.
+     */
+    OFFRAMP = 13,
+    /**
+     * CONNECTINGRAMP - A ramp that connect two motorways.
+     *
+     * Since it is intended to be used for normal automotive
+     * driving, it should be used in combination with TYPE_DRIVING.
+     */
+    CONNECTINGRAMP = 14
+}
 /** \brief The condition of the road surface. */
 interface Lane_Classification_RoadCondition {
     /**
      * The temperature of the roads surface in Kelvin.
      *
-     * Unit: [K]
+     * Unit: K
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     surface_temperature?: number | undefined;
     /**
      * The height of the water film on top of the surface in mm.
      *
-     * Unit: [mm]
+     * Unit: mm
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     surface_water_film?: number | undefined;
     /**
      * The temperature where the water on top of the surface would start
      * to freeze or dew in Kelvin.
      *
-     * Unit: [K]
+     * Unit: K
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     surface_freezing_point?: number | undefined;
     /**
      * The percentage of ice covering the road.
      *
-     * Unit: [%]
+     * Unit: %
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     surface_ice?: number | undefined;
     /**
@@ -1649,52 +3147,51 @@ interface Lane_Classification_RoadCondition {
      * 20 mm/m (a very rough road).
      *
      * Estimated value ranges (IRI):
-     * 0.0 [mm/m] absolutely perfect evenness
-     * 0.3 -  1.8 [mm/m] airport runways and superhighways
-     * 1.4 -  3.4 [mm/m] new pavements
-     * 2.2 -  5.7 [mm/m] older pavements
-     * 3.2 -  9.8 [mm/m] maintained unpaved roads
-     * 4.0 - 11.0 [mm/m] damaged pavements
+     * 0.0 mm/m absolutely perfect evenness
+     * 0.3 -  1.8 mm/m airport runways and superhighways
+     * 1.4 -  3.4 mm/m new pavements
+     * 2.2 -  5.7 mm/m older pavements
+     * 3.2 -  9.8 mm/m maintained unpaved roads
+     * 4.0 - 11.0 mm/m damaged pavements
      * 8.0 - >
-     * 20 [mm/m] rough unpaved roads
+     * 20 mm/m rough unpaved roads
      *
      * Speed of normal use (IRI):
-     * 30 [km/h] - 20   [mm/m]
-     * 50 [km/h] - 14.5 [mm/m]
-     * 60 [km/h] - 10.0 [mm/m]
-     * 80 [km/h] -  8.5 [mm/m]
-     * 100 [km/h] -  3.4 [mm/m]
+     * 30 km/h - 20   mm/m
+     * 50 km/h - 14.5 mm/m
+     * 60 km/h - 10.0 mm/m
+     * 80 km/h -  8.5 mm/m
+     * 100 km/h -  3.4 mm/m
      *
      * Road conditions (IRI);
-     * 15 [mm/m] erosion gulleys and deep depressions
-     * 11 [mm/m] frequent shallow depressions, some deep
-     * 9 [mm/m] frequent minor depressions
-     * 5 [mm/m] surface imperfections
+     * 15 mm/m erosion gulleys and deep depressions
+     * 11 mm/m frequent shallow depressions, some deep
+     * 9 mm/m frequent minor depressions
+     * 5 mm/m surface imperfections
      *
-     * Unit: [mm/m]
+     * Unit: mm/m
      *
-     * \par References:
-     * - [1] SAYERS, M.W.; KARAMIHAS, S.M. Little Book of Profiling,
-     * University of Michigan Transportation Research Institute, 1998.
+     * \par Reference:
+     * [1] Sayers, M. W. & Karamihas, S. M. (1998). <em>Little Book of Profiling</em>. University of Michigan Transportation Research Institute. Retrieved January 25, 2020, from http://www.umtri.umich.edu/content/LittleBook98R.pdf pp. 45 ff.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     surface_roughness?: number | undefined;
     /**
      * The surface texture or fine roughness
      *
      * Whereas the IRI-based roughness or unevenness measure only takes
-     * into account road wavelengths around 0.5m - 100m, the surface
-     * texture or fine roughness [2] measures only wavelengths below
-     * 0.5m. It is given as the standard height deviation of fine
+     * into account road wavelengths around 0.5 m - 100 m, the surface
+     * texture or fine roughness [1] measures only wavelengths below
+     * 0.5 m. It is given as the standard height deviation of fine
      * roughness
      *
-     * Unit: [m]
+     * Unit: m
      *
-     * \par References:
-     * - [1] SAYERS, M.W.; KARAMIHAS, S.M. Little Book of Profiling,
-     * University of Michigan Transportation Research Institute, 1998.
-     * - [2] SCHNEIDER, R.: Modellierung der Wellenausbreitung fuer
-     * ein bildgebendes Kfz-Radar, Dissertation, Universitaet Karlsruhe,
-     * Mai 1998.
+     * \par Reference:
+     * [1] Schneider, R. (1998). <em>Modellierung der Wellenausbreitung fuer ein bildgebendes Kfz-Radar</em>. PhD thesis. Karlsruhe, Germany. Universitaet Karlsruhe, Fak. f. Elektrotechnik.
      */
     surface_texture?: number | undefined;
 }
@@ -1741,9 +3238,21 @@ interface Lane_Classification_RoadCondition {
  * elements of the lanes with the respective ids.
  */
 interface Lane_Classification_LanePairing {
-    /** The antecessor lane ID. */
+    /**
+     * The antecessor lane ID.
+     *
+     * \rules
+     * refers_to: Lane
+     * \endrules
+     */
     antecessor_lane_id?: Identifier | undefined;
-    /** The successor lane ID. */
+    /**
+     * The successor lane ID.
+     *
+     * \rules
+     * refers_to: Lane
+     * \endrules
+     */
     successor_lane_id?: Identifier | undefined;
 }
 /**
@@ -1761,40 +3270,67 @@ interface Lane_Classification_LanePairing {
  * for \c #osi3::LaneBoundary::BoundaryPoint elements.
  */
 interface LaneBoundary {
-    /** The ID of the lane boundary. */
+    /**
+     * The ID of the lane boundary.
+     *
+     * \rules
+     * is_globally_unique
+     * \endrules
+     */
     id?: Identifier | undefined;
     /**
-     * The list of individual points defining the location of the lane boundary
-     * (as a list of segments).
-     *
-     * Since a \c BoundaryPoint is part of a sequence, only the position
-     * attribute has to be set for each instance. All other values will be
-     * reused from the previous \c BoundaryPoint in the sequence or set to
-     * default values if there is none or it was never set.
-     *
-     * \image html OSI_LaneBoundary.svg "" width=800px
-     *
-     * Example: The boundary_line of the \c LaneBoundary with id lb2 is given by
-     * (bp2_1, ..., bp2_{i-1}, bp2_{i}, bp2_{i+1}, ...).
-     *
      * \note For dashed lines, one \c BoundaryPoint has to be at the start and
      * another at the end of each dashed line segment. The first
      * \c BoundaryPoint defines the beginning of the first dashed lane marking.
      * The last \c BoundaryPoint defines the end of the last dashed lane
-     * marking. For example, the area between the second and third
-     * \c BoundaryPoint has no lane marking, and so on.
+     * marking.
      * \note For Botts' dots lines, one \c BoundaryPoint position has to define
      * each Botts' dot.
      *
      * \attention For \c BoundaryPoint the same rule for the approximation
      * error applies as for \c Lane::Classification::centerline.
+     *
+     * \rules
+     * first_element width is_equal_to 0.13
+     * first_element height is_equal_to 0.14
+     * last_element width is_equal_to 0.13
+     * last_element height is_equal_to 0.13
+     * \endrules
      */
     boundary_line?: LaneBoundary_BoundaryPoint[] | undefined;
     /** The classification of the lane boundary. */
     classification?: LaneBoundary_Classification | undefined;
+    /**
+     * Optional external reference to the lane boundary source.
+     *
+     * \note For OpenDRIVE, there is no direct possibility to reference the
+     *       RoadMark, as there is no unique identifier in this sub-object.
+     *
+     * \note For non-ASAM Standards, it is implementation-specific how
+     *       source_reference is resolved.
+     *
+     * \note The value has to be repeated because one object may be derived
+     *       from more than one origin source, for example, from a scenario file
+     *       and from sensors.
+     */
+    source_reference?: ExternalReference[] | undefined;
+    /**
+     * The visual color of the material of the lane boundary.
+     *
+     * \note This does not represent the semantic classification but the visual
+     * appearance. For semantic classification of the lane boundary use the color
+     * field in \c Classification.
+     */
+    color_description?: ColorDescription | undefined;
 }
 /**
  * \brief A single point of a lane boundary.
+ *
+ * \image html OSI_LaneBoundaries_And_CenterLine.svg "" width=800px
+ *
+ * \note
+ * cl: center line
+ * lb: lane boundary
  *
  * \image html OSI_LaneBoundary.svg "" width=800px
  *
@@ -1828,9 +3364,56 @@ interface LaneBoundary_BoundaryPoint {
      * \image html OSI_LaneBoundaryHeight.svg "" width=600px
      *
      * \note Field need not be set if it is previously defined.
+     *
+     * \note The boundary point height should not be used to model the boundary
+     *       between two adjacent lanes at different heights as a single, shared
+     *       boundary.
+     *       Boundaries between adjacent lanes at different heights should be
+     *       modeled as two separate lane boundaries.
+     *
      * See \c LaneBoundary .
      */
     height?: number | undefined;
+    /**
+     * Alternation of dashes in case of a dashed lane boundary. In
+     * context, this field gives information about the location of
+     * dashes on the boundary line.
+     */
+    dash?: LaneBoundary_BoundaryPoint_Dash | undefined;
+}
+/**
+ * This enum describes the alternation of dashes in case of a
+ * dashed lane boundary.
+ *
+ * \note The enum descriptions adhere to the definition direction
+ * of the lane boundary points. This means that start or end of a
+ * dash are understood with respect to the direction in which the
+ * points of the boundary line are defined.
+ */
+declare enum LaneBoundary_BoundaryPoint_Dash {
+    /**
+     * UNKNOWN - The current state of the dash alternation is not known (must
+     * not be used in ground truth).
+     */
+    UNKNOWN = 0,
+    /** OTHER - Other (unspecified but known) type of dash alternation state. */
+    OTHER = 1,
+    /** START - The current \c BoundaryPoint indicates the start of a dash. */
+    START = 2,
+    /**
+     * CONTINUE - The current \c BoundaryPoint is located on a dash of a dashed
+     * line. This enables a dash to continue across multiple points.
+     */
+    CONTINUE = 3,
+    /** END - The current \c BoundaryPoint indicates the end of a dash. */
+    END = 4,
+    /**
+     * GAP - The current \c BoundaryPoint is located in the gap between
+     * two dashes. When used to describe a first/last point of a lane
+     * boundary, it indicates that the lane boundary starts/ends in
+     * a gap.
+     */
+    GAP = 5
 }
 /**
  * \brief \c Classification of a lane boundary.
@@ -1923,12 +3506,21 @@ interface LaneBoundary_BoundaryPoint {
 interface LaneBoundary_Classification {
     /** The type of the lane boundary. */
     type?: LaneBoundary_Classification_Type | undefined;
-    /** The color of the lane boundary in case of lane markings. */
+    /**
+     * The semantic color of the lane boundary in case of lane markings.
+     *
+     * \note The color types represent the semantic classification of
+     * lane markings only. They do not represent an actual visual appearance.
+     */
     color?: LaneBoundary_Classification_Color | undefined;
     /**
      * The ids of \c StationaryObject which limit the corresponding lane.
      * This field must be set if the \c #type is set to
      * \c #TYPE_STRUCTURE
+     *
+     * \rules
+     * refers_to: StationaryObject
+     * \endrules
      */
     limiting_structure_id?: Identifier[] | undefined;
 }
@@ -1949,7 +3541,7 @@ declare enum LaneBoundary_Classification_Type {
      * Consider proposing an additional type if using TYPE_OTHER.
      */
     OTHER = 1,
-    /** NO_LINE - An invisible lane boundary (e.g. unmarked part of a dashed line). */
+    /** NO_LINE - An invisible lane boundary. */
     NO_LINE = 2,
     /** SOLID_LINE - A solid line at the lane boundary. */
     SOLID_LINE = 3,
@@ -1978,12 +3570,19 @@ declare enum LaneBoundary_Classification_Type {
     /** CURB - A curb. */
     CURB = 12,
     /** STRUCTURE - A structure (e.g. building or tunnel wall). */
-    STRUCTURE = 13
+    STRUCTURE = 13,
+    /** BARRIER - A barrier to guide vehicles and to prevent them from entering other lanes (e.g. a concrete barrier on a highway). */
+    BARRIER = 14,
+    /** SOUND_BARRIER - A sound barrier. */
+    SOUND_BARRIER = 15
 }
 /**
- * The color of the lane boundary in case of a lane markings.
+ * The semantic color of the lane boundary in case of a lane markings.
  * Lane markings that alternate in color must be represented by
  * individual \c LaneBoundary segments.
+ *
+ * \note The color types represent the semantic color classification of
+ * lane markings only. They do not represent an actual visual appearance.
  */
 declare enum LaneBoundary_Classification_Color {
     /**
@@ -2010,18 +3609,16 @@ declare enum LaneBoundary_Classification_Color {
     /** GREEN - Marking with green color; */
     GREEN = 7,
     /** VIOLET - Marking with violet color. */
-    VIOLET = 8
+    VIOLET = 8,
+    /** ORANGE - Marking with orange color. */
+    ORANGE = 9
 }
 
 /** \brief A lane segment as detected by the sensor. */
 interface DetectedLane {
     /** Common information of one detected item. */
     header?: DetectedItemHeader | undefined;
-    /**
-     * A list of candidates for this lane as estimated by the sensor.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** A list of candidates for this lane as estimated by the sensor. */
     candidate?: DetectedLane_CandidateLane[] | undefined;
 }
 /**
@@ -2036,7 +3633,10 @@ interface DetectedLane_CandidateLane {
      * given under the condition of
      * \c DetectedItemHeader::existence_probability.
      *
-     * Range: [0,1]
+     * \rules
+     * is_less_than_or_equal_to: 1
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     probability?: number | undefined;
     /**
@@ -2051,6 +3651,15 @@ interface DetectedLane_CandidateLane {
  * \brief A lane boundary segment as detected by the sensor.
  *
  * \image html OSI_DetectedLaneBoundary.svg
+ *
+ * The parent frame of a detected lane boundary is the virtual sensor coordinate
+ * system.
+ *
+ * /note The virtual sensor coordinate system is relative to the vehicle coordinate
+ * system which has its origin in the center of the rear axle of the ego
+ * vehicle. This means if virtual sensor mounting position and orientation are
+ * set to (0,0,0) the virtual sensor coordinate system coincides with the
+ * vehicle coordinate system.
  */
 interface DetectedLaneBoundary {
     /** Common information of one detected item. */
@@ -2058,8 +3667,6 @@ interface DetectedLaneBoundary {
     /**
      * A list of candidates for this lane boundary as estimated by the
      * sensor.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     candidate?: DetectedLaneBoundary_CandidateLaneBoundary[] | undefined;
     /**
@@ -2092,9 +3699,20 @@ interface DetectedLaneBoundary {
      * one \c #boundary_line_confidences confidence value is
      * specified which is suitable for all candidates.
      *
-     * Range: [0,1]
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     boundary_line_confidences?: number[] | undefined;
+    /**
+     * The visual color of the material of the lane boundary.
+     *
+     * \note This does not represent the semantic classification but the visual
+     * appearance. For semantic classification of the lane boundary use the color
+     * field in \c CandidateLaneBoundary::classification.
+     */
+    color_description?: ColorDescription | undefined;
 }
 /**
  * \brief A candidate for a detected lane boundary as estimated by the
@@ -2108,7 +3726,10 @@ interface DetectedLaneBoundary_CandidateLaneBoundary {
      * given under the condition of
      * \c DetectedItemHeader::existence_probability.
      *
-     * Range: [0,1]
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     probability?: number | undefined;
     /**
@@ -2122,10 +3743,29 @@ interface DetectedLaneBoundary_CandidateLaneBoundary {
 
 /** \brief An occupant of a host vehicle, especially the driver of the vehicle. */
 interface Occupant {
-    /** The ID of the driver. */
+    /**
+     * The ID of the driver.
+     *
+     * \rules
+     * is_globally_unique
+     * \endrules
+     */
     id?: Identifier | undefined;
     /** Specific information about the classification of the occupant. */
     classification?: Occupant_Classification | undefined;
+    /**
+     * External reference to the occupant source.
+     *
+     * \note For OpenDRIVE and OpenSCENARIO there is no direct counterpart.
+     *
+     * \note For non-ASAM Standards, it is implementation-specific how
+     *       source_reference is resolved.
+     *
+     * \note The value has to be repeated because one object may be derived
+     *       from more than one origin source, for example, from a scenario file
+     *       and from sensors.
+     */
+    source_reference?: ExternalReference[] | undefined;
 }
 /** \brief Information regarding the classification of the occupant. */
 interface Occupant_Classification {
@@ -2207,8 +3847,6 @@ interface DetectedOccupant {
     /**
      * A list of candidates for this occupant as estimated by the
      * sensor.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     candidate?: DetectedOccupant_CandidateOccupant[] | undefined;
 }
@@ -2224,7 +3862,10 @@ interface DetectedOccupant_CandidateOccupant {
      * given under the condition of
      * \c DetectedItemHeader::existence_probability.
      *
-     * Range: [0,1]
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     probability?: number | undefined;
     /**
@@ -2265,96 +3906,122 @@ declare enum TrafficSignValue_Unit {
     UNKNOWN = 0,
     /** OTHER - Other (unspecified but known) unit of the sign's value. */
     OTHER = 1,
-    /**
-     * NO_UNIT - Value without unit.
-     *
-     * Unit: []
-     */
+    /** NO_UNIT - Value without unit. */
     NO_UNIT = 2,
     /**
      * KILOMETER_PER_HOUR - Velocity.
      * Kilometers per hour.
      *
-     * Unit: [km/h]
+     * Unit: km/h
      */
     KILOMETER_PER_HOUR = 3,
     /**
      * MILE_PER_HOUR - Velocity.
      * Miles per hour.
      *
-     * Unit: [mph]
+     * Unit: mph
      */
     MILE_PER_HOUR = 4,
     /**
      * METER - Length.
      * Meter.
      *
-     * Unit: [m]
+     * Unit: m
      */
     METER = 5,
     /**
      * KILOMETER - Length.
      * Kilometer.
      *
-     * Unit: [km]
+     * Unit: km
      */
     KILOMETER = 6,
     /**
      * FEET - Length.
      * Feet.
      *
-     * Unit: [ft]
+     * Unit: ft
      */
     FEET = 7,
     /**
      * MILE - Length.
      * Mile.
      *
-     * Unit: [mile]
+     * Unit: mile
      */
     MILE = 8,
     /**
      * METRIC_TON - Weight.
      * Ton.
      *
-     * Unit: [t]
+     * Unit: t
      */
     METRIC_TON = 9,
     /**
      * LONG_TON - Weight.
-     * Long ton UK 1,016.047 [kg].
+     * Long ton UK 1,016.047 kg.
      *
-     * Unit: [tn. l.]
+     * Unit: tn. l.
      */
     LONG_TON = 10,
     /**
      * SHORT_TON - Weight.
-     * Short ton USA 907.1847 [kg].
+     * Short ton USA 907.1847 kg.
      *
-     * Unit: [tn. sh.]
+     * Unit: tn. sh.
      */
     SHORT_TON = 11,
     /**
-     * MINUTES - Time of day.
-     * Hour since midnight.
+     * HOUR - Time of day.
+     * Hours since midnight. Starting with 0.
      *
-     * Unit: [min]
+     * Unit: h
+     */
+    HOUR = 15,
+    /**
+     * MINUTES - Time of day.
+     * Minutes since last hour. Starting with 0.
+     *
+     * Unit: min
      */
     MINUTES = 12,
+    /**
+     * DAY_OF_MONTH - Day of the month.
+     * Starting with 1.
+     */
+    DAY_OF_MONTH = 16,
     /**
      * DAY - Day of the week.
      * Days since Monday. Monday = 0; Tuesday = 1; ...
      *
-     * Unit: []
+     * \note For consistency this field will be renamed to UNIT_DAY_OF_WEEK in v4.0.0 .
      */
     DAY = 13,
     /**
      * PERCENTAGE - Percentage.
      * Value.
      *
-     * Unit: [%]
+     * Unit: %
      */
-    PERCENTAGE = 14
+    PERCENTAGE = 14,
+    /**
+     * DURATION_DAY - Duration in days.
+     *
+     * Unit: day
+     */
+    DURATION_DAY = 17,
+    /**
+     * DURATION_HOUR - Duration in hours.
+     *
+     * Unit: h
+     */
+    DURATION_HOUR = 18,
+    /**
+     * DURATION_MINUTE - Duration in minutes.
+     *
+     * Unit: min
+     */
+    DURATION_MINUTE = 19
 }
 /**
  * \brief A traffic sign.
@@ -2363,17 +4030,47 @@ declare enum TrafficSignValue_Unit {
  * coordinate system.
  */
 interface TrafficSign {
-    /** The ID of the traffic sign. */
+    /**
+     * The ID of the traffic sign.
+     *
+     * \rules
+     * is_globally_unique
+     * is_set
+     * \endrules
+     */
     id?: Identifier | undefined;
-    /** Main sign, e.g. speed limit 30 [km/h] */
+    /** Main sign, e.g. speed limit 30 km/h */
     main_sign?: TrafficSign_MainSign | undefined;
     /**
      * Additional supplementary signs, e.g. time limits, modifying the traffic
      * sign.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     supplementary_sign?: TrafficSign_SupplementarySign[] | undefined;
+    /**
+     * Optional external reference to the traffic sign source.
+     *
+     * The external reference point to the source of the traffic sign, if it is
+     * derived from one or more objects or external references.
+     *
+     * For example, to reference a signal defined in an OpenDRIVE map
+     * the items should be set as follows:
+     * * reference = URI to map, can remain empty if identical with definition
+     *               in \c GroundTruth::map_reference
+     * * type = "net.asam.opendrive"
+     * * identifier[0] = id of t_road_signals_signal
+     *
+     * \note For non-ASAM Standards, it is implementation-specific how
+     *       source_reference is resolved.
+     *
+     * \note If an individual identification of MainSign and SupplementarySign
+     *       is necessary, this should be done via multiple individual
+     *       entries of this source_reference.
+     *
+     * \note The value has to be repeated, because one lane segment may be
+     *       derived from more than one origin segment. Multiple sources
+     *       may be added as reference as well, for example, a map and sensors.
+     */
+    source_reference?: ExternalReference[] | undefined;
 }
 /** Definition of the variability of a traffic sign. */
 declare enum TrafficSign_Variability {
@@ -2384,10 +4081,37 @@ declare enum TrafficSign_Variability {
     UNKNOWN = 0,
     /** OTHER - Other (unspecified but known) variability. */
     OTHER = 1,
-    /** FIXED - Fixed sign, i.e. always present. */
+    /**
+     * FIXED - Sign that can change neither semantically nor positionally, e.g. a
+     * fixed, immutable, non-temporary traffic sign.
+     */
     FIXED = 2,
-    /** VARIABLE - Temporary or variable sign, e.g. on a sign bridge. */
-    VARIABLE = 3
+    /**
+     * VARIABLE - Sign that can change semantically and/or positionally, i.e. it is
+     * left unspecified in which way the sign may change.
+     *
+     * \note This value represents a legacy definition. If possible, please
+     * use the more specific values below to indicate the exact nature of
+     * variability.
+     */
+    VARIABLE = 3,
+    /**
+     * MOVABLE - Sign that can change positionally but not semantically, e.g. a
+     * temporary, immutable traffic sign at construction site.
+     */
+    MOVABLE = 4,
+    /**
+     * MUTABLE - Sign that can change semantically but not positionally, e.g. a
+     * digital traffic sign on traffic sign gantry, or an analog prism
+     * sign.
+     */
+    MUTABLE = 5,
+    /**
+     * MOVABLE_AND_MUTABLE - Sign that can change both semantically and positionally, e.g. a
+     * temporary, digital traffic sign at a construction site, or a digital
+     * traffic sign attached to a road works vehicle.
+     */
+    MOVABLE_AND_MUTABLE = 6
 }
 /**
  * \brief Main sign of the traffic sign.
@@ -2411,6 +4135,13 @@ interface TrafficSign_MainSign {
     base?: BaseStationary | undefined;
     /** The classification of the traffic sign. */
     classification?: TrafficSign_MainSign_Classification | undefined;
+    /**
+     * Opaque reference of an associated 3D model of the traffic sign.
+     *
+     * \note It is implementation-specific how model_references are resolved to
+     * 3d models.
+     */
+    model_reference?: string | undefined;
 }
 /**
  * \brief \c Classification data for a traffic sign.
@@ -2442,11 +4173,20 @@ interface TrafficSign_MainSign {
  */
 interface TrafficSign_MainSign_Classification {
     /**
-     * The traffic sign is not stationary, for example a temporary
-     * traffic sign in a street construction.
+     * This value indicates if a sign is static or dynamic regarding its
+     * content (e.g., electronic sign bridge) and/or regarding its
+     * position on the road.
      */
     variability?: TrafficSign_Variability | undefined;
-    /** The type of the traffic sign. */
+    /**
+     * The type of the traffic sign.
+     *
+     * \attention Deprecated: A revision is planned for version 4.0.0 to
+     * replace the type enum with a more semantically defined enumeration,
+     * with the exact sign specification being relegated to the newly
+     * introduced 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     */
     type?: TrafficSign_MainSign_Classification_Type | undefined;
     /**
      * Additional value associated with the traffic sign, e.g. value of
@@ -2477,6 +4217,12 @@ interface TrafficSign_MainSign_Classification {
      * and not a traffic sign. Actual traffic signs lying on the ground
      * might have been intentionally unmounted and, hence, not be in
      * effect.
+     *
+     * \attention Deprecated: A revision is planned for version 4.0.0 to
+     * replace the type enum with a more semantically defined enumeration,
+     * with the exact sign specification being relegated to the newly
+     * introduced 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
      */
     direction_scope?: TrafficSign_MainSign_Classification_DirectionScope | undefined;
     /**
@@ -2485,6 +4231,10 @@ interface TrafficSign_MainSign_Classification {
      *
      * \note OSI uses singular instead of plural for repeated field
      * names.
+     *
+     * \rules
+     * refers_to: Lane
+     * \endrules
      */
     assigned_lane_id?: Identifier[] | undefined;
     /**
@@ -2497,8 +4247,72 @@ interface TrafficSign_MainSign_Classification {
      * by setting the \c #vertically_mirrored boolean to \c true.
      * As for every boolean in the protocol buffers language, the
      * default value of \c #vertically_mirrored is \c false.
+     *
+     * \attention Deprecated: A revision is planned for version 4.0.0 to
+     * replace the type enum with a more semantically defined enumeration,
+     * with the exact sign specification being relegated to the newly
+     * introduced 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
      */
     vertically_mirrored?: boolean | undefined;
+    /**
+     * Boolean flag to indicate that a traffic sign is taken out of service.
+     * This can be achieved by visibly crossing the sign or covering it completely.
+     */
+    is_out_of_service?: boolean | undefined;
+    /**
+     * Country specification of the traffic sign catalog specification
+     * that identifies the actual traffic sign. This is part of the
+     * 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     *
+     * Country is specified using the ISO 3166-1, alpha-2 code
+     * https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2, or the
+     * special OpenDRIVE country for generic signs.<br>
+     */
+    country?: string | undefined;
+    /**
+     * Revision specification of the traffic sign catalog specification
+     * that identifies the actual traffic sign. This is part of the
+     * 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     *
+     * The year the traffic rules came into force. <br>
+     * e.g. "2017"
+     */
+    country_revision?: string | undefined;
+    /**
+     * Code specification of the traffic sign catalog specification
+     * that identifies the actual traffic sign. This is part of the
+     * 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     *
+     * Code identifier according to country and country revision,
+     * corresponds to the type field of OpenDRIVE. <br>
+     * code is only unique in combination with #country and #country_revision.  <br>
+     * e.g. http://www.vzkat.de/2017/VzKat.htm
+     */
+    code?: string | undefined;
+    /**
+     * Sub-code specification of the traffic sign catalog specification
+     * that identifies the actual traffic sign. This is part of the
+     * 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     *
+     * Sub-code identifier according to country, country revision and code,
+     * corresponds to the subtype field of OpenDRIVE. <br>
+     * sub_code is only unique in combination with #country, #country_revision,
+     * and #code.  <br>
+     * e.g. http://www.vzkat.de/2017/VzKat.htm
+     */
+    sub_code?: string | undefined;
+    /**
+     * Assignment of this object to logical lanes.
+     *
+     * \note OSI uses singular instead of plural for repeated field
+     * names.
+     */
+    logical_lane_assignment?: LogicalLaneAssignment[] | undefined;
 }
 /**
  * Definition of traffic sign types.
@@ -2519,6 +4333,12 @@ interface TrafficSign_MainSign_Classification {
  * (Richtzeichen) \arg
  * https://www.gesetze-im-internet.de/stvo_2013/anlage_4.html
  * (Verkehrseinrichtungen) \arg https://traffic-rules.com/
+ *
+ * \attention Deprecated: A revision is planned for version 4.0.0 to
+ * replace the type enum with a more semantically defined enumeration,
+ * with the exact sign specification being relegated to the newly
+ * introduced 4-tupel traffic sign catalog specification as used in
+ * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
  */
 declare enum TrafficSign_MainSign_Classification_Type {
     /**
@@ -3552,7 +5372,7 @@ declare enum TrafficSign_MainSign_Classification_Type {
      * </tr>
      * </table>
      *
-     * Left: \c #TYPE_PRESCRIBED_LEFT_TURN_AND_RIGHT_TURN
+     * Left: \c #TYPE_PRESCRIBED_LEFT_TURN_AND_STRAIGHT
      *
      * As symbolic road marking \c
      * RoadMarking::Classification::TYPE_SYMBOLIC_TRAFFIC_SIGN
@@ -3660,10 +5480,10 @@ declare enum TrafficSign_MainSign_Classification_Type {
      * <table cellspacing="0" cellpadding="0">
      * <tr>
      * <td>
-     * \image html 222.png
+     * \image html 222-10.png
      * </td>
      * <td>
-     * StVO 222
+     * StVO 222-10
      * </td>
      * </tr>
      * </table>
@@ -3676,10 +5496,10 @@ declare enum TrafficSign_MainSign_Classification_Type {
      * <table cellspacing="0" cellpadding="0">
      * <tr>
      * <td>
-     * \image html 222-10.png
+     * \image html 222.png
      * </td>
      * <td>
-     * StVO 222-10
+     * StVO 222
      * </td>
      * </tr>
      * </table>
@@ -4084,7 +5904,7 @@ declare enum TrafficSign_MainSign_Classification_Type {
      * </table>
      *
      * \note In the German StVO, trucks are defined as motorized
-     * vehicles that are heavier than 3.5 [t].
+     * vehicles that are heavier than 3.5 t.
      */
     TRUCKS_PROHIBITED = 39,
     /**
@@ -4242,7 +6062,7 @@ declare enum TrafficSign_MainSign_Classification_Type {
      *
      * \note In the German StVO, tractors are defined as motorized
      * vehicles that are not allowed to, or cannot, drive faster
-     * than 25 [km/h].
+     * than 25 km/h.
      */
     TRACTORS_PROHIBITED = 163,
     /**
@@ -5525,7 +7345,7 @@ declare enum TrafficSign_MainSign_Classification_Type {
      * -->
      * </td>
      * <td>
-     * StVO 353  - Valid only until october 2022.
+     * StVO 353  - Valid only until October 2022.
      * </td>
      * </tr>
      * </table>
@@ -5895,7 +7715,7 @@ declare enum TrafficSign_MainSign_Classification_Type {
      * -->
      * </td>
      * <td>
-     * StVO 380 - Valid only until october 2022.
+     * StVO 380 - Valid only until October 2022.
      * </td>
      * </tr>
      * </table>
@@ -5914,7 +7734,7 @@ declare enum TrafficSign_MainSign_Classification_Type {
      * -->
      * </td>
      * <td>
-     * StVO 381 - Valid only until october 2022
+     * StVO 381 - Valid only until October 2022
      * </td>
      * </tr>
      * </table>
@@ -6001,7 +7821,7 @@ declare enum TrafficSign_MainSign_Classification_Type {
      * -->
      * </td>
      * <td>
-     * StVO 388 - Valid only until october 2022
+     * StVO 388 - Valid only until October 2022
      * </td>
      * </tr>
      * </table>
@@ -6009,7 +7829,7 @@ declare enum TrafficSign_MainSign_Classification_Type {
     SHOULDER_NOT_PASSABLE_MOTOR_VEHICLES = 220,
     /**
      * SHOULDER_UNSAFE_TRUCKS_TRACTORS - Shoulder unsafe for vehicles with a permitted gross weight
-     * over 3.5 [t] and for tractors.
+     * over 3.5 t and for tractors.
      * <table cellspacing="0" cellpadding="0">
      * <tr>
      * <td>
@@ -6018,7 +7838,7 @@ declare enum TrafficSign_MainSign_Classification_Type {
      * -->
      * </td>
      * <td>
-     * StVO 389 - Valid only until october 2022
+     * StVO 389 - Valid only until October 2022
      * </td>
      * </tr>
      * </table>
@@ -6659,7 +8479,7 @@ declare enum TrafficSign_MainSign_Classification_Type {
      */
     HIGHWAY_PREANNOUNCEMENT_DIRECTIONS = 126,
     /**
-     * POLE_EXIT - Pole indicating highways exit in ... [m].
+     * POLE_EXIT - Pole indicating highways exit in ... m.
      * <table cellspacing="0" cellpadding="0">
      * <tr>
      * <td>
@@ -6678,7 +8498,7 @@ declare enum TrafficSign_MainSign_Classification_Type {
      * </table>
      *
      * Use \c TrafficSignValue::value and \c
-     * TrafficSignValue::value_unit to specify the distance in [m]
+     * TrafficSignValue::value_unit to specify the distance in m
      * or the displayed number of stripes (in that case, set \c
      * TrafficSignValue::value_unit to \c
      * TrafficSignValue::UNIT_NO_UNIT.).
@@ -7452,7 +9272,7 @@ declare enum TrafficSign_MainSign_Classification_Type {
      * </tr>
      * </table>
      *
-     * \note Additional traffic signs are modelled as separate main
+     * \note Additional traffic signs are modeled as separate main
      * signs.
      */
     MOBILE_LANE_CLOSURE = 139,
@@ -7662,6 +9482,13 @@ interface TrafficSign_SupplementarySign {
     base?: BaseStationary | undefined;
     /** The classification of the supplementary traffic sign. */
     classification?: TrafficSign_SupplementarySign_Classification | undefined;
+    /**
+     * Opaque reference of an associated 3D model of the supplementary traffic sign.
+     *
+     * \note It is implementation-specific how model_references are resolved to
+     * 3d models.
+     */
+    model_reference?: string | undefined;
 }
 /**
  * \brief \c Classification data for a supplementary traffic sign.
@@ -7683,7 +9510,15 @@ interface TrafficSign_SupplementarySign {
 interface TrafficSign_SupplementarySign_Classification {
     /** Variability. */
     variability?: TrafficSign_Variability | undefined;
-    /** Type of the supplementary sign. */
+    /**
+     * Type of the supplementary sign.
+     *
+     * \attention Deprecated: A revision is planned for version 4.0.0 to
+     * replace the type enum with a more semantically defined enumeration,
+     * with the exact sign specification being relegated to the newly
+     * introduced 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     */
     type?: TrafficSign_SupplementarySign_Classification_Type | undefined;
     /**
      * Additional value(s) associated with the traffic sign, e.g.
@@ -7702,16 +9537,92 @@ interface TrafficSign_SupplementarySign_Classification {
      *
      * \note OSI uses singular instead of plural for repeated field
      * names.
+     *
+     * \rules
+     * refers_to: Lane
+     * \endrules
      */
     assigned_lane_id?: Identifier[] | undefined;
     /**
      * This enumerator indicates a traffic actor (e.g.
      * bikes, cars, trucks and so on), that the supplementary sign
      * makes reference to.
+     *
+     * \attention Deprecated: A revision is planned for version 4.0.0 to
+     * replace the type enum with a more semantically defined enumeration,
+     * with the exact sign specification being relegated to the newly
+     * introduced 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
      */
     actor?: TrafficSign_SupplementarySign_Classification_Actor[] | undefined;
-    /** A direction arrow shown on the supplementary sign. */
+    /**
+     * A direction arrow shown on the supplementary sign.
+     *
+     * \attention Deprecated: A revision is planned for version 4.0.0 to
+     * replace the type enum with a more semantically defined enumeration,
+     * with the exact sign specification being relegated to the newly
+     * introduced 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     */
     arrow?: TrafficSign_SupplementarySign_Classification_Arrow[] | undefined;
+    /**
+     * Boolean flag to indicate that the supplementary traffic sign is taken out of service.
+     * This can be achieved by visibly crossing the sign or covering it completely.
+     */
+    is_out_of_service?: boolean | undefined;
+    /**
+     * Country specification of the traffic sign catalog specification
+     * that identifies the actual traffic sign. This is part of the
+     * 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     *
+     * Country is specified using the ISO 3166-1, alpha-2 code
+     * https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2, or the
+     * special OpenDRIVE country for generic signs.<br>
+     */
+    country?: string | undefined;
+    /**
+     * Revision specification of the traffic sign catalog specification
+     * that identifies the actual traffic sign. This is part of the
+     * 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     *
+     * The year the traffic rules came into force. <br>
+     * e.g. "2017"
+     */
+    country_revision?: string | undefined;
+    /**
+     * Code specification of the traffic sign catalog specification
+     * that identifies the actual traffic sign. This is part of the
+     * 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     *
+     * Code identifier according to country and country revision,
+     * corresponds to the type field of OpenDRIVE. <br>
+     * code is only unique in combination with #country and #country_revision.  <br>
+     * e.g. http://www.vzkat.de/2017/VzKat.htm
+     */
+    code?: string | undefined;
+    /**
+     * Sub-code specification of the traffic sign catalog specification
+     * that identifies the actual traffic sign. This is part of the
+     * 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     *
+     * Sub-code identifier according to country, country revision and code,
+     * corresponds to the subtype field of OpenDRIVE. <br>
+     * sub_code is only unique in combination with #country, #country_revision,
+     * and #code.  <br>
+     * e.g. http://www.vzkat.de/2017/VzKat.htm
+     */
+    sub_code?: string | undefined;
+    /**
+     * Assignment of this object to logical lanes.
+     *
+     * \note OSI uses singular instead of plural for repeated field
+     * names.
+     */
+    logical_lane_assignment?: LogicalLaneAssignment[] | undefined;
 }
 /**
  * Definition of supplementary sign types.
@@ -7727,6 +9638,12 @@ interface TrafficSign_SupplementarySign_Classification {
  * text, \c Type is used in descending order in the following
  * sequence: \c #TYPE_EXCEPT, \c #TYPE_CONSTRAINED_TO, \c
  * #TYPE_ARROW, \c #TYPE_TIME, \c #TYPE_SPACE, \c #TYPE_TEXT.
+ *
+ * \attention Deprecated: A revision is planned for version 4.0.0 to
+ * replace the type enum with a more semantically defined enumeration,
+ * with the exact sign specification being relegated to the newly
+ * introduced 4-tupel traffic sign catalog specification as used in
+ * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
  */
 declare enum TrafficSign_SupplementarySign_Classification_Type {
     /**
@@ -8203,7 +10120,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * All green signals ("green wave") at certain speed.
      * <br>
      * Use \c TrafficSignValue::value and \c
-     * TrafficSignValue::value_unit (e.g. [km/h]) to indicate the
+     * TrafficSignValue::value_unit (e.g. km/h) to indicate the
      * speed.
      * </td>
      * </tr>
@@ -8489,7 +10406,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * - Use \c TrafficSignValue::value to include the distance
      * indicated in the sign. Accompany this value with an
      * indication of its unit of measure given by \c
-     * TrafficSignValue::value_unit (e.g. [m]),
+     * TrafficSignValue::value_unit (e.g. m),
      * - Use \c TrafficSignValue::text to indicate the sign's
      * specific text,
      *
@@ -8522,7 +10439,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * "STOP" + distance
      * </td>
      * <td>
-     * Stop in e.g. ... [m]
+     * Stop in e.g. ... m
      * </td>
      * </tr>
      * <tr>
@@ -8536,7 +10453,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * &rdquo;Rei&szlig;verschluss erst in&rdquo; + distance
      * </td>
      * <td>
-     * Zipper merge in e.g. ... [m]
+     * Zipper merge in e.g. ... m
      * </td>
      * </tr>
      * <tr>
@@ -8550,7 +10467,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * "Ende Seitenstreifen in" + distance
      * </td>
      * <td>
-     * End of the side strip in e.g. ... [m]
+     * End of the side strip in e.g. ... m
      * </td>
      * </tr>
      * <tr>
@@ -8564,7 +10481,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * "Ende in" + distance
      * </td>
      * <td>
-     * End in .. [m]
+     * End in .. m
      * </td>
      * </tr>
      * <tr>
@@ -8584,7 +10501,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * still be used up to a certain point. To indicate the point,
      * use one of the following alternatives:
      * - A numerical value described by \c TrafficSignValue::value
-     * and \c TrafficSignValue::value_unit (e.g. [m]) to indicate
+     * and \c TrafficSignValue::value_unit (e.g. m) to indicate
      * the point as a distance from the sign.
      * - A text described by \c TrafficSignValue::text in order to
      * describe the point's location verbally, e.g. "Baugebiet ...".
@@ -8601,7 +10518,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * - Use one or more \c TrafficSignValue messages to include
      * the times indicated in the sign. Accompany each value with an
      * indication of its unit of measure given by \c
-     * TrafficSignValue::value_unit, e.g. [h].
+     * TrafficSignValue::value_unit, e.g. h.
      * - For each \c TrafficSignValue, \c TrafficSignValue::value
      * indicates the time elapsed since midnight every day.
      * - Use the \c TrafficSignValue::text member of the
@@ -8691,7 +10608,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * TrafficSignValue::value indicates the time elapsed since
      * midnight of the corresponding day, and \c
      * TrafficSignValue::value_unit indicates the unit this time is
-     * expressed in, e.g. in [min].
+     * expressed in, e.g. in min.
      * </td>
      * </tr>
      * <tr>
@@ -8836,7 +10753,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * [\c rules above](\ref TYPE_TIME).
      * <br>
      * See also: [\c Two time ranges](\ref StVO_1040-31),
-     * [\c Working days except saturdays](\ref StVO_1042-38).
+     * [\c Working days except Saturdays](\ref StVO_1042-38).
      * </td>
      * </tr>
      * <tr>
@@ -8865,7 +10782,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * &rdquo;werktags au&szlig;er samstags&rdquo;
      * </td>
      * <td>
-     * Working days except saturdays.
+     * Working days except Saturdays.
      * </td>
      * </tr>
      * <tr>
@@ -9118,10 +11035,10 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * Trucks.
      * \note
      * - In the German StVO, trucks are defined as motorized
-     * vehicles that are heavier than 3.5 [t].
+     * vehicles that are heavier than 3.5 t.
      * - This supplementary sign also denotes the trucks' tractor
      * units and trailers.
-     * - Cars and buses with a total weight superior to 3.5 [t] are
+     * - Cars and buses with a total weight superior to 3.5 t are
      * not denoted by this. sign.
      * </td>
      * </tr>
@@ -9265,7 +11182,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * Tractors.
      * \note In the German StVO, tractors are defined as motorized
      * vehicles that are not allowed to, or cannot, drive faster
-     * than 25 [km/h].
+     * than 25 km/h.
      * </td>
      * </tr>
      * <tr>
@@ -9388,7 +11305,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * &rdquo;d&uuml;rfen &uuml;berholt werden&rdquo;.
      * \note In the German StVO, tractors are defined as motorized
      * vehicles that are not allowed to, or cannot, drive faster
-     * than 25 [km/h].
+     * than 25 km/h.
      * </td>
      * </tr>
      * <tr>
@@ -9625,7 +11542,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * Only trucks with trailers and trucks with semi-trailers.
      * \note
      * - In the German StVO, trucks are defined as motorized
-     * vehicles that are heavier than 3.5 [t].
+     * vehicles that are heavier than 3.5 t.
      * - This supplementary sign also denotes the trucks'
      * tractor units and trailers.
      * - This supplementary sign excludes passenger cars and
@@ -9662,7 +11579,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * <br>
      * \note
      * - In the German StVO, trucks are defined as motorized
-     * vehicles that are heavier than 3.5 [t].
+     * vehicles that are heavier than 3.5 t.
      * - This supplementary sign also denotes the trucks' tractor
      * units and trailers.
      * </td>
@@ -9801,7 +11718,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * each \c TrafficSignValue, \c TrafficSignValue::value
      * indicates the time elapsed since midnight every day, and \c
      * TrafficSignValue::value_unit indicates the unit this time is
-     * expressed in, e.g. in [min].
+     * expressed in, e.g. in min.
      * </td>
      * </tr>
      * <tr>
@@ -10127,10 +12044,10 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * Except trucks, their tractor unit and their trailers.
      * \note
      * - In the German StVO, trucks are defined as motorized
-     * vehicles that are heavier than 3.5 [t].
+     * vehicles that are heavier than 3.5 t.
      * - This supplementary sign also denotes the trucks' tractor
      * units and trailers.
-     * - Cars and buses with a total weight superior to 3.5 [t] are
+     * - Cars and buses with a total weight superior to 3.5 t are
      * not exempted of a rule by this sign.
      * </td>
      * </tr>
@@ -10148,10 +12065,10 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * Except trucks with trailers.
      * \note
      * - In the German StVO, trucks are defined as motorized
-     * vehicles that are heavier than 3.5 [t].
+     * vehicles that are heavier than 3.5 t.
      * - This supplementary sign also denotes the trucks' tractor
      * units and trailers.
-     * - Cars and buses with a total weight superior to 3.5 [t] are
+     * - Cars and buses with a total weight superior to 3.5 t are
      * not exempted of a rule by this sign.
      * </td>
      * </tr>
@@ -10211,7 +12128,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * Except tractors.
      * \note In the German StVO, tractors are defined as motorized
      * vehicles that are not allowed to, or cannot, drive faster
-     * than 25 [km/h].
+     * than 25 km/h.
      * </td>
      * </tr>
      * <tr>
@@ -10242,7 +12159,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * Except campers with a maximum allowed mass.
      * <br>
      * Use \c TrafficSignValue::value and \c
-     * TrafficSignValue::value_unit (e.g. [t]) to indicate the mass.
+     * TrafficSignValue::value_unit (e.g. t) to indicate the mass.
      * </td>
      * </tr>
      * <tr>
@@ -10273,7 +12190,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * \c #ACTOR_BUSES
      * </td>
      * <td>
-     * Except buses in ocasional service.
+     * Except buses in occasional service.
      * <br>
      * Set \c TrafficSignValue::text as "im Gelegenheitsverkehr".
      * </td>
@@ -10579,7 +12496,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * </table>
      *
      * Use \c TrafficSignValue::value and \c
-     * TrafficSignValue::value_unit (e.g. [m]) to indicate the
+     * TrafficSignValue::value_unit (e.g. m) to indicate the
      * distance.
      */
     VALID_FOR_DISTANCE = 3,
@@ -10734,14 +12651,14 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * </table>
      *
      * Use \c TrafficSignValue::value and \c
-     * TrafficSignValue::value_unit (e.g. [m]) to indicate the
+     * TrafficSignValue::value_unit (e.g. m) to indicate the
      * distance.
      *
      * \note For OSI 4.0 compatibility use \c #TYPE_SPACE instead.
      */
     VALID_IN_DISTANCE = 4,
     /**
-     * STOP_IN - Stop in e.g. .. [m].
+     * STOP_IN - Stop in e.g. .. m.
      * <table cellspacing="0" cellpadding="0">
      * <tr>
      * <td>
@@ -10753,7 +12670,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * </table>
      *
      * Use \c TrafficSignValue::value and \c
-     * TrafficSignValue::value_unit (e.g. [m]) to indicate the
+     * TrafficSignValue::value_unit (e.g. m) to indicate the
      * distance.
      *
      * \note For OSI 4.0 compatibility use \c #TYPE_SPACE instead.
@@ -10926,7 +12843,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * TrafficSignValue, \c TrafficSignValue::value indicates
      * the time elapsed since midnight each day, and \c
      * TrafficSignValue::value_unit indicates the unit this time is
-     * expressed in, e.g. in [min].
+     * expressed in, e.g. in min.
      * - If including start and end days of the week, include two
      * additional \c TrafficSignValue messages. For these messages,
      * use \c TrafficSignValue::value_unit as \c
@@ -10952,7 +12869,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * </td>
      * <td>
      * Use \c TrafficSignValue::value and \c
-     * TrafficSignValue::value_unit (e.g. [min]) to indicate the
+     * TrafficSignValue::value_unit (e.g. min) to indicate the
      * allowed duration of parking.
      * </td>
      * </tr>
@@ -10968,7 +12885,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * </td>
      * <td>
      * Use \c TrafficSignValue::value and \c
-     * TrafficSignValue::value_unit (e.g. [min]) to indicate the
+     * TrafficSignValue::value_unit (e.g. min) to indicate the
      * allowed duration of parking. Set \c TrafficSignValue::text
      * to &rdquo;in gekennzeichneten Fl&auml;chen&rdquo;.
      * </td>
@@ -10991,7 +12908,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Type {
      * </table>
      *
      * Use \c TrafficSignValue::value and \c
-     * TrafficSignValue::value_unit (e.g. in [t]) to indicate the
+     * TrafficSignValue::value_unit (e.g. in t) to indicate the
      * weight.
      */
     WEIGHT = 6,
@@ -11218,7 +13135,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Actor {
      *
      * \note In the German StVO, tractors are defined as
      * motorized vehicles that are not allowed to, or cannot,
-     * drive faster than 25 [km/h]
+     * drive faster than 25 km/h
      */
     TRACTORS = 37,
     /** TRAILERS - Trailers */
@@ -11230,7 +13147,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Actor {
      *
      * \note
      * In the German StVO, trucks are defined as
-     * motorized vehicles that are heavier than 3.5 [t]
+     * motorized vehicles that are heavier than 3.5 t
      */
     TRUCKS = 40,
     /** TRUCKS_WITH_SEMITRAILERS - Trucks with semi-trailers */
@@ -11250,7 +13167,13 @@ declare enum TrafficSign_SupplementarySign_Classification_Actor {
 }
 /** \brief An arrow denoting a direction shown on the traffic sign. */
 interface TrafficSign_SupplementarySign_Classification_Arrow {
-    /** The IDs of the lanes the arrow applies to */
+    /**
+     * The IDs of the lanes the arrow applies to
+     *
+     * \rules
+     * refers_to: Lane
+     * \endrules
+     */
     lane_id?: Identifier[] | undefined;
     /** The direction to which the arrow points to */
     direction?: TrafficSign_SupplementarySign_Classification_Arrow_Direction[] | undefined;
@@ -11302,7 +13225,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Arrow_Direction {
      */
     DIRECT_135_DEG_LEFT = 9,
     /**
-     * DIRECT_180_DEG - A straight arrow pointing oposite to the direction of
+     * DIRECT_180_DEG - A straight arrow pointing opposite to the direction of
      * driving.
      */
     DIRECT_180_DEG = 10,
@@ -11384,7 +13307,7 @@ declare enum TrafficSign_SupplementarySign_Classification_Arrow_Direction {
     CIRCLE_135_DEG_LEFT = 25,
     /**
      * CIRCLE_180_DEG - An arrow that includes a fraction of a circle and points
-     * in the oposite to the direction of driving. Can be used
+     * in the opposite to the direction of driving. Can be used
      * in detours in roundabouts.
      */
     CIRCLE_180_DEG = 26,
@@ -11434,7 +13357,13 @@ declare enum TrafficSign_SupplementarySign_Classification_Arrow_Direction {
 
 /**  */
 interface RoadMarking {
-    /** The ID of the road marking. */
+    /**
+     * The ID of the road marking.
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
     id?: Identifier | undefined;
     /**
      * The base parameters of the road marking.
@@ -11458,6 +13387,41 @@ interface RoadMarking {
     base?: BaseStationary | undefined;
     /** The classification data for the road marking. */
     classification?: RoadMarking_Classification | undefined;
+    /**
+     * Optional external reference to the road-marking source.
+     *
+     * The external reference points to the source of the surface marking, if it
+     * is derived from one or more objects or external references. An example
+     * here is the reference to the signal defined in a OpenDRIVE map.
+     *
+     * For example, to reference a signal defined in an OpenDRIVE map
+     * the items should be set as follows:
+     * * reference = URI to map, can remain empty if identical with definition
+     *               in \c GroundTruth::map_reference
+     * * type = "net.asam.opendrive"
+     * * identifier[0] = id of t_road_signals_signal
+     *
+     * \note With OpenDRIVE, surface markings can also be defined as objects.
+     *       In this case, the associated object is usually referenced within
+     *       OpenDRIVE using the reference t_road_signals_signal_reference.
+     *       An additional reference to the object is therefore not necessary.
+     *
+     * \note For non-ASAM Standards, it is implementation-specific how
+     *       source_reference is resolved.
+     *
+     * \note The value has to be repeated, because one lane segment may be
+     *       derived from more than one origin segment. Multiple sources
+     *       may be added as reference as well, for example, a map and sensors.
+     */
+    source_reference?: ExternalReference[] | undefined;
+    /**
+     * The visual color of the material of the road marking.
+     *
+     * \note This does not represent the semantic classification but the visual
+     * appearance. For semantic classification of the road marking use the color
+     * field in \c Classification.
+     */
+    color_description?: ColorDescription | undefined;
 }
 /** \brief \c Classification data for a road surface marking. */
 interface RoadMarking_Classification {
@@ -11472,13 +13436,28 @@ interface RoadMarking_Classification {
      *
      * \note Field need not be set (or set to \c #TYPE_OTHER)
      * if road marking type (\c #type) does not require it.
+     *
+     * \attention Deprecated: A revision is planned for version 4.0.0 to
+     * replace the type enum with a more semantically defined enumeration,
+     * with the exact sign specification being relegated to the newly
+     * introduced 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     *
+     * \rules
+     * check_if this.type is_greater_than_or_equal_to 2 else do_check is_set
+     * check_if this.type is_less_than_or_equal_to 4 else do_check is_set
+     * \endrules
      */
     traffic_main_sign_type?: TrafficSign_MainSign_Classification_Type | undefined;
     /**
-     * The monochrome color of the road marking.
      * \note Field need not be set (or set to \c #COLOR_OTHER)
      * if road marking type does not require it (e.g. for \c #type ==
      * \c #TYPE_PAINTED_TRAFFIC_SIGN).
+     *
+     * \rules
+     * check_if this.type is_equal_to 2 else do_check is_set
+     * check_if this.monochrome_color is_equal_to 1 else do_check is_set
+     * \endrules
      */
     monochrome_color?: RoadMarking_Classification_Color | undefined;
     /**
@@ -11502,8 +13481,110 @@ interface RoadMarking_Classification {
      * May be multiple if the road marking goes across multiple lanes.
      *
      * \note OSI uses singular instead of plural for repeated field names.
+     *
+     * \rules
+     * refers_to: Lane
+     * \endrules
      */
     assigned_lane_id?: Identifier[] | undefined;
+    /**
+     * Boolean flag to indicate that the road marking is taken out of service.
+     * This can be achieved by visibly crossing the road marking with stripes,
+     * or completely covering a road marking making it not visible.
+     *
+     * \image html OSI_RoadMaking_is_out_of_service.jpg width=800px
+     */
+    is_out_of_service?: boolean | undefined;
+    /**
+     * Country specification of the traffic sign catalog specification
+     * that identifies the actual traffic sign. This is part of the
+     * 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     *
+     * Country is specified using the ISO 3166-1, alpha-2 code
+     * https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2, or the
+     * special OpenDRIVE country for generic signs.<br>
+     *
+     * \rules
+     * check_if this.type is_greater_than_or_equal_to 2 else do_check is_set
+     * check_if this.type is_less_than_or_equal_to 4 else do_check is_set
+     * \endrules
+     */
+    country?: string | undefined;
+    /**
+     * Revision specification of the traffic sign catalog specification
+     * that identifies the actual traffic sign. This is part of the
+     * 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     *
+     * The year the traffic rules came into force. <br>
+     * e.g. "2017"
+     *
+     * \note Field is set if ( \c #type == \c #TYPE_PAINTED_TRAFFIC_SIGN or
+     * \c #TYPE_SYMBOLIC_TRAFFIC_SIGN or \c #TYPE_TEXTUAL_TRAFFIC_SIGN ).
+     *
+     * \note Field need not be set (or set to \c #TYPE_OTHER)
+     * if road marking type (\c #type) does not require it.
+     *
+     * \rules
+     * check_if this.type is_greater_than_or_equal_to 2 else do_check is_set
+     * check_if this.type is_less_than_or_equal_to 4 else do_check is_set
+     * \endrules
+     */
+    country_revision?: string | undefined;
+    /**
+     * Code specification of the traffic sign catalog specification
+     * that identifies the actual traffic sign. This is part of the
+     * 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     *
+     * Code identifier according to country and country revision,
+     * corresponds to the type field of OpenDRIVE. <br>
+     * code is only unique in combination with #country and #country_revision.  <br>
+     * e.g. http://www.vzkat.de/2017/VzKat.htm
+     *
+     * \note Field is set if ( \c #type == \c #TYPE_PAINTED_TRAFFIC_SIGN or
+     * \c #TYPE_SYMBOLIC_TRAFFIC_SIGN or \c #TYPE_TEXTUAL_TRAFFIC_SIGN ).
+     *
+     * \note Field need not be set (or set to \c #TYPE_OTHER)
+     * if road marking type (\c #type) does not require it.
+     *
+     * \rules
+     * check_if this.type is_greater_than_or_equal_to 2 else do_check is_set
+     * check_if this.type is_less_than_or_equal_to 4 else do_check is_set
+     * \endrules
+     */
+    code?: string | undefined;
+    /**
+     * Sub-code specification of the traffic sign catalog specification
+     * that identifies the actual traffic sign. This is part of the
+     * 4-tupel traffic sign catalog specification as used in
+     * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+     *
+     * Sub-code identifier according to country, country revision and code,
+     * corresponds to the subtype field of OpenDRIVE. <br>
+     * sub_code is only unique in combination with #country, #country_revision,
+     * and #code.  <br>
+     * e.g. http://www.vzkat.de/2017/VzKat.htm
+     *
+     * \note Field is set if ( \c #type == \c #TYPE_PAINTED_TRAFFIC_SIGN or
+     * \c #TYPE_SYMBOLIC_TRAFFIC_SIGN or \c #TYPE_TEXTUAL_TRAFFIC_SIGN ).
+     *
+     * \note Field need not be set (or set to \c #TYPE_OTHER)
+     * if road marking type (\c #type) does not require it.
+     *
+     * \rules
+     * check_if this.type is_greater_than_or_equal_to 2 else do_check is_set
+     * check_if this.type is_less_than_or_equal_to 4 else do_check is_set
+     * \endrules
+     */
+    sub_code?: string | undefined;
+    /**
+     * Assignment of this object to logical lanes.
+     *
+     * \note OSI uses singular instead of plural for repeated field names.
+     */
+    logical_lane_assignment?: LogicalLaneAssignment[] | undefined;
 }
 /** Definition of road marking types. */
 declare enum RoadMarking_Classification_Type {
@@ -11537,7 +13618,12 @@ declare enum RoadMarking_Classification_Type {
     /** GENERIC_TEXT - Paint on the road surface indicating a generic character string. */
     GENERIC_TEXT = 7
 }
-/** Definition of road marking colors */
+/**
+ * Definition of semantic road marking colors
+ *
+ * \note The color types represent the semantic classification of
+ * road markings only. They do not represent an actual visual appearance.
+ */
 declare enum RoadMarking_Classification_Color {
     /**
      * UNKNOWN - Color of road marking is unknown (must not be used in ground
@@ -11557,7 +13643,9 @@ declare enum RoadMarking_Classification_Color {
     /** GREEN - Marking with green color. */
     GREEN = 7,
     /** VIOLET - Marking with violet color. */
-    VIOLET = 8
+    VIOLET = 8,
+    /** ORANGE - Marking with orange color. */
+    ORANGE = 9
 }
 
 /**
@@ -11571,6 +13659,15 @@ declare enum RoadMarking_Classification_Color {
  * RoadMarking::Classification::TYPE_TEXTUAL_TRAFFIC_SIGN is marked, STOP \c
  * RoadMarking::Classification::type == \c
  * RoadMarking::Classification::TYPE_SYMBOLIC_TRAFFIC_SIGN is not marked.
+ *
+ * The parent frame of a detected road marking is the virtual sensor coordinate
+ * system.
+ *
+ * /note The virtual sensor coordinate system is relative to the vehicle coordinate
+ * system which has its origin in the center of the rear axle of the ego
+ * vehicle. This means if virtual sensor mounting position and orientation are
+ * set to (0,0,0) the virtual sensor coordinate system coincides with the
+ * vehicle coordinate system.
  */
 interface DetectedRoadMarking {
     /** Common information of one detected item. */
@@ -11604,10 +13701,16 @@ interface DetectedRoadMarking {
     /**
      * A list of candidates for this road marking as estimated by the
      * sensor.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     candidate?: DetectedRoadMarking_CandidateRoadMarking[] | undefined;
+    /**
+     * The visual color of the material of the road marking.
+     *
+     * \note This does not represent the semantic classification but the visual
+     * appearance. For semantic classification of the road marking use the color
+     * field in \c CandidateRoadMarking::classification.
+     */
+    color_description?: ColorDescription | undefined;
 }
 /**
  * \brief A candidate for a detected road marking as estimated by the
@@ -11621,7 +13724,10 @@ interface DetectedRoadMarking_CandidateRoadMarking {
      * given under the condition of
      * \c DetectedItemHeader::existence_probability.
      *
-     * Range: [0,1]
+     * \rules
+     * is_less_than_or_equal_to: 1
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     probability?: number | undefined;
     /**
@@ -11642,7 +13748,14 @@ interface DetectedRoadMarking_CandidateRoadMarking {
  * bulbs, e.g. red, yellow, green are three separate traffic lights.
  */
 interface TrafficLight {
-    /** The ID of the traffic light. */
+    /**
+     * The ID of the traffic light.
+     *
+     * \rules
+     * is_globally_unique
+     * is_set
+     * \endrules
+     */
     id?: Identifier | undefined;
     /**
      * The base parameters of the traffic light.
@@ -11653,11 +13766,50 @@ interface TrafficLight {
     base?: BaseStationary | undefined;
     /** The classification data for the traffic light. */
     classification?: TrafficLight_Classification | undefined;
+    /**
+     * Opaque reference of an associated 3D model of the traffic light.
+     *
+     * \note It is implementation-specific how model_references are resolved to
+     * 3d models.
+     */
+    model_reference?: string | undefined;
+    /**
+     * Optional external reference to the traffic light source.
+     *
+     * The external reference points to the source of the traffic light, if it
+     * is derived from one or more objects or external references.
+     *
+     * For example, to reference a signal defined in an OpenDRIVE map
+     * the items should be set as follows:
+     * * reference = URI to map, can remain empty if identical with definition
+     *               in \c GroundTruth::map_reference
+     * * type = "net.asam.opendrive"
+     * * identifier[0] = id of t_road_signals_signal
+     *
+     * \note For non-ASAM Standards, it is implementation-specific how
+     *       source_reference is resolved.
+     *
+     * \note The value has to be repeated, because one lane segment may be
+     *       derived from more than one origin segment. Multiple sources
+     *       may be added as reference as well, for example, a map and sensors.
+     */
+    source_reference?: ExternalReference[] | undefined;
+    /**
+     * The visual color of the traffic light.
+     *
+     * \note This does not represent the semantic classification but the visual
+     * appearance.  For semantic classification of the traffic light use the color
+     * field in \c Classification.
+     */
+    color_description?: ColorDescription | undefined;
 }
 /** \brief \c Classification data for a traffic light. */
 interface TrafficLight_Classification {
     /**
-     * The color of the traffic light.
+     * The semantic color of the traffic light.
+     *
+     * \note The color types represent the semantic color classification of a
+     * traffic light only. They do not represent an actual visual appearance.
      *
      * \note If the color of the traffic light is known (from history or
      * geometrical arrangement) and the state \c #mode is
@@ -11673,9 +13825,13 @@ interface TrafficLight_Classification {
     mode?: TrafficLight_Classification_Mode | undefined;
     /**
      * The value of the countdown counter.
-     * Unit: [%] or [s]
+     * Unit: % or s
      *
      * \note Set value only if traffic light bulb is a countdown counter.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     counter?: number | undefined;
     /**
@@ -11684,10 +13840,31 @@ interface TrafficLight_Classification {
      * lanes.
      *
      * \note OSI uses singular instead of plural for repeated field names.
+     *
+     * \rules
+     * refers_to: Lane
+     * \endrules
      */
     assigned_lane_id?: Identifier[] | undefined;
+    /**
+     * Boolean flag to indicate that the traffic light is taken out of service.
+     * This can be achieved by visibly crossing the light, covering it completely
+     * or switching the traffic light off.
+     */
+    is_out_of_service?: boolean | undefined;
+    /**
+     * Assignment of this object to logical lanes.
+     *
+     * \note OSI uses singular instead of plural for repeated field names.
+     */
+    logical_lane_assignment?: LogicalLaneAssignment[] | undefined;
 }
-/** Definition of colors for traffic lights. */
+/**
+ * Definition of semantic colors for traffic lights.
+ *
+ * \note The color types represent the semantic classification of a traffic light
+ * only. They do not represent an actual visual appearance.
+ */
 declare enum TrafficLight_Classification_Color {
     /** UNKNOWN - Color is unknown (must not be used in ground truth). */
     UNKNOWN = 0,
@@ -11826,6 +14003,15 @@ declare enum TrafficLight_Classification_Mode {
  * One detected traffic light message defines a single 'bulb' and not a box of
  * several bulbs, e.g. red, yellow, green are three separate detected traffic
  * lights.
+ *
+ * The parent frame of a detected traffic light is the virtual sensor coordinate
+ * system.
+ *
+ * /note The virtual sensor coordinate system is relative to the vehicle coordinate
+ * system which has its origin in the center of the rear axle of the ego
+ * vehicle. This means if virtual sensor mounting position and orientation are
+ * set to (0,0,0) the virtual sensor coordinate system coincides with the
+ * vehicle coordinate system.
  */
 interface DetectedTrafficLight {
     /** Common information of one detected item. */
@@ -11846,10 +14032,16 @@ interface DetectedTrafficLight {
     /**
      * A list of candidates for this traffic light as estimated by the
      * sensor.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     candidate?: DetectedTrafficLight_CandidateTrafficLight[] | undefined;
+    /**
+     * The visual color of the traffic light.
+     *
+     * \note This does not represent the semantic classification but the visual
+     * appearance.  For semantic classification of the traffic light use the color
+     * field in \c CandidateTrafficLight::classification.
+     */
+    color_description?: ColorDescription | undefined;
 }
 /**
  * \brief A candidate for a detected traffic light as estimated by
@@ -11863,7 +14055,10 @@ interface DetectedTrafficLight_CandidateTrafficLight {
      * given under the condition of
      * \c DetectedItemHeader::existence_probability.
      *
-     * Range: [0,1]
+     * \rules
+     * is_less_than_or_equal_to: 1
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     probability?: number | undefined;
     /**
@@ -11879,17 +14074,22 @@ interface DetectedTrafficLight_CandidateTrafficLight {
  * \brief A traffic sign in the environment as detected by the sensor.
  *
  * \image html OSI_DetectedSign.svg
+ *
+ * The parent frame of a detected traffic sign is the virtual sensor coordinate
+ * system.
+ *
+ * \note The virtual sensor coordinate system is relative to the vehicle coordinate
+ * system which has its origin in the center of the rear axle of the ego
+ * vehicle. This means if virtual sensor mounting position and orientation are
+ * set to (0,0,0) the virtual sensor coordinate system coincides with the
+ * vehicle coordinate system.
  */
 interface DetectedTrafficSign {
     /** Common information of one detected item. */
     header?: DetectedItemHeader | undefined;
     /** The main sign as detected by the sensor. */
     main_sign?: DetectedTrafficSign_DetectedMainSign | undefined;
-    /**
-     * A list of additional supplementary sign(s) as detected by the sensor.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** A list of additional supplementary sign(s) as detected by the sensor. */
     supplementary_sign?: DetectedTrafficSign_DetectedSupplementarySign[] | undefined;
 }
 /**
@@ -11910,11 +14110,14 @@ interface DetectedTrafficSign_DetectedMainSign {
      *
      * The orientation of the bounding box \c #base
      * ( \c BaseStationary::orientation ) is defined as follows:
+     *
      * The z-axis of the given \c BaseStationary::orientation is the vector
      * from the bottom to the top of the traffic sign's 2D image plate.
      * (Normally it is equal to the ground truth z-axis.)
+     *
      * The x-axis of the given \c BaseStationary::orientation is view
      * normal of the traffic sign's image.
+     *
      * This x-axis points from the traffic sign's image in the direction
      * from where a 'viewer' could see the traffic sign image.
      */
@@ -11950,7 +14153,7 @@ declare enum DetectedTrafficSign_DetectedMainSign_Geometry {
     SQUARE = 5,
     /**
      * POLE - Traffic sign that has a pole geometry. (height is bigger than
-     * width e.g. pole indicating highways exit in xx [m]). (4 corners)
+     * width e.g. pole indicating highways exit in xx m). (4 corners)
      */
     POLE = 6,
     /**
@@ -11990,7 +14193,10 @@ interface DetectedTrafficSign_DetectedMainSign_CandidateMainSign {
      * probability is given under the condition of \c
      * DetectedItemHeader::existence_probability.
      *
-     * Range: [0,1]
+     * \rules
+     * is_less_than_or_equal_to: 1
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     probability?: number | undefined;
     /**
@@ -12049,7 +14255,10 @@ interface DetectedTrafficSign_DetectedSupplementarySign_CandidateSupplementarySi
      * probability is given under the condition of \c
      * DetectedItemHeader::existence_probability.
      *
-     * Range: [0,1]
+     * \rules
+     * is_less_than_or_equal_to: 1
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     probability?: number | undefined;
     /**
@@ -12081,10 +14290,10 @@ interface DetectedTrafficSign_DetectedSupplementarySign_CandidateSupplementarySi
  * properly set the version components prior to sending.
  *
  * Increments will happen as part of changes to the whole interface.
- * The meaning of different InterfaceVersions is defined [1].
+ * The meaning of different InterfaceVersions is defined in [1].
  *
- * \par References:
- * [1] Open Simulation Interface: README.md
+ * \par Reference:
+ * [1] Open Simulation Interface. (2020, January 25). <em>README</em>. Retrieved January 25, 2020, from https://opensimulationinterface.github.io/osi-documentation/open-simulation-interface/README.html
  */
 interface InterfaceVersion {
     /** Major version number. */
@@ -12129,33 +14338,19 @@ interface FeatureData {
      * environment).
      */
     version?: InterfaceVersion | undefined;
-    /**
-     * Radar detections for multiple radar sensors (sensor fusion).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** Radar detections for multiple radar sensors (sensor fusion). */
     radar_sensor?: RadarDetectionData[] | undefined;
-    /**
-     * Lidar detections for multiple lidar sensors (sensor fusion).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** Lidar detections for multiple lidar sensors (sensor fusion). */
     lidar_sensor?: LidarDetectionData[] | undefined;
     /**
      * Ultrasonic detections for multiple ultrasonic sensors (sensor fusion).
      *
-     * \note OSI uses singular instead of plural for repeated field names.
-     *
      * \note Required for ultrasonic sensors: Detections will be send by the
      * emitting ultrasonic sensor, including all indirect detections received
-     * by neighbouring sensors.
+     * by neighboring sensors.
      */
     ultrasonic_sensor?: UltrasonicDetectionData[] | undefined;
-    /**
-     * Camera detections for multiple camera sensors (sensor fusion).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** Camera detections for multiple camera sensors (sensor fusion). */
     camera_sensor?: CameraDetectionData[] | undefined;
 }
 /** \brief The header attributes of each sensor's detection list. */
@@ -12174,13 +14369,16 @@ interface SensorDetectionHeader {
      * Monotonous counter to identify the exact cycle.
      * In general the detection function is called periodically and
      * \c #cycle_counter corresponds to the number of periods.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     cycle_counter?: number | undefined;
     /**
-     * Mounting position of the sensor (origin and orientation of the sensor
-     * frame). Both origin and orientation are given in and with respect to the
-     * host vehicle coordinate system (see: \c MovingObject::Vehicle vehicle
-     * reference point) [1].
+     * The physical mounting position of the sensor (origin and orientation of
+     * the sensor frame). Both origin and orientation are given in and with
+     * respect to the host vehicle coordinate system [1].
      *
      * The sensor frame's x-axis is pointing in the central viewing direction of
      * the sensor. It is the angle bisector of the sensor's horizontal and
@@ -12197,8 +14395,12 @@ interface SensorDetectionHeader {
      * identical to sensor detection frame's origin. Detections are defined in
      * the sensor detection frame which uses e.g. spherical coordinates.
      *
-     * \par References:
-     * - [1] DIN ISO 8855:2013-11
+     * \par Reference:
+     * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
+     *
+     * \rules
+     * is_set
+     * \endrules
      */
     mounting_position?: MountingPosition | undefined;
     /**
@@ -12220,6 +14422,10 @@ interface SensorDetectionHeader {
      * The current number of valid detections in the detections list.
      *
      * \note This value has to be set if the list contains invalid detections.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     number_of_valid_detections?: number | undefined;
     /**
@@ -12227,6 +14433,10 @@ interface SensorDetectionHeader {
      *
      * This ID can equal \c SensorData::sensor_id, if \c SensorData holds only
      * data from one sensor/sensor model.
+     *
+     * \rules
+     * is_set
+     * \endrules
      */
     sensor_id?: Identifier | undefined;
     /**
@@ -12282,7 +14492,7 @@ declare enum SensorDetectionHeader_ExtendedQualifier {
     REDUCED_FIELD_OF_VIEW = 8,
     /** INPUT_NOT_AVAILABLE - Input not available. */
     INPUT_NOT_AVAILABLE = 9,
-    /** INTERNAL_REASON - Internal reason (e.g. an internal HW or SW error has occurred). */
+    /** INTERNAL_REASON - Internal reason (e.g. an internal hardware or software error has occurred). */
     INTERNAL_REASON = 10,
     /**
      * EXTERNAL_DISTURBANCE - External disturbance, sensor specific for front radar (e.g.
@@ -12296,11 +14506,7 @@ declare enum SensorDetectionHeader_ExtendedQualifier {
 interface RadarDetectionData {
     /** Header attributes of radar detection from one radar sensor. */
     header?: SensorDetectionHeader | undefined;
-    /**
-     * List of radar detections constituting the radar detection list.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** List of radar detections constituting the radar detection list. */
     detection?: RadarDetection[] | undefined;
 }
 /** \brief A radar detection. */
@@ -12309,16 +14515,23 @@ interface RadarDetection {
      * Existence probability of the detection not based on history. Value does
      * not depend on any past experience with similar detections.
      *
-     * Range: [0.0, 1.0]
-     *
      * \note Use as confidence measure where a low value means less confidence
      * and a high value indicates strong confidence.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     existence_probability?: number | undefined;
     /**
      * ID of the detected object this detection is associated to.
      *
      * \note ID = MAX(uint64) indicates no reference to an object.
+     *
+     * \rules
+     * refers_to: DetectedObject
+     * \endrules
      */
     object_id?: Identifier | undefined;
     /**
@@ -12329,34 +14542,41 @@ interface RadarDetection {
     /** Root mean squared error of the measured position of the detection. */
     position_rmse?: Spherical3d | undefined;
     /**
-     * Absolute radial (in direction to the sensor) velocity of the detection.
+     * Radial velocity of the detection positive in direction to the sensor.
      *
-     * Unit: [m/s]
+     * Unit: m/s
      */
     radial_velocity?: number | undefined;
     /**
      * Root mean squared error of the object measured radial velocity.
      *
-     * Unit: [m/s]
+     * Unit: m/s
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     radial_velocity_rmse?: number | undefined;
     /**
      * The radar cross section (RCS) of the radar detection.
      *
-     * Unit: [dB m^2]
+     * Unit: dB m^2
      */
     rcs?: number | undefined;
     /**
      * The signal to noise ratio (SNR) of the radar detection.
      *
-     * Unit: [dB]
+     * Unit: dB
      */
     snr?: number | undefined;
     /**
      * Describes the possibility whether more than one object may have led to
      * this detection.
      *
-     * Range: [0.0, 1.0]
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     point_target_probability?: number | undefined;
     /**
@@ -12366,7 +14586,7 @@ interface RadarDetection {
      *
      * \note Unambiguous measurements have the ambiguity ID 0.
      *
-     * \note Multiple seperate detections, from e.g. a large object, do not
+     * \note Multiple separate detections, from e.g. a large object, do not
      * necessarily on their own create any ambiguity. Therefore they do not
      * usually share an ambiguity ID. They can however be ambiguous
      * with other detections.
@@ -12379,11 +14599,7 @@ interface RadarDetection {
 interface LidarDetectionData {
     /** Header attributes of lidar detection from one lidar sensor. */
     header?: SensorDetectionHeader | undefined;
-    /**
-     * List of lidar detections.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** List of lidar detections. */
     detection?: LidarDetection[] | undefined;
 }
 /** \brief A point or vertical line in a lidar point cloud. */
@@ -12392,16 +14608,23 @@ interface LidarDetection {
      * Existence probability of the detection not based on history. Value does
      * not depend on any past experience with similar detections.
      *
-     * Range: [0.0, 1.0]
-     *
      * \note Used as confidence measure where a low value means less confidence
      * and a high value indicates strong confidence.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     existence_probability?: number | undefined;
     /**
      * ID of the detected object this detection is associated to.
      *
      * \note ID = MAX(uint64) indicates no reference to an object.
+     *
+     * \rules
+     * refers_to: DetectedObject
+     * \endrules
      */
     object_id?: Identifier | undefined;
     /**
@@ -12415,39 +14638,81 @@ interface LidarDetection {
      * The height value which is required when multiple scan points are
      * vertically clustered. Only vertical clustering is allowed (z-axis).
      *
-     * Unit: [m]
+     * Unit: m
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     height?: number | undefined;
     /**
      * Root mean squared error of the object height.
      *
-     * Unit: [m]
+     * Unit: m
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     height_rmse?: number | undefined;
     /**
      * Intensity or equivalent value of the detection's echo.
      *
-     * Unit: [%]
+     * Unit: %
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 100
+     * \endrules
      */
     intensity?: number | undefined;
     /**
      * The free space probability in the range [0.0, 1.0] from the origin of the
      * sensor up to this detection, as given by the distance.
      *
-     * Range: [0.0, 1.0]
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     free_space_probability?: number | undefined;
     /** Basic classification of the detection. */
     classification?: DetectionClassification | undefined;
     /** Lambertian reflectivity. */
     reflectivity?: number | undefined;
+    /**
+     * Echo pulse width of the detection's echo.
+     * Several sensors output an echo pulse width instead of an intensity for each individual detection.
+     * The echo pulse is measured in m and measures the extent of the object parts or atmospheric particles that produce the echo.
+     * \note For more details see [1] Fig. 7 and 8.
+     * \note Fig. 7 shows an example where the two echos are reflected from the edges A-B and C-D.
+     * \note Fig. 8 shows how the echo pulse width is measured as the range between the rising edge and the falling edge that crosses the intensity threshold.
+     *
+     * Unit: m
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
+     *
+     * \par Reference:
+     * [1] Rosenberger, P., Holder, M.F., Cianciaruso, N. et al. (2020). <em>Sequential lidar sensor system simulation: a modular approach for simulation-based safety validation of automated driving</em> Automotive Engine Technology 5, Fig 7, Fig 8. Retrieved May 10, 2021, from https://doi.org/10.1007/s41104-020-00066-x
+     */
+    echo_pulse_width?: number | undefined;
+    /**
+     * Radial velocity of the detection positive in direction to the sensor.
+     *
+     * Unit: m/s
+     */
+    radial_velocity?: number | undefined;
+    /** ID of the corresponding lidar beam. */
+    beam_id?: Identifier | undefined;
 }
 /** \brief Specific header extension for ultrasonic sensors. */
 interface UltrasonicDetectionSpecificHeader {
     /**
      * Maximal range of the ultrasonic sensor.
      *
-     * Unit: [m]
+     * Unit: m
      */
     max_range?: number | undefined;
     /**
@@ -12474,7 +14739,7 @@ interface UltrasonicDetectionSpecificHeader {
  *
  * \image html OSI_USSensor.svg
  *
- * \note Direct detecions lies on circles with the sending sensor as centre.
+ * \note Direct detections lie on circles with the sending sensor as center.
  */
 interface UltrasonicDetectionData {
     /** Header attributes of ultrasonic detection from one ultrasonic sensor. */
@@ -12484,17 +14749,11 @@ interface UltrasonicDetectionData {
      * sensor.
      */
     specific_header?: UltrasonicDetectionSpecificHeader | undefined;
-    /**
-     * List of ultrasonic detections.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** List of ultrasonic detections. */
     detection?: UltrasonicDetection[] | undefined;
     /**
      * List of ultrasonic indirect detections (sender and receiver sensors are
      * not the same).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     indirect_detection?: UltrasonicIndirectDetection[] | undefined;
 }
@@ -12510,29 +14769,40 @@ interface UltrasonicDetectionData {
  *
  * \image html OSI_USSensor_direct.svg
  *
- * \note Direct detecions lies on circles with the sensor as centre.
+ * \note Direct detections lie on circles with the sensor as center.
  */
 interface UltrasonicDetection {
     /**
      * Existence probability of the detection not based on history. Value does
      * not depend on any past experience with similar detections.
      *
-     * Range: [0.0, 1.0]
-     *
      * \note Used as confidence measure where a low value means less confidence
      * and a high value indicates strong confidence.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     existence_probability?: number | undefined;
     /**
      * ID of the detected object this detection is associated to.
      *
      * \note ID = MAX(uint64) indicates no reference to an object.
+     *
+     * \rules
+     * refers_to: DetectedObject
+     * \endrules
      */
     object_id?: Identifier | undefined;
     /**
      * Measured distance (radius) of the detection.
      *
-     * Unit: [m]
+     * Unit: m
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     distance?: number | undefined;
 }
@@ -12548,7 +14818,7 @@ interface UltrasonicDetection {
  *
  * \image html OSI_USSensor_indirect.svg
  *
- * \note Indirect detecions lies on ellipses with the sending resp. receiving
+ * \note Indirect detections lie on ellipses with the sending resp. receiving
  * sensor in the focal points.
  */
 interface UltrasonicIndirectDetection {
@@ -12556,28 +14826,35 @@ interface UltrasonicIndirectDetection {
      * Existence probability of the detection not based on history. Value does
      * not depend on any past experience with similar detections.
      *
-     * Range: [0.0, 1.0]
-     *
      * \note Used as confidence measure where a low value means less confidence
      * and a high value indicates strong confidence.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     existence_probability?: number | undefined;
     /**
      * ID of the detected object this detection is associated to.
      *
      * \note ID = MAX(uint64) indicates no reference to an object.
+     *
+     * \rules
+     * refers_to: DetectedObject
+     * \endrules
      */
     object_id?: Identifier | undefined;
     /**
      * First parameter b of an ellipsoid equation.
      *
-     * Unit: [m]
+     * Unit: m
      */
     ellipsoid_radial?: number | undefined;
     /**
      * Second parameter b of an ellipsoid equation.
      *
-     * Unit: [m]
+     * Unit: m
      */
     ellipsoid_axial?: number | undefined;
     /**
@@ -12598,6 +14875,10 @@ interface CameraDetectionSpecificHeader {
      * refer.
      *
      * \note This value has to be set if the list contains invalid points.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     number_of_valid_points?: number | undefined;
 }
@@ -12607,17 +14888,9 @@ interface CameraDetectionData {
     header?: SensorDetectionHeader | undefined;
     /** Additional header attributes of camera detection from one camera sensor. */
     specific_header?: CameraDetectionSpecificHeader | undefined;
-    /**
-     * List of camera detections.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** List of camera detections. */
     detection?: CameraDetection[] | undefined;
-    /**
-     * List of points which are used by detections.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** List of points which are used by detections. */
     point?: CameraPoint[] | undefined;
 }
 /** \brief Camera detection from the sensor. */
@@ -12626,16 +14899,23 @@ interface CameraDetection {
      * Existence probability of the detection not based on history. Value does
      * not depend on any past experience with similar detections.
      *
-     * Range: [0.0, 1.0]
-     *
      * \note Used as confidence measure where a low value means less confidence
      * and a high value indicates strong confidence.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     existence_probability?: number | undefined;
     /**
      * ID of the detected object this detection is associated to.
      *
      * \note ID = MAX(uint64) indicates no reference to an object.
+     *
+     * \rules
+     * refers_to: DetectedObject
+     * \endrules
      */
     object_id?: Identifier | undefined;
     /**
@@ -12652,12 +14932,10 @@ interface CameraDetection {
      * The defined shape is background.
      * The probability for this classification is at least
      * \c #shape_classification_probability.
-     *
-     * Range: [0.0, 1.0]
      */
     shape_classification_background?: boolean | undefined;
     /**
-     * The defined shape is foregroud.
+     * The defined shape is foreground.
      * The probability for this classification is at least
      * \c #shape_classification_probability.
      */
@@ -12783,18 +15061,30 @@ interface CameraDetection {
      */
     shape_classification_pedestrian_rear?: boolean | undefined;
     /**
-     * This probability defines the mininimum probability for each selected
+     * This probability defines the minimum probability for each selected
      * shape classification.
      *
-     * Range: [0.0, 1.0]
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     shape_classification_probability?: number | undefined;
-    /** The dominant color of the shape. */
+    /**
+     * The dominant color of the shape.
+     *
+     * \attention DEPRECATED: This color enum will be removed in version
+     * 4.0.0. Use the field \c #color_description (\c ColorDescription)
+     * instead.
+     */
     color?: CameraDetection_Color | undefined;
     /**
      * The probability of the shape's color.
      *
-     * Range: [0.0, 1.0]
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     color_probability?: number | undefined;
     /**
@@ -12810,10 +15100,21 @@ interface CameraDetection {
     /**
      * Number of points which defines the shape.
      * \c #image_shape_type may restrict the number of possible values.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     number_of_points?: number | undefined;
+    /** The dominant color of the shape. */
+    color_description?: ColorDescription | undefined;
 }
-/** Definition of shape dominant color. */
+/**
+ * Definition of shape dominant color.
+ *
+ * \attention DEPRECATED: This color enum will be removed in version
+ * 4.0.0. Use \c ColorDescription instead.
+ */
 declare enum CameraDetection_Color {
     /**
      * UNKNOWN - Color of the shape is unknown (must not be used in ground
@@ -12824,7 +15125,13 @@ declare enum CameraDetection_Color {
     OTHER = 1,
     /** BLACK - Shape with black color. */
     BLACK = 2,
-    /** GREY - Shape with grey color. */
+    /** GRAY - Shape with gray color. */
+    GRAY = 3,
+    /**
+     * GREY - Shape with gray color.
+     *
+     * \note Deprecated variant spelling of COLOR_GRAY
+     */
     GREY = 3,
     /** WHITE - Shape with white color. */
     WHITE = 4,
@@ -12861,7 +15168,7 @@ declare enum CameraDetection_ImageShapeType {
      * Allowed number of referenced points: 2 or 3
      *
      * Allowed number of referenced points = 2: first and third corner of
-     * the box. Box is alligned horizontal resp. vertical.
+     * the box. Box is aligned horizontal resp. vertical.
      *
      * Allowed number of referenced points = 3: first, second and third
      * corner of the box. fourth corner is calculated by first+third-second
@@ -12915,14 +15222,17 @@ interface CameraPoint {
      * Existence probability of the point not based on history. Value does
      * not depend on any past experience with similar points.
      *
-     * Range: [0.0, 1.0]
-     *
      * \note Used as confidence measure where a low value means less confidence
      * and a high value indicates strong confidence.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
      */
     existence_probability?: number | undefined;
     /**
-     * Measured point refered by one camera detection given in spherical
+     * Measured point referred by one camera detection given in spherical
      * coordinates in the sensor coordinate system.
      */
     point?: Spherical3d | undefined;
@@ -12930,27 +15240,272 @@ interface CameraPoint {
     point_rmse?: Spherical3d | undefined;
 }
 
+/** Definition of basic logical detection classifications. */
+declare enum LogicalDetectionClassification {
+    /** UNKNOWN - Logical detection is unknown (must not be used in ground truth). */
+    UNKNOWN = 0,
+    /** OTHER - Other (unspecified but known) logical detection. */
+    OTHER = 1,
+    /**
+     * INVALID - Invalid logical detection, not to be used for object tracking, of unspecified
+     * type (none of the other types applies).
+     */
+    INVALID = 2,
+    /** CLUTTER - Clutter (noise, spray, rain, fog etc.). */
+    CLUTTER = 3,
+    /** OVERDRIVABLE - Over-drivable (ground etc.). */
+    OVERDRIVABLE = 4,
+    /** UNDERDRIVABLE - Under-drivable (sign gantry etc.). */
+    UNDERDRIVABLE = 5
+}
+/**
+ * \brief Processed data from one or multiple sensors as a list of logical detections.
+ * Logical detections are derived from sensor detections in a logical model through processing steps like fusion filtering, tracking etc.
+ *
+ * All information is given with respect to the reference frame of the logical/virtual sensor
+ * \c SensorView::mounting_position (e.g. center of rear axle of the ego car) in Cartesian coordinates.
+ */
+interface LogicalDetectionData {
+    /**
+     * The interface version used by the sender (i.e. the simulation
+     * environment).
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    version?: InterfaceVersion | undefined;
+    /** Header attributes of fused detections from multiple sensors and sensor types. */
+    header?: LogicalDetectionDataHeader | undefined;
+    /**
+     * Logical detections consisting of transformed (and potentially fused)
+     * detections from one or multiple sensors and sensor types.
+     *
+     * The parent frame of a logical detection is the virtual sensor coordinate
+     * system specified by \c SensorView::mounting_position .
+     *
+     * /note The virtual sensor coordinate system is relative to the vehicle
+     * coordinate system which has its origin in the center of the rear axle of
+     * the ego vehicle. This means if virtual sensor mounting position and
+     * orientation are set to (0,0,0) the virtual sensor coordinate system
+     * coincides with the vehicle coordinate system.
+     */
+    logical_detection?: LogicalDetection[] | undefined;
+}
+/** \brief The header attributes of each sensor's logical detections list. */
+interface LogicalDetectionDataHeader {
+    /**
+     * Time stamp at which the transformation and optional fusion was finished in the global synchronized time.
+     *
+     * \note See \c SensorData::timestamp and
+     * \c SensorData::last_measurement_time for detailed discussions on the
+     * semantics of time-related fields.
+     */
+    logical_detection_time?: Timestamp | undefined;
+    /**
+     * Data Qualifier expresses to what extent the content of this event can be
+     * relied on.
+     */
+    data_qualifier?: LogicalDetectionDataHeader_DataQualifier | undefined;
+    /**
+     * The current number of valid detections in the logical detections list.
+     *
+     * \note This value has to be set if the list contains invalid logical detections.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
+     */
+    number_of_valid_logical_detections?: number | undefined;
+    /**
+     * The ID(s) of the sensor(s) that produced the detections for transformation
+     * and - in case of multiple sensors - fusion into logical detections.
+     */
+    sensor_id?: Identifier[] | undefined;
+}
+/**
+ * Data qualifier communicates the overall availability of the
+ * interface.
+ */
+declare enum LogicalDetectionDataHeader_DataQualifier {
+    /** UNKNOWN - Unknown (must not be used in ground truth). */
+    UNKNOWN = 0,
+    /** OTHER - Other (unspecified but known). */
+    OTHER = 1,
+    /** AVAILABLE - Data is available. */
+    AVAILABLE = 2,
+    /** AVAILABLE_REDUCED - Reduced data is available. */
+    AVAILABLE_REDUCED = 3,
+    /** NOT_AVAILABLE - Data is not available. */
+    NOT_AVAILABLE = 4,
+    /** BLINDNESS - Sensor is blind. */
+    BLINDNESS = 5,
+    /** TEMPORARY_AVAILABLE - Sensor temporary available. */
+    TEMPORARY_AVAILABLE = 6,
+    /** INVALID - Sensor invalid. */
+    INVALID = 7
+}
+/** \brief A logical detection that could be based on multiple sensors and sensor types. */
+interface LogicalDetection {
+    /**
+     * Existence probability of the logical detection
+     *
+     * \note Use as confidence measure where a low value means less confidence
+     * and a high value indicates strong confidence.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
+     */
+    existence_probability?: number | undefined;
+    /**
+     * ID of the detected object this logical detection is associated to.
+     *
+     * \note ID = MAX(uint64) indicates no reference to an object.
+     *
+     * \rules
+     * refers_to: DetectedObject
+     * \endrules
+     */
+    object_id?: Identifier | undefined;
+    /**
+     * Measured position of the logical detection given in cartesian coordinates
+     * in the virtual sensor coordinate system.
+     *
+     * Unit: m
+     */
+    position?: Vector3d | undefined;
+    /** Root mean squared error of the measured position of the logical detection. */
+    position_rmse?: Vector3d | undefined;
+    /**
+     * Velocity of the logical detection given in cartesian coordinates in the
+     * virtual sensor coordinate system.
+     *
+     * Unit: m/s
+     */
+    velocity?: Vector3d | undefined;
+    /**
+     * Root mean squared error of the logical detection's velocity.
+     *
+     * Unit: m/s
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
+     */
+    velocity_rmse?: Vector3d | undefined;
+    /**
+     * Intensity or equivalent value of the logical detection's echo.
+     *
+     * Unit: %
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 100
+     * \endrules
+     */
+    intensity?: number | undefined;
+    /**
+     * The signal to noise ratio (SNR) of the logical detection.
+     *
+     * Unit: dB
+     */
+    snr?: number | undefined;
+    /**
+     * Describes the possibility whether more than one object may have led to
+     * this logical detection.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 1
+     * \endrules
+     */
+    point_target_probability?: number | undefined;
+    /**
+     * The ID(s) of the sensor(s) that produced the detection(s) for transformation
+     * and - in case of multiple sensors - fusion into the single logical detection.
+     *
+     * \note One logical detection can originate from multiple sensors.
+     */
+    sensor_id?: Identifier[] | undefined;
+    /** Basic classification of the logical detection. */
+    classification?: LogicalDetectionClassification | undefined;
+    /**
+     * Echo pulse width of the logical detection's echo.
+     * Several sensors output an echo pulse width instead of an intensity for each individual detection.
+     * The echo pulse is measured in m and measures the extent of the object parts or atmospheric particles that produce the echo.
+     * \note For more details see [1] Fig. 7 and 8.
+     * \note Fig. 7 shows an example where the two echos are reflected from the edges A-B and C-D.
+     * \note Fig. 8 shows how the echo pulse width is measured as the range between the rising edge and the falling edge that crosses the intensity threshold.
+     *
+     * Unit: m
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
+     *
+     * \par Reference:
+     * [1] Rosenberger, P., Holder, M.F., Cianciaruso, N. et al. (2020). <em>Sequential lidar sensor system simulation: a modular approach for simulation-based safety validation of automated driving</em> Automotive Engine Technology 5, Fig 7, Fig 8. Retrieved May 10, 2021, from https://doi.org/10.1007/s41104-020-00066-x
+     */
+    echo_pulse_width?: number | undefined;
+}
+
 /**
  * \brief The conditions of the environment.
  *
  * Definition of light, weather conditions and other environmental conditions.
+ *
+ * \note These conditions apply locally around the host vehicle.
  */
 interface EnvironmentalConditions {
     /** The ambient illumination of the environment. */
     ambient_illumination?: EnvironmentalConditions_AmbientIllumination | undefined;
-    /** The time of day. */
+    /** The time of day at the host vehicles location. */
     time_of_day?: EnvironmentalConditions_TimeOfDay | undefined;
     /**
-     * Atmospheric pressure in Pascal at z=0.0 in world frame (about 101325
-     * [Pa]).
+     * The unix timestamp describes the time and date at the host vehicle's
+     * location, referring to UTC.
      *
-     * Unit: [Pa]
+     * The Unix epoch (or Unix time or POSIX time or Unix timestamp) is
+     * the number of seconds that have elapsed since January 1, 1970
+     * (midnight UTC/GMT [1]), not counting leap seconds [2].
+     * Historically, the origin of UNIX system time was referred to as
+     * "00:00:00 GMT, January 1, 1970" [2]. Literally speaking the epoch
+     * is Unix time 0 (midnight 1/1/1970), but 'epoch' is often used as
+     * a synonym for 'Unix time'. Many Unix systems store epoch dates as
+     * a signed 32-bit integer, which might cause problems on January 19,
+     * 2038 (known as the Year 2038 problem or Y2038).
+     *
+     * \note You can convert the timestamp using the following [routines
+     * sorted by languages](https://www.epochconverter.com/#code).
+     *
+     * \par References:
+     * [1] ITU Radiocommunication Assembly. (2002). <em>Recommendation  ITU-R  TF.460-6 Standard-frequency and time-signal emissions</em>. (Rec.  ITU-R  TF.460-6). Retrieved January 25, 2020, from http://www.itu.int/dms_pubrec/itu-r/rec/tf/R-REC-TF.460-6-200202-I!!PDF-E.pdf \n
+     * [2] The Open Group. (2018). <em>POSIX.1-2017</em> The Open Group Base Specifications Issue 7, 2018 edition. IEEE Std 1003.1-2017 (Revision of IEEE Std 1003.1-2008). Retrieved January 25, 2020, from https://pubs.opengroup.org/onlinepubs/9699919799/xrat/contents.html
+     */
+    unix_timestamp?: number | undefined;
+    /**
+     * Atmospheric pressure in Pascal at z=0.0 in world frame (about 101325
+     * Pa).
+     *
+     * Unit: Pa
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 80000
+     * is_less_than_or_equal_to: 120000
+     * \endrules
      */
     atmospheric_pressure?: number | undefined;
     /**
      * Temperature in Kelvin at z=0.0 in world frame.
      *
-     * Unit: [K]
+     * Unit: K
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 170
+     * is_less_than_or_equal_to: 340
+     * \endrules
      */
     temperature?: number | undefined;
     /**
@@ -12960,22 +15515,44 @@ interface EnvironmentalConditions {
      * humidity can be easily derived from relative_humidity, given that the
      * temperature and atmospheric_pressure are known.
      *
-     * Unit: [%]
+     * Unit: %
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than_or_equal_to: 100
+     * \endrules
      */
     relative_humidity?: number | undefined;
     /** Description of the precipitation. */
     precipitation?: EnvironmentalConditions_Precipitation | undefined;
     /** Description of the fog. */
     fog?: EnvironmentalConditions_Fog | undefined;
+    /**
+     * Optional external reference to the environmental condition sources.
+     *
+     * \note For OpenDRIVE and OpenSCENARIO there is no direct counterpart.
+     *
+     * \note For non-ASAM standards, it is implementation-specific how
+     *       source_reference is resolved.
+     *
+     * \note The value has to be repeated because one object may be derived
+     *       from more than one origin source, for example, from a scenario file
+     *       and from sensors.
+     */
+    source_reference?: ExternalReference[] | undefined;
+    /** Description of the clouds. */
+    clouds?: EnvironmentalConditions_CloudLayer | undefined;
+    /** Description of the wind. */
+    wind?: EnvironmentalConditions_Wind | undefined;
+    /** Description of the sun. */
+    sun?: EnvironmentalConditions_Sun | undefined;
 }
 /**
  * Definition of discretized precipitation states according to [1].
- * (I = Intensity of precipitation in mm per hour [mm/h])
+ * (I = Intensity of precipitation in mm per hour mm/h)
  *
- * \par References:
- * - [1] PAULAT, Marcus, et al. A gridded dataset of hourly precipitation
- * in Germany: Its construction, climatology and application.
- * Meteorologische Zeitschrift, 2008, 17. Jg. Nr. 6, S. 719-732.
+ * \par Reference:
+ * [1] Paulat, M., Frei, C., Hagen, M. & Wernli, H. (2008). A gridded dataset of hourly precipitation in Germany: Its construction, climatology and application. <em>Meteorologische Zeitschrift</em>. Vol. 17, No. 6. pp. 719-732. Berlin, Stuttgart, Germany. https://doi.org/10.1127/0941-2948/2008/0332
  */
 declare enum EnvironmentalConditions_Precipitation {
     /**
@@ -12985,26 +15562,26 @@ declare enum EnvironmentalConditions_Precipitation {
     UNKNOWN = 0,
     /** OTHER - Other (unspecified but known) intensity of precipitation. */
     OTHER = 1,
-    /** NONE - No precipitation, when I in [0,0.1[ [mm/h] */
+    /** NONE - No precipitation, when I in [0,0.1[ mm/h */
     NONE = 2,
-    /** VERY_LIGHT - Very light intensity of precipitation, when I in [0.1,0.5[ [mm/h] */
+    /** VERY_LIGHT - Very light intensity of precipitation, when I in [0.1,0.5[ mm/h */
     VERY_LIGHT = 3,
-    /** LIGHT - Light intensity of precipitation, when I in [0.5,1.9[ [mm/h] */
+    /** LIGHT - Light intensity of precipitation, when I in [0.5,1.9[ mm/h */
     LIGHT = 4,
-    /** MODERATE - Moderate intensity of precipitation, when I in [1.9,8.1[ [mm/h] */
+    /** MODERATE - Moderate intensity of precipitation, when I in [1.9,8.1[ mm/h */
     MODERATE = 5,
-    /** HEAVY - Heavy intensity of precipitation, when I in [8.1,34[ [mm/h] */
+    /** HEAVY - Heavy intensity of precipitation, when I in [8.1,34[ mm/h */
     HEAVY = 6,
-    /** VERY_HEAVY - Very heavy intensity of precipitation, when I in [34,149[ [mm/h] */
+    /** VERY_HEAVY - Very heavy intensity of precipitation, when I in [34,149[ mm/h */
     VERY_HEAVY = 7,
-    /** EXTREME - Extreme intensity of precipitation, when I in [149,infinity[ [mm/h] */
+    /** EXTREME - Extreme intensity of precipitation, when I in [149,infinity[ mm/h */
     EXTREME = 8
 }
 /**
- * Definition of discretized fog states according to [2].
+ * Definition of discretized fog states according to [1].
  * The bandwidth of thick and dense fog was adjusted to fit the German StVO
- * regarding rear fog lights [3].
- * (V = Visibility in meters [m])
+ * regarding rear fog lights [2, 3].
+ * (V = Visibility in m)
  *
  * Visibility is defined as the length of the atmosphere over which a beam
  * of light travels before its luminous flux is reduced to 5% of its
@@ -13013,34 +15590,32 @@ declare enum EnvironmentalConditions_Precipitation {
  * contrast of a distant object against its background.
  *
  * \par References:
- * - [2] SHEPARD, Frank D. Reduced visibility due to fog on the highway.
- * Transportation Research Board, 1996.
- * - [3] [StVO 17 chapter
- * 3](https://www.stvo.de/strassenverkehrsordnung/101-17-beleuchtung)
- * - [4] [Homepage of the Meteorological
- * Office](http://www.metoffice.gov.uk/guide/weather/observations-guide/how-we-measure-visibility)
+ * [1] Shepard, F. D. (1996). <em>Reduced visibility due to fog on the highway.</em> Transportation Research Board, National Research Council (Ed.). National Academy Press. Washington, D.C., USA. ISBN 0-309-06006-0. \n
+ * [2] Strassenverkehrs-Ordnung (StVO) as of dated  March 06, 2013 (BGBl. I S. 367), lastly changed by article 4a of the order from June 06, 2019 (BGBl. I S. 756). \n
+ * [3] stvo.de. (2013, April 01). <em>StVO Par. 17 Beleuchtung</em>. Retrieved January 25, 2020, from https://www.stvo.de/strassenverkehrsordnung/101-17-beleuchtung \n
+ * [4] Meteorological Office UK. (2020). <em>Homepage of the Meteorological Office - How we measure visibility</em>. Retrieved January 25, 2020, from http://www.metoffice.gov.uk/guide/weather/observations-guide/how-we-measure-visibility
  */
 declare enum EnvironmentalConditions_Fog {
-    /** UNKOWN - Visibility is unknown (must not be used in ground truth). */
-    UNKOWN = 0,
+    /** UNKNOWN - Visibility is unknown (must not be used in ground truth). */
+    UNKNOWN = 0,
     /** OTHER - Other (unspecified but known) fog intensity. */
     OTHER = 1,
-    /** EXCELLENT_VISIBILITY - Excellent visibility, when V in [40000,infinity[ [m] */
+    /** EXCELLENT_VISIBILITY - Excellent visibility, when V in [40000,infinity[ m */
     EXCELLENT_VISIBILITY = 2,
-    /** GOOD_VISIBILITY - Good visibility, when V in [10000,40000[ [m] */
+    /** GOOD_VISIBILITY - Good visibility, when V in [10000,40000[ m */
     GOOD_VISIBILITY = 3,
-    /** MODERATE_VISIBILITY - Moderate visibility, when V in [4000,10000[ [m] */
+    /** MODERATE_VISIBILITY - Moderate visibility, when V in [4000,10000[ m */
     MODERATE_VISIBILITY = 4,
-    /** POOR_VISIBILITY - Poor visibility, when V in [2000,4000[ [m] */
+    /** POOR_VISIBILITY - Poor visibility, when V in [2000,4000[ m */
     POOR_VISIBILITY = 5,
-    /** MIST - Mist, when V in [1000,2000[ [m] */
+    /** MIST - Mist, when V in [1000,2000[ m */
     MIST = 6,
-    /** LIGHT - Fog, when V in [200,1000[ [m] */
+    /** LIGHT - Fog, when V in [200,1000[ m */
     LIGHT = 7,
-    /** THICK - Thick fog, when V in [50,200[ [m] */
+    /** THICK - Thick fog, when V in [50,200[ m */
     THICK = 8,
     /**
-     * DENSE - Dense fog, when V in [0,50[ [m]
+     * DENSE - Dense fog, when V in [0,50[ m
      * (allowed to use rear fog light according to [3])
      */
     DENSE = 9
@@ -13051,30 +15626,24 @@ declare enum EnvironmentalConditions_Fog {
  * emitted by the vehicle itself. It can include sun/moon light, light from
  * other cars, street lights etc.
  *
- * Lux [lx] is the SI unit of luminance or illumination of an area of exact
- * one square meter, which is equal to one lumen per square meter 1 [lx] =
- * 1 [lm/m^2] [5].
- * The lumen [lm] is the SI derived unit of luminous flux and a measure of
+ * lx ("lux") is the SI unit of luminance or illumination of an area of exact
+ * one square meter, which is equal to one lumen per square meter 1 lx =
+ * 1 lm/m^2 [1].
+ * lm ("lumen") is the SI derived unit of luminous flux and a measure of
  * the total quantity of visible light emitted by a source. The lumen is
- * defined in relation to the candela [cd] as 1 [lm] =1 [cd sr] where [sr]
+ * defined in relation to cd ("candela") as 1 lm = 1 cd sr, where sr
  * denotes steradian, the unit of solid angle used in 3D geometry analogous
- * to the radian.
+ * to the radian [1].
  *
  * Categorization is done based on natural day/night time illuminance levels
- * [6] and standards for required lighting levels on roads [6, 7, 8, 9].
+ * [2] and standards for required lighting levels on roads [2, 3, 4, 5].
  *
  * \par References:
- * - [5] [The NIST Reference on Constants, Units, and
- * Uncertainty](https://physics.nist.gov/cuu/Units/units.html)
- * - [6] [National Optical Astronomy
- * Observatory](https://www.noao.edu/education/QLTkit/ACTIVITY_Documents/Safety/LightLevels_outdoor+indoor.pdf)
- * - [7] [Standards for required street lighting in the
- * USA](http://www.wsdot.wa.gov/research/reports/fullreports/847.1.pdf)
- * - [8] [Canadian IES-RP-8 standards for road lighting - municipality of
- * Saint-Gedeon-de-.
- * Beauce](http://sslnet.ca/wp-content/uploads/2011/10/LTE-RT-2011-0076-Anglais.pdf)
- * - [9] [European standards for road
- * lighting](http://courtneystrong.com/wp-content/uploads/2017/07/css-sl1-class-and-quality-of-street-lighting.pdf)
+ * [1] DIN Deutsches Institut fuer Normung e. V. (1982). <em>DIN 5031-3 Strahlungsphysik im optischen Bereich und Lichttechnik - Groessen, Formelzeichen und Einheiten der Lichttechnik</em>. (DIN 5031-3:1982-03). Berlin, Germany. \n
+ * [2] National Optical Astronomy Observatory. (2015, December 02). <em>Recommended Light Levels</em>. Retrieved January 25, 2020, from https://www.noao.edu/education/QLTkit/ACTIVITY_Documents/Safety/LightLevels_outdoor+indoor.pdf \n
+ * [3] Wang, Y. & Zou, Y., (2016, March). <em>Study on Illumination for State Highways</em>. Washington State Department of Transportation. Retrieved January 25, 2020, from http://www.wsdot.wa.gov/research/reports/fullreports/847.1.pdf \n
+ * [4] Laperriere, A. (2011, May). <em>LED street lighting in the municipality of Saint-Gedeon-de-Beauce within the framework of advanced lighting technologies</em>. Retrieved January 25, 2020, from http://sslnet.ca/wp-content/uploads/2011/10/LTE-RT-2011-0076-Anglais.pdf \n
+ * [5] Crabb, G. I., Beaumont, R. & Webster, D. (2008, October 17). <em>Review of the class and quality of street lighting</em>. Transport Research Laboratory. Retrieved January 25, 2020, from http://courtneystrong.com/wp-content/uploads/2017/07/css-sl1-class-and-quality-of-street-lighting.pdf
  */
 declare enum EnvironmentalConditions_AmbientIllumination {
     /** UNKNOWN - Ambient illumination is unknown (must not be used in ground truth). */
@@ -13082,73 +15651,1364 @@ declare enum EnvironmentalConditions_AmbientIllumination {
     /** OTHER - Other (unspecified but known) ambient illumination. */
     OTHER = 1,
     /**
-     * LEVEL1 - Level 1 illumination in ]0.001, 0.01[ [lx]
+     * LEVEL1 - Level 1 illumination in ]0.001, 0.01[ lx. \n
      * E.g. Night with no artificial light.
      *
      * \note Use \c #AMBIENT_ILLUMINATION_LEVEL1 if illumination is less
-     * than 0.001 [lx]
+     * than 0.001 lx.
      */
     LEVEL1 = 2,
     /**
-     * LEVEL2 - Level 2 illumination in [0.01, 1[ [lx]
+     * LEVEL2 - Level 2 illumination in [0.01, 1[ lx. \n
      * E.g. Night full moon / Deep twilight.
      */
     LEVEL2 = 3,
     /**
-     * LEVEL3 - Level 3 illumination in [1, 3[ [lx]
+     * LEVEL3 - Level 3 illumination in [1, 3[ lx. \n
      * E.g. Deep to average twilight / Minimum lighting on local low
      * pedestrian conflict roads.
      */
     LEVEL3 = 4,
     /**
-     * LEVEL4 - Level 4 illumination in [3, 10[ [lx]
+     * LEVEL4 - Level 4 illumination in [3, 10[ lx. \n
      * E.g. Average to full twilight / Minimum lighting on collector roads /
      * Minimum lighting on major and expressway roads with low to average
      * pedestrian conflict.
      */
     LEVEL4 = 5,
     /**
-     * LEVEL5 - Level 5 illumination in [10, 20[ [lx]
+     * LEVEL5 - Level 5 illumination in [10, 20[ lx. \n
      * E.g. Minimum lighting on major and expressway roads with high
      * pedestrian conflict.
      */
     LEVEL5 = 6,
     /**
-     * LEVEL6 - Level 6 illumination in [20, 400[ [lx]
+     * LEVEL6 - Level 6 illumination in [20, 400[ lx. \n
      * E.g. Roads with more lighting / Very dark overcast day to sunrise or
      * sunset on a clear day.
      */
     LEVEL6 = 7,
     /**
-     * LEVEL7 - Level 7 illumination in [400, 1000[ [lx]
+     * LEVEL7 - Level 7 illumination in [400, 1000[ lx. \n
      * E.g. Sunrise or sunset on a clear day / Overcast day.
      */
     LEVEL7 = 8,
     /**
-     * LEVEL8 - Level 8 illumination in [1000, 10000[ [lx]
+     * LEVEL8 - Level 8 illumination in [1000, 10000[ lx. \n
      * E.g. Average to full daylight.
      */
     LEVEL8 = 9,
     /**
-     * LEVEL9 - Level 9 illumination in [10000, 120000[ [lx]
+     * LEVEL9 - Level 9 illumination in [10000, 120000[ lx. \n
      * E.g. Full daylight to intense sunlight.
      *
      * \note Use \c #AMBIENT_ILLUMINATION_LEVEL9 if illumination is more
-     * than 120000 [lx]
+     * than 120000 lx
      */
     LEVEL9 = 10
 }
-/** \brief The time of day at the location of the vehicle. */
+/**
+ * \brief The time of day at a specified location.
+ *
+ * \note In general the global position of the parent frame should be
+ * obtainable in order to derive the local time.
+ * This information can be calculated from the \c #unix_timestamp in
+ * combination with \c #osi3::GroundTruth::proj_string and the position of
+ * the corresponding \c #osi3::BaseStationary or \c #osi3::BaseMoving .
+ */
 interface EnvironmentalConditions_TimeOfDay {
     /**
-     * The number of seconds [s] that have passed since midnight local time.
-     * Used for determining the current state of the circadian rhythm of a
-     * driver.
+     * The number of seconds in s that have passed since midnight local time.
+     * Used e.g. for determining the current state of the circadian rhythm
+     * of a driver.
      *
      * \note No changes of daylight saving time or time zones are
      * considered.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * is_less_than: 86400
+     * \endrules
      */
     seconds_since_midnight?: number | undefined;
+}
+/** \brief Description of a cloud layer. */
+interface EnvironmentalConditions_CloudLayer {
+    /** Properties of a cloud layer given by fractional cloud cover levels. */
+    fractional_cloud_cover?: EnvironmentalConditions_CloudLayer_FractionalCloudCover | undefined;
+}
+/**
+ * Defines the fractional cloud cover [1] given by observation of total cloud amount in eights (oktas) of the sky.
+ *
+ * For visual alignment please see reference [2].
+ *
+ * The total degree of coverage indicates how much of the sky is covered with clouds altogether.
+ * 0 oktas means that there are no traces of clouds in the sky,
+ * 8 oktas means that the sky is completely covered with clouds and no sky blue can be recognized.
+ *
+ * \par References:
+ * [1] CIE engl. International Commission on Illumination. (2020). <em>CIE S017:2020 ILV: Intl. Lighting Vocabulary, 2nd edn.</em>. Retrieved March 8, 2022, from https://cie.co.at/eilvterm/17-29-116 \n
+ * [2] UBC The University of British Columbia. (2018). <em>ATSC 113 Weather for Sailing, Flying & Snow Sports</em>. Retrieved March 8, 2022, from https://www.eoas.ubc.ca/courses/atsc113/flying/met_concepts/01-met_concepts/01c-cloud_coverage/index.html
+ */
+declare enum EnvironmentalConditions_CloudLayer_FractionalCloudCover {
+    /** UNKNOWN - Fractional cloud cover level is unknown (must not be used in ground truth). */
+    UNKNOWN = 0,
+    /** OTHER - Other (unspecified but known) fractional cloud cover level. */
+    OTHER = 1,
+    /** ZERO_OKTAS - 0/8 of the sky is covered with clouds. */
+    ZERO_OKTAS = 2,
+    /** ONE_OKTAS - 1/8 of the sky is covered with clouds. */
+    ONE_OKTAS = 3,
+    /** TWO_OKTAS - 2/8 of the sky is covered with clouds. */
+    TWO_OKTAS = 4,
+    /** THREE_OKTAS - 3/8 of the sky is covered with clouds. */
+    THREE_OKTAS = 5,
+    /** FOUR_OKTAS - 4/8 of the sky is covered with clouds. */
+    FOUR_OKTAS = 6,
+    /** FIVE_OKTAS - 5/8 of the sky is covered with clouds. */
+    FIVE_OKTAS = 7,
+    /** SIX_OKTAS - 6/8 of the sky is covered with clouds. */
+    SIX_OKTAS = 8,
+    /** SEVEN_OKTAS - 7/8 of the sky is covered with clouds. */
+    SEVEN_OKTAS = 9,
+    /** EIGHT_OKTAS - 8/8 of the sky is covered with clouds. */
+    EIGHT_OKTAS = 10,
+    /** SKY_OBSCURED - Sky obscured, describes situations where the sky is not perceivable, e.g. in dense fog. */
+    SKY_OBSCURED = 11
+}
+/** \brief Defines wind properties. */
+interface EnvironmentalConditions_Wind {
+    /**
+     * The origin direction of the wind (not the target direction) in the ground/xy-plane of the
+     * world coordinate system. Corresponds to the heading/yaw angle, counted counterclockwise.
+     * 0 pointing north. If north is not explicitly defined via \c #osi3::GroundTruth::proj_string,
+     * then north is pointing in y-axis direction. The default orientation (x, y, z) is easting, northing, up [1].
+     *
+     * \note 0: north; +pi/2: west; pi: south, 3/2 pi: east.
+     *
+     * Unit: rad
+     *
+     * The preferred angular range is [0, 2pi].
+     *
+     * \par References:
+     * [1] PROJ contributors. (2019). <em>PROJ coordinate transformation software library</em>. Open Source Geospatial Foundation. Retrieved January 25, 2019, from https://proj.org/usage/projections.html
+     */
+    origin_direction?: number | undefined;
+    /**
+     * The wind speed.
+     *
+     * Unit: m/s
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
+     */
+    speed?: number | undefined;
+}
+/** \brief Properties of the sun. */
+interface EnvironmentalConditions_Sun {
+    /**
+     * Azimuth of the sun, counted counterclockwise.
+     * 0 pointing north. If north is not explicitly defined via \c #osi3::GroundTruth::proj_string,
+     * then north is pointing in y-axis direction. The default orientation (x, y, z) is easting, northing, up [1].
+     * The point of observation is defined to be the global coordinate system's origin.
+     *
+     * \note 0: north; +pi/2: west; pi: south, 3/2 pi: east.
+     *
+     * Unit: rad
+     *
+     * The preferred angular range is [0, 2pi].
+     *
+     * \par References:
+     * [1] PROJ contributors. (2019). <em>PROJ coordinate transformation software library</em>. Open Source Geospatial Foundation. Retrieved January 25, 2019, from https://proj.org/usage/projections.html
+     */
+    azimuth?: number | undefined;
+    /**
+     * Solar elevation angle.
+     * The elevation angle is positive when the sun is above the xy-plane, negative when
+     * the sun is below the xy-plane.
+     * The point of observation is defined to be the global coordinate system's origin.
+     *
+     * \note 0: xy-plane; +pi/2: zenith; -pi/2: nadir.
+     *
+     * Unit: rad
+     *
+     * The preferred angular range is [-pi/2, +pi/2].
+     */
+    elevation?: number | undefined;
+    /**
+     * Illuminance of the sun, direct sunlight is around 100000 lx.
+     *
+     * Unit: lx
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
+     */
+    intensity?: number | undefined;
+}
+
+/**
+ * \brief Boundary line of a LogicalLane
+ *
+ * Similar to a LaneBoundary, but with a reference line and ST positions.
+ *
+ * A logical lane boundary describes the boundary between two logical lanes. As
+ * such, there will always be exactly one logical lane boundary between two
+ * lanes at a given S position. Contrary to that, there can be 0 to N physical
+ * lane boundaries (i.e. type LaneBoundary) between two logical lanes at a
+ * given S position.
+ *
+ * If there are multiple physical lane boundaries at one S position between two
+ * lanes (think of a solid-broken marking, which would be described by two
+ * LaneBoundary objects, one for the solid lane marking, one for the broken lane
+ * marking), then the single LogicalLaneBoundary describing the boundary between
+ * two logical lanes should be between the physical boundaries.
+ *
+ * A logical lane boundary consists of a list of \link LogicalBoundaryPoint
+ * LogicalBoundaryPoints\endlink. Each point has a XYZ and an ST coordinate.
+ * The XYZ coordinates describe the position and height of the boundary in the
+ * world.
+ *
+ * Notes on design decisions:
+ * - The LogicalLaneBoundary has ST coordinates, and is thus a separate type
+ *   from LaneBoundary.
+ *   Advantages of this decision:
+ *   - Calculations like getting the lane width at a position are easy, since
+ *     one can just get the boundary points of the left and right boundary at
+ *     the desired S position (via linear interpolation), and calculate the
+ *     width from the two points. Also getting something like the distance to
+ *     the lane border is very easy.
+ *   - No centerline of the lane is necessary, since this can very easily be
+ *     generated from the boundaries.
+ *   Disadvantages of this decision:
+ *   - %Lane boundaries cannot be shared with physical lanes. This results in
+ *     more data needed. This can mostly be mitigated by only transmitting the
+ *     lane boundaries during initialization (e.g. via the OSMP GroundTruthInit
+ *     message).
+ * - The LogicalLaneBoundary contains all data directly which an agent model is
+ *   likely to need. It does not include information normally only used by
+ *   sensor models (e.g. the exact length of the color markings on the road).
+ *   This information can be gotten from the physical lane referenced in the
+ *   LogicalLane, if needed.
+ */
+interface LogicalLaneBoundary {
+    /**
+     * The ID of the lane boundary.
+     *
+     * \rules
+     * is_globally_unique
+     * is_set
+     * \endrules
+     */
+    id?: Identifier | undefined;
+    /**
+     * Points making up the lane boundary.
+     *
+     * The boundary must be defined in the same direction as the reference
+     * line. So S positions should increase along the line. Note that S
+     * positions will not always increase strictly monotonically.
+     * Example:
+     * <pre>
+     *                |---------\
+     *                |          \
+     *  /---boundary--|           \\------------
+     * /
+     * ---------- reference line --------------
+     * </pre>
+     * At the place where the boundary suddenly increases, two points will have
+     * the same S coordinate.
+     *
+     * If the boundary approximates a curve (e.g. a cubic function in
+     * OpenDRIVE), the points must be chosen in a way that the lateral distance
+     * to the ideal line does not exceed 5cm. As shown in the following image:
+     *
+     * \image html line_approximation_error.svg "Approximation error"
+     * Approximation error green line.
+     *
+     * The Z error (difference in Z height between #boundary_line and the
+     * "real" line) must not exceed 2cm. This is a stricter requirement than
+     * for errors in the XY plane, because Z differences between lanes
+     * influence driving very much.
+     *
+     * Note: if two lanes have different Z heights (e.g. a driving lane is
+     * beside a sidewalk, where the sidewalk is 10cm higher than the road),
+     * then these lanes cannot share a boundary, since their boundaries have
+     * different Z heights.
+     */
+    boundary_line?: LogicalLaneBoundary_LogicalBoundaryPoint[] | undefined;
+    /**
+     * The reference line for this boundary.
+     *
+     * The reference line is used as a coordinate system for this boundary.
+     * All points of this LogicalLaneBoundary must have S coordinates in the
+     * range [\c sStart,\c sEnd].
+     *
+     * The reference line should roughly have the same shape as the boundary (so
+     * roughly parallel to the lane middle), so that S coordinates continually
+     * increase along the boundary.
+     *
+     * \rules
+     * refers_to: ReferenceLine
+     * \endrules
+     */
+    reference_line_id?: Identifier | undefined;
+    /**
+     * Reference to the physical lane boundary or boundaries that make up this
+     * logical boundary.
+     *
+     * Rules and notes:
+     * - This list is empty if there are no physical lane boundaries to delimit
+     *   a lane.
+     * - In the common case, this will contain one physical boundary.
+     * - This list contains several lane boundaries if there are several physical
+     *   lane boundaries at one S position (e.g. both a broken and a solid
+     *   line).
+     * - If there are several lane boundaries, they must be listed in increasing
+     *   T order (i.e. from right to left in reference line direction).
+     *   Rationale: this makes it easier to determine e.g. rules on lane
+     *   changes, which depend on the T order of the lanes.
+     * - Whenever physical lane boundaries begin or end, or switch their T
+     *   position (if there are multiple physical lane boundaries), a new
+     *   LogicalLaneBoundary must be created.
+     * - The referenced LaneBoundary objects may be longer than the
+     *   LogicalLaneBoundary which references them, but must never be shorter.
+     *
+     * Example:
+     * <pre>
+     *       Lane 1
+     *  --------a------------------ - - - -c- - - -           ----&gt;
+     *  \- - - -b- - - -
+     *       Lane -1
+     * </pre>
+     *
+     * This shows the boundary between lane 1 and lane -1, with the reference
+     * line going from left to right. First there is a solid-broken line (a and
+     * b), then there is only a solid line (a), then there is a broken line
+     * (c). There would be three LogicalLaneBoundary objects between Lane1 and
+     * Lane2: the first would reference first b and then a, the second would
+     * reference only a, and the third would reference c.
+     *
+     * \rules
+     * refers_to: LaneBoundary
+     * \endrules
+     */
+    physical_boundary_id?: Identifier[] | undefined;
+    /**
+     * The passing rules, insomuch as they can be determined just from road
+     * markings.
+     */
+    passing_rule?: LogicalLaneBoundary_PassingRule | undefined;
+    /**
+     * Optional external reference to the lane boundary source.
+     *
+     * \note For OpenDRIVE, there is no direct possibility to reference the
+     *       RoadMark, as there is no unique identifier in this sub-object.
+     *
+     * \note For non-ASAM Standards, it is implementation-specific how
+     *       source_reference is resolved.
+     *
+     * \note The value has to be repeated because one object may be derived
+     *       from more than one origin source, for example, from a scenario file
+     *       and from sensors.
+     */
+    source_reference?: ExternalReference[] | undefined;
+}
+/**
+ * Passing rule of the LogicalLaneBoundary.
+ *
+ * This describes how vehicles are legally allowed to move across the
+ * LogicalLaneBoundary. The PassingRule is determined solely based
+ * on the semantics of (physical) lane boundaries, not on any signs
+ * (i.e. it may be overridden by signs).
+ */
+declare enum LogicalLaneBoundary_PassingRule {
+    /** UNKNOWN - Passing rule is unknown (must not be used in ground truth). */
+    UNKNOWN = 0,
+    /**
+     * OTHER - Passing rule fits neither of the other categories.
+     *
+     * Example: this type needs to be used if passing depends on the agent
+     * type, e.g. if cars may change lane, but trucks may not.
+     *
+     * This value is also used between LogicalLanes where the traffic
+     * regulations do not say anything about passing rules (e.g. for a
+     * LogicalLaneBoundary between LogicalLanes of TYPE_NORMAL
+     * and TYPE_CURB or between LogicalLanes of TYPE_BORDER and
+     * TYPE_SHOULDER) .
+     */
+    OTHER = 1,
+    /**
+     * NONE_ALLOWED - No passing is allowed (neither from left to right nor from right to
+     * left).
+     */
+    NONE_ALLOWED = 2,
+    /**
+     * INCREASING_T - Only passing in increasing T direction allowed. Passing is allowed
+     * from one lane to the other if the points on the target lane have
+     * larger T values than points on the source lane (at the same S
+     * position). In reference line direction (but not necessarily in
+     * driving direction), this means changing from right to left is
+     * allowed.
+     */
+    INCREASING_T = 3,
+    /**
+     * DECREASING_T - Only passing in decreasing T direction allowed. Passing is allowed
+     * from one lane to the other if the points on the target lane have
+     * smaller T values than points on the source lane (at the same S
+     * position). In reference line direction (but not necessarily in
+     * driving direction), this means changing from left to right is
+     * allowed.
+     */
+    DECREASING_T = 4,
+    /**
+     * BOTH_ALLOWED - Passing is allowed in both directions (left to right and right to
+     * left).
+     */
+    BOTH_ALLOWED = 5
+}
+/** \brief A point on the boundary */
+interface LogicalLaneBoundary_LogicalBoundaryPoint {
+    /** The position of the \c LaneBoundaryPoint. */
+    position?: Vector3d | undefined;
+    /**
+     * S position of the LaneBoundaryPoint, measured along the parent's
+     * reference_line_id.
+     */
+    s_position?: number | undefined;
+    /**
+     * T position of the LaneBoundaryPoint, measured along the parent's
+     * reference_line_id.
+     */
+    t_position?: number | undefined;
+}
+/**
+ * \brief A logical lane in the road network.
+ *
+ * A logical lane is part of a road. Compared to a physical lane (OSI type
+ * \c Lane), its existence doesn't hinge on the existence of road markings. So
+ * e.g. a road with two driving directions but no road markings in-between
+ * would be presented as two \link LogicalLane LogicalLanes\endlink, but only
+ * one Lane. So one Lane can consist of multiple \link LogicalLane
+ * LogicalLanes\endlink. E.g. on intersections, each driving path is one
+ * LogicalLane, but the whole area is one \c Lane of type \link
+ * osi3::Lane::Classification::TYPE_INTERSECTION \c TYPE_INTERSECTION \endlink.
+ *
+ * Outside of intersections, logical lanes are constructed such that each point on
+ * the road belongs to at least one (typically: exactly one) logical lane. So
+ * there are no gaps between logical lanes, and no areas that don't belong to a
+ * logical lane.
+ *
+ * If OSI is generated from OpenDRIVE, then \link LogicalLane
+ * LogicalLanes\endlink map directly to OpenDRIVE lanes. However, it is allowed
+ * to merge multiple consecutive (in S direction) OpenDRIVE lanes with the same
+ * type into one OSI LogicalLane: if an OpenDRIVE lane has a single successor,
+ * which has the same lane type, and this successor has only one predecessor
+ * (so no lane merging or splitting) then the two lanes may be presented as one
+ * continuous LogicalLane. This may be done recursively.
+ *
+ * The \link ReferenceLine reference line\endlink pointed to by
+ * #reference_line_id defines an ST coordinate system for the lane. This ST
+ * coordinate system is used to describe positions on the lane.
+ *
+ * ## Example
+ *
+ * The example below shows two logical lanes on an intersection, with a focus
+ * on the left-turn lane (\c l1):
+ * \image html OSI_LogicalLane1.png "Two logical lanes on an intersection"
+ *
+ * Assumptions not shown in the image:
+ * - This is right-hand traffic (and thus vehicles on \c l1 drive from the bottom
+ *   to the left, vehicles on \c l2 drive from right to left).
+ * - The yellow line is a ReferenceLine, defined starting at the bottom, and
+ *   going to the left.
+ *
+ * Some features shown in the image relative to \c l1:
+ * - The yellow line is the ReferenceLine of \c l1 . The ReferenceLine can be
+ *   shared with other lanes.  Because the ReferenceLine has the same direction
+ *   as the driving direction of \c l1 in this example,
+ *   <code>#move_direction == #MOVE_DIRECTION_INCREASING_S</code>.
+ * - The red line marks the area where \c l2 is left of
+ *   \c l1 - this info is recorded in #left_adjacent_lane of \c l1.
+ * - The red area is the area where \c l2 overlaps \c l1. This is recorded in
+ *   #overlapping_lane of \c l1.
+ *
+ * The image below shows the same two lanes, but from the perspective of \c l2:
+ * \image html OSI_LogicalLane2.png "Two logical lanes on an intersection"
+ *
+ * Assumptions not shown in the image:
+ * - The yellow line is a ReferenceLine, defined starting at the right, going
+ *   to the left.
+ *
+ * Some features shown in the image relative to \c l2:
+ * - The yellow line is the ReferenceLine of \c l2 . The ReferenceLine can be
+ *   shared with other lanes.  Because the ReferenceLine has the same direction
+ *   as the driving direction of \c l2 in this example,
+ *   <code>#move_direction == #MOVE_DIRECTION_INCREASING_S</code>.
+ * - The green line marks the area where \c l1 is right of
+ *   \c l2 - this info is recorded in #right_adjacent_lane of \c l2.
+ * - The red area is the area where \c l1 overlaps \c l2. This is recorded in
+ *   #overlapping_lane of \c l1.
+ *
+ * As can be seen in the images, the two highlighted lanes are neighbors for
+ * part of their length, but it makes no sense for them to have the same
+ * reference line, since they diverge significantly.
+ *
+ * Note: all the relations shown above are also defined outside of intersections.
+ */
+interface LogicalLane {
+    /**
+     * The ID of the logical lane.
+     *
+     * \note Note ID is global unique.
+     *
+     * \rules
+     * is_globally_unique
+     * \endrules
+     */
+    id?: Identifier | undefined;
+    /** The type of the logical lane. */
+    type?: LogicalLane_Type | undefined;
+    /**
+     * Optional external reference to the lane source.
+     *
+     * The external reference points to the source of the lane, if it is derived
+     * from one or more objects or external references.
+     *
+     * For example, to reference a lane defined in an OpenDRIVE map
+     * the items should be set as follows:
+     * * reference = URI to map, can remain empty if identical with definition
+     *               in \c GroundTruth::map_reference
+     * * type = "net.asam.opendrive"
+     * * identifier[0] = id of t_road
+     * * identifier[1] = s of t_road_lanes_laneSection
+     * * identifier[2] = id of t_road_lanes_laneSection_left_lane,
+     *                         t_road_lanes_laneSection_right_lane
+     *
+     * \note For non-ASAM Standards, it is implementation-specific how
+     *       source_reference is resolved.
+     *
+     * \note The value has to be repeated, because one lane segment may be
+     *       derived from more than one origin segment. Multiple sources
+     *       may be added as reference as well, for example, a map and sensors.
+     */
+    source_reference?: ExternalReference[] | undefined;
+    /**
+     * Reference to the physical lanes this logical lane belongs to.
+     *
+     * This makes it possible to get detailed information on the physical lane
+     * properties, e.g. the visual colors of the boundaries, the road
+     * condition, etc..
+     *
+     * Note: a logical lane may consist of several physical lanes (in a row).
+     * At any one S position, a logical lane should only reference one physical
+     * lane. Several logical lanes may reference the same physical lane (see
+     * drawing below).
+     *
+     * Logical lanes should not extend beyond intersections. All logical lanes
+     * on intersections should end at the latest at the border of the
+     * intersection.
+     *
+     * Example:
+     * <pre>
+     * ---------------------------------
+     *  l1                       l2
+     * ----------    l3        ---------
+     *  l4                       l5
+     * ---------------------------------
+     * </pre>
+     *
+     * In this case, we have five physical lanes: l1, l2, l4 and l5 where a
+     * lane marking is present. And l3 is one lane covering the whole road
+     * (because no road marking is present).
+     *
+     * This would typically be presented as two logical lanes:
+     * - One encompassing l1, part of l3, and l2
+     * - The other encompassing l4, part of l3 and l5
+     *
+     * In this example, both logical lanes would reference l3. Their shared
+     * LogicalLaneBoundary would cut through the middle of l3.
+     *
+     * physical_lane_reference does not give any information how much of the
+     * area of a physical lane is covered by a logical lane.
+     *
+     * For LogicalLanes without a correspondence to a Lane.Classification.Subtype
+     * (i.e. TYPE_MEDIAN, TYPE_CURB, TYPE_TRAM, TYPE_RAIL) this field has no value.
+     *
+     * \rules
+     * refers_to: Lane
+     * \endrules
+     */
+    physical_lane_reference?: LogicalLane_PhysicalLaneReference[] | undefined;
+    /**
+     * The \link ReferenceLine reference line\endlink for this logical lane
+     *
+     * The reference line is used as a coordinate system on this lane.
+     *
+     * The reference line should roughly have the same shape as the lane, so
+     * that S coordinates continually increase/decrease along the lane. It is
+     * not required that the reference line has the same direction as the
+     * driving direction of the lane.
+     *
+     * Neighboring lanes (i.e. lanes that are neighbors and whose directions
+     * do not diverge significantly) are strongly encouraged to reference the
+     * same ReferenceLine, so that vehicles that are next to each other on
+     * neighboring lanes have comparable S positions.
+     *
+     * The S coordinate of the reference line makes it easy to find e.g. which
+     * object is next on a lane, using the LogicalLaneAssignment of the
+     * objects.
+     *
+     * The reference trajectory must be sampled such that there are no two
+     * positions on the lane more than 5cm apart with the same ST coordinate.
+     *
+     * \rules
+     * refers_to: ReferenceLine
+     * \endrules
+     */
+    reference_line_id?: Identifier | undefined;
+    /**
+     * Start S position of the lane.
+     *
+     * Must be in range [\c sStart,\c sEnd] of the reference line.
+     */
+    start_s?: number | undefined;
+    /**
+     * End S position of the lane.
+     *
+     * Must be in range [\c sStart,\c sEnd] of the reference line.
+     *
+     * Requirement: #end_s > #start_s
+     */
+    end_s?: number | undefined;
+    /** Definition of the intended driving direction. */
+    move_direction?: LogicalLane_MoveDirection | undefined;
+    /**
+     * Lanes that are directly right of this lane, without gap or overlap.
+     *
+     * "Right" is in definition direction (not driving direction), so right lanes
+     * have smaller T coordinates.
+     * Entries must be ordered: first by #start_s, then by #end_s.
+     *
+     * The XY positions of the polyline generated by the LogicalLaneBoundaries
+     * of adjacent lanes must match up to a small error (5cm).
+     * Typically adjacent lanes will share a LogicalLaneBoundary, but this will
+     * not always be true. Examples: on intersections, it might be hard to generate
+     * data such that lanes that are adjacent for a short length share a
+     * LogicalLaneBoundary for this length; also different LogicalLaneBoundaries
+     * are needed if the lanes have different heights at their boundaries (e.g.
+     * road adjacent to a sidewalk).
+     */
+    right_adjacent_lane?: LogicalLane_LaneRelation[] | undefined;
+    /**
+     * Lanes that are directly left of this lane, without gap or overlap.
+     *
+     * "Left" is in definition direction (not driving direction), so left lanes
+     * have larger T coordinates.
+     * Entries must be ordered: first by #start_s, then by #end_s.
+     *
+     * The XY positions of the polyline generated by the LogicalLaneBoundaries
+     * of adjacent lanes must match up to a small error (5cm).
+     * Typically adjacent lanes will share a LogicalLaneBoundary, but this will
+     * not always be true. Examples: on intersections, it might be hard to generate
+     * data such that lanes that are adjacent for a short length share a
+     * LogicalLaneBoundary for this length; also different LogicalLaneBoundaries
+     * are needed if the lanes have different heights at their boundaries (e.g.
+     * road adjacent to a sidewalk).
+     */
+    left_adjacent_lane?: LogicalLane_LaneRelation[] | undefined;
+    /**
+     * Lanes that partially or completely overlap this lane.
+     *
+     * Only overlaps laterally larger than 5cm are considered overlaps for the
+     * purpose of this relation.
+     *
+     * This will typically contain a lot of entries on intersections, but might
+     * also be used outside of intersections (e.g. if a #TYPE_BIKING lane
+     * overlaps a #TYPE_NORMAL lane).
+     *
+     * Entries must be ordered: first by #start_s, then by #end_s.
+     */
+    overlapping_lane?: LogicalLane_LaneRelation[] | undefined;
+    /**
+     * Right boundary of this lane.
+     *
+     * References to LogicalLaneBoundary elements.
+     * All LogicalLaneBoundary elements referenced here must refer to the same
+     * ReferenceLine as this lane.
+     * The boundaries together must cover the whole length of the lane (the
+     * range \[#start_s,#end_s\]) without gap or overlap. The boundaries must be
+     * stored in ascending order, starting with the smallest S position.
+     * Consecutive boundaries must share a point: the last point of the
+     * previous boundary must be identical to the first point of the next
+     * boundary.
+     *
+     * Note: the referenced boundaries may have points outside of
+     * \[#start_s,#end_s\] (e.g. a boundary may extend beyond the end of a lane).
+     *
+     * Note: A curb is a type of LogicalLane and of LaneBoundary.
+     * If LogicalLane.Type == TYPE_CURB, by convention this
+     * field references the respective LaneBoundary of TYPE_CURB
+     * identically to the left_boundary_id of this LogicalLane.
+     *
+     * \rules
+     * refers_to: LogicalLaneBoundary
+     * \endrules
+     */
+    right_boundary_id?: Identifier[] | undefined;
+    /**
+     * Left boundary of this lane.
+     *
+     * References to LogicalLaneBoundary elements.
+     * All LogicalLaneBoundary elements referenced here must refer to the same
+     * ReferenceLine as this lane.
+     * The boundaries together must cover the whole length of the lane (the
+     * range \[#start_s,#end_s\]) without gap or overlap. The boundaries must be
+     * stored in ascending order, starting with the smallest S position.
+     * Consecutive boundaries must share a point: the last point of the
+     * previous boundary must be identical to the first point of the next
+     * boundary.
+     *
+     * Note: the referenced boundaries may have points outside of
+     * \[#start_s,#end_s\] (e.g. a boundary may extend beyond the end of a lane).
+     *
+     * Note: A curb is a type of LogicalLane and of LaneBoundary.
+     * If LogicalLane.Type == TYPE_CURB, by convention this
+     * field references the respective LaneBoundary of TYPE_CURB.
+     * identically to the right_boundary_id of this LogicalLane.
+     *
+     * \rules
+     * refers_to: LogicalLaneBoundary
+     * \endrules
+     */
+    left_boundary_id?: Identifier[] | undefined;
+    /**
+     * Lanes that directly are connected to this lane at the beginning.
+     *
+     * "Beginning" is relative to the reference line, so connections at #start_s.
+     *
+     * Lane predecessors and successors shall only be used to connect lanes if
+     * a physical connection at the beginning or end of both lanes exist. Both
+     * lanes have a non-zero width at the connection point and they are
+     * semantically connected.
+     *
+     * A lane may have several predecessors e.g. on intersections, or if a wide
+     * lane splits into two, or two merge into one.
+     */
+    predecessor_lane?: LogicalLane_LaneConnection[] | undefined;
+    /**
+     * Lanes that directly are connected to this lane at the end.
+     *
+     * "End" is relative to the reference line, so connections at #end_s.
+     *
+     * Lane predecessors and successors shall only be used to connect lanes if
+     * a physical connection at the beginning or end of both lanes exist. Both
+     * lanes have a non-zero width at the connection point and they are
+     * semantically connected.
+     *
+     * A lane may have several successors e.g. on intersections, or if a wide
+     * lane splits into two, or two merge into one.
+     */
+    successor_lane?: LogicalLane_LaneConnection[] | undefined;
+    /** Name of the street this lane belongs to. */
+    street_name?: string | undefined;
+    /** A list of traffic rules on the lane. */
+    traffic_rule?: LogicalLane_TrafficRule[] | undefined;
+}
+/**
+ * Definition of available lane types.
+ *
+ * This is mostly aligned with OpenDRIVE, except that lane types modeling
+ * access restrictions (e.g. "taxi") are not made available here. These are
+ * already deprecated in OpenDRIVE.  To support this, access restrictions
+ * should be added later, in alignment with OpenDRIVE.
+ */
+declare enum LogicalLane_Type {
+    /** UNKNOWN - %Lane of unknown type. Do not use in ground truth. */
+    UNKNOWN = 0,
+    /** OTHER - Any other type of lane. */
+    OTHER = 1,
+    /**
+     * NORMAL - A normal driving lane.
+     * Example: Lanes with IDs l1, l2, l3 and l4 in image \ref
+     * HighwayExit.
+     * This matches the OpenDRIVE type "driving".
+     *
+     * Note: a lane with OpenDRIVE type "bidirectional" will have an OSI
+     * type of TYPE_NORMAL, with <code>#move_direction ==
+     * #MOVE_DIRECTION_BOTH_ALLOWED</code>.
+     */
+    NORMAL = 2,
+    /**
+     * BIKING - A lane that is designated for bicycles
+     * Note that biking lanes that cross the road (e.g. on an intersection)
+     * are also labeled with this type.
+     */
+    BIKING = 3,
+    /**
+     * SIDEWALK - A lane that is designated for pedestrians (sidewalk).
+     * Note that pedestrian lanes that cross the road (e.g. on an
+     * intersection) are also labeled with this type.
+     */
+    SIDEWALK = 4,
+    /** PARKING - A lane with parking spaces. */
+    PARKING = 5,
+    /**
+     * STOP - A hard shoulder on motorways for emergency stops.
+     * Example: Lane l5 in image \ref
+     * HighwayExit.
+     */
+    STOP = 6,
+    /** RESTRICTED - A lane on which cars should not drive. */
+    RESTRICTED = 7,
+    /** BORDER - A hard border on the edge of a road. */
+    BORDER = 8,
+    /** SHOULDER - A soft border on the edge of a road. */
+    SHOULDER = 9,
+    /**
+     * EXIT - A deceleration lane in parallel to the main road.
+     * Example: Lane l6 in image \ref
+     * HighwayExit.
+     */
+    EXIT = 10,
+    /** ENTRY - An acceleration lane in parallel to the main road. */
+    ENTRY = 11,
+    /** ONRAMP - A ramp from rural or urban roads joining a motorway. */
+    ONRAMP = 12,
+    /** OFFRAMP - A ramp leading off a motorway onto rural or urban roads. */
+    OFFRAMP = 13,
+    /** CONNECTINGRAMP - A ramp that connect two motorways. */
+    CONNECTINGRAMP = 14,
+    /**
+     * MEDIAN - A lane that sits between driving lanes
+     * that lead in opposite directions. It is
+     * typically used to separate traffic in
+     * towns on large roads.
+     */
+    MEDIAN = 15,
+    /**
+     * CURB - Curb stones. Curb stones have a different
+     * height than the adjacent drivable lanes.
+     */
+    CURB = 16,
+    /**
+     * RAIL - A rail lane. This lane covers the area a train needs to drive along
+     * its rails.
+     * #overlapping_lane then describes where a train crosses other lanes.
+     */
+    RAIL = 17,
+    /**
+     * TRAM - A tram lane. This lane covers the area a tram needs to drive along
+     * its rails.
+     * #overlapping_lane then describes where a tram crosses other lanes.
+     */
+    TRAM = 18
+}
+/**
+ * Describes in which direction moving objects may typically move along a
+ * lane.
+ *
+ * This describes the allowed typical driving direction on a lane, or (in
+ * the case of pedestrian) the allowed walking direction.
+ *
+ * Note: Allowed overtaking (e.g. on country roads) does not automatically
+ * make a lane bidirectional, since vehicles may normally only drive in the
+ * other direction during the overtake maneuver, not for longer periods of
+ * time.
+ */
+declare enum LogicalLane_MoveDirection {
+    /** UNKNOWN - Move direction is unknown. Do not use in ground truth. */
+    UNKNOWN = 0,
+    /**
+     * OTHER - Move direction fits neither of the other categories.
+     *
+     * Example: a lane where cars may only drive in one direction, but
+     * bikes may drive in both.
+     */
+    OTHER = 1,
+    /**
+     * INCREASING_S - Objects may move in increasing S direction.
+     *
+     * This means they move in the same direction as the reference line.
+     */
+    INCREASING_S = 2,
+    /**
+     * DECREASING_S - Objects may move in decreasing S direction.
+     *
+     * This means they move in the opposite direction as the reference line.
+     */
+    DECREASING_S = 3,
+    /** BOTH_ALLOWED - Objects may move in both directions. */
+    BOTH_ALLOWED = 4
+}
+/** \brief Reference to a physical lane. */
+interface LogicalLane_PhysicalLaneReference {
+    /**
+     * Id of the physical lane referenced.
+     *
+     * \rules
+     * refers_to: Lane
+     * \endrules
+     */
+    physical_lane_id?: Identifier | undefined;
+    /** S position on the logical lane where the physical lane starts. */
+    start_s?: number | undefined;
+    /**
+     * S position on the logical lane where the physical lane ends.
+     *
+     * Requirement: #end_s > #start_s
+     */
+    end_s?: number | undefined;
+}
+/** \brief Connection to another lane (predecessor or successor) */
+interface LogicalLane_LaneConnection {
+    /**
+     * Id of the other logical lane that is connected.
+     *
+     * \rules
+     * refers_to: LogicalLane
+     * \endrules
+     */
+    other_lane_id?: Identifier | undefined;
+    /**
+     * If true: LaneConnection is at the beginning of the other lane
+     * If false: LaneConnection is a the end of the other lane
+     */
+    at_begin_of_other_lane?: boolean | undefined;
+}
+/** \brief Relation of this lane to another logical lane */
+interface LogicalLane_LaneRelation {
+    /**
+     * Id of the other logical lane.
+     *
+     * \rules
+     * refers_to: LogicalLane
+     * \endrules
+     */
+    other_lane_id?: Identifier | undefined;
+    /** Start s position of the relation. */
+    start_s?: number | undefined;
+    /**
+     * End s position of the relation.
+     *
+     * Requirement: #end_s > #start_s
+     */
+    end_s?: number | undefined;
+    /**
+     * Start s position of the relation on the other lane.
+     *
+     * This is the same place as #start_s, but measured along the reference
+     * line of the other lane.
+     */
+    start_s_other?: number | undefined;
+    /**
+     * End s position of the relation on the other lane.
+     *
+     * This is the same place as #end_s, but measured along the reference
+     * line of the other lane.
+     *
+     * Note: #end_s_other might be smaller than #start_s_other
+     */
+    end_s_other?: number | undefined;
+}
+/**
+ * Describes traffic rules on a lane.
+ * The traffic rule can thereby be induced by regulations, traffic signs
+ * or by other means. If the modeled traffic rule is induced by a traffic sign
+ * the information should be identical with the respective traffic sign.
+ *
+ * Note: Every instance should be corresponding to only one specific rule.
+ * The type of the traffic rule should be set using the respective field.
+ * Additionally, every message should contain the traffic rule validity information
+ * and the respective field for the respective traffic rule type.
+ * In case of traffic rule (priority) conflicts for rules of the same type that
+ * can not be depicted using the traffic rule validity only the currently
+ * valid rule should be provided.
+ *
+ * Note: Each traffic rule corresponds to only one lane. If the traffic rule
+ * is also valid on adjacent/successor/predecessor lanes it needs to be
+ * specified for each lane individually.
+ *
+ * \brief Logical Model of a traffic rule on a lane.
+ */
+interface LogicalLane_TrafficRule {
+    /**
+     * The type of the traffic rule.
+     *
+     * This specifies the type of the traffic rule to be modeled.
+     * Based on the type the respective message containing the information
+     * corresponding to the traffic rule should be filled.
+     */
+    traffic_rule_type?: LogicalLane_TrafficRule_TrafficRuleType | undefined;
+    /** The validity information of the traffic rule. */
+    traffic_rule_validity?: LogicalLane_TrafficRule_TrafficRuleValidity | undefined;
+    /** Traffic rule information for traffic rule of type speed limit. */
+    speed_limit?: LogicalLane_TrafficRule_SpeedLimit | undefined;
+}
+/** The type of the the traffic rule. */
+declare enum LogicalLane_TrafficRule_TrafficRuleType {
+    /** SPEED_LIMIT - Traffic rule is of type speed limit */
+    SPEED_LIMIT = 0
+}
+/** \brief Validity information for a traffic rule. */
+interface LogicalLane_TrafficRule_TrafficRuleValidity {
+    /**
+     * The starting point of the traffic rule validity on the lane.
+     * Must be in range [\c sStart,\c sEnd] of the reference line.
+     *
+     * Note: The traffic rule applies only to traffic with notional
+     * direction of travel from the start_s coordinate towards
+     * the end_s coordinate. For unidirectional lanes this must
+     * match the direction of travel as specified by the
+     * move_direction field of the logical lane. For bidirectional
+     * lanes this allows the specification of separate rules for
+     * each direction of travel.
+     */
+    start_s?: number | undefined;
+    /**
+     * The ending point of the traffic rule validity on the lane.
+     * Must be in range [\c sStart,\c sEnd] of the reference line.
+     */
+    end_s?: number | undefined;
+    /**
+     * List of traffic participant types for which the speed limit is valid.
+     * If the traffic rule validity is independent of the vehicle type
+     * the list should be empty.
+     */
+    valid_for_type?: LogicalLane_TrafficRule_TrafficRuleValidity_TypeValidity[] | undefined;
+}
+/** \brief Type of traffic participant for which a rule is valid. */
+interface LogicalLane_TrafficRule_TrafficRuleValidity_TypeValidity {
+    /** The type of object for which the traffic rule is valid. */
+    type?: MovingObject_Type | undefined;
+    /**
+     * Vehicle classification type for traffic participants.
+     *
+     * Should be set to TYPE_UNKNOWN if type is not TYPE_VEHICLE
+     * or the rule is valid for all vehicle types.
+     */
+    vehicle_type?: MovingObject_VehicleClassification_Type | undefined;
+    /**
+     * Role of traffic participant.
+     *
+     * Should be set to ROLE_UNKNOWN if type is not TYPE_VEHICLE
+     * or the rule is valid for all vehicle roles.
+     */
+    vehicle_role?: MovingObject_VehicleClassification_Role | undefined;
+}
+/** \brief Speed limit on a lane. */
+interface LogicalLane_TrafficRule_SpeedLimit {
+    /**
+     * The value of the speed limit.
+     * The unit field in the TrafficSignValue message may only be set to
+     * units associated with velocities and must not be UNKNOWN.
+     *
+     * Note: All speed limits are to be modeled this way, independent
+     * of how they are induced.
+     */
+    speed_limit_value?: TrafficSignValue | undefined;
+}
+
+/**
+ * \brief A reference line for defining a non-Euclidean ST coordinate system
+ *
+ * A reference line is a 3D polyline, used for generating a non-Euclidean
+ * ST coordinate system.
+ *
+ * \note This ST coordinate system is specific to OSI and not to be confused with
+ *       similar definitions in other standards like OpenDRIVE or OpenSCENARIO 1.x.
+ *       Nevertheless the goal of this definition is to approximate the source
+ *       coordinates (e.g. OpenDRIVE).
+ *
+ * Notes on design decisions:
+ * - This is a polyline, and not some more complex curve. The advantage of a
+ *   polyline is that it is very simple to generate from various map formats,
+ *   and it is also easy to handle. The downside is that a polyline has no
+ *   direct curvature, and even the angle is not continuous (only C0 smooth).
+ *   In the author's experience, the benefits of a polyline outweigh the costs.
+ */
+interface ReferenceLine {
+    /**
+     * The ID of the reference line.
+     *
+     * \note Note ID is global unique.
+     *
+     * \rules
+     * is_globally_unique
+     * is_set
+     * \endrules
+     */
+    id?: Identifier | undefined;
+    /** The type of the reference line. */
+    type?: ReferenceLine_Type | undefined;
+    /**
+     * Points comprising the polyline.
+     *
+     * At least two points must be given.
+     * The polyline is defined as the lines between consecutive points.
+     * Each point has an S coordinate. Other attributes might be set, depending
+     * on the type of the polyline (see Type).
+     *
+     * ## Rules on the S position
+     *
+     * There are a few requirements on the S position:
+     * - Later points in the list must have strictly larger S coordinates than
+     *   earlier points.
+     * - For consecutive points, the S difference between them  must be at
+     *   least as large as the 2D Euclidean distance between the points (2D
+     *   distance == Euclidean distance between the points taking only X and Y
+     *   into account).
+     * - The S distance between two points may be larger than the 2D Euclidean
+     *   distance, but should be not much larger. It is allowed to be larger if
+     *   the underlying reference line (e.g. in an OpenDRIVE map) is a curve,
+     *   and thus the sampled reference line has a smaller length than the original
+     *   curve.
+     *
+     * Together, these rules allow directly putting OpenDRIVE S coordinates
+     * into an OSI ReferenceLine.
+     *
+     * If the reference line approximates a curve (e.g. a clothoid in
+     * OpenDRIVE), the points must be chosen in a way that the lateral distance
+     * to the ideal line does not exceed 5cm. As shown in the following image:
+     *
+     * \image html line_approximation_error.svg "Approximation error"
+     * Approximation error green line.
+     *
+     * Between two ReferenceLinePoints, both the world coordinate and the S
+     * coordinate is interpolated linearly. So each S value uniquely describes
+     * a point on the polyline.
+     *
+     * ## Extending the coordinate system infinitely
+     *
+     * For the purpose of this discussion, let's call the S position of the
+     * first point \c sStart, and the S position of the last point \c sEnd.
+     *
+     * For some purposes, S positions outside the normally defined range (i.e.
+     * outside [\c sStart,\c sEnd]) need to be defined. For this purpose, the
+     * first line of the polyline is infinitely extended in negative S
+     * direction.  Similarly, the last line of the polyline is infinitely
+     * extended beyond the last point. The S value of points outside [\c
+     * sStart,\c sEnd] is defined by the Euclidean 2D distance from the start
+     * or end point, respectively.  So if <code>sStart = 15</code>, and a point
+     * is on the line extended from the start position, with a 2D Euclidean
+     * distance of 10 from the first point, then it has an S position of 5.
+     *
+     * A point is "before" the reference line, if its s coordinate is < \c sStart.
+     * A point is "after" the reference line, if its s coordinate is > \c sEnd.
+     *
+     * ## Adding T coordinates
+     *
+     * To describe points that are not directly on the polyline, a T coordinate
+     * is added. T is the signed 2D distance between the point to describe (P)
+     * and a projected point (P_proj) on the polyline. There are two ways of
+     * defining this point, depending on the ReferenceLine::Type (see below).
+     *
+     * The T coordinate of the point in question is then defined as
+     * <code>hypot(P.X-P_proj.X,P.Y-P_proj.Y)</code>. The projected point P_proj
+     * might either be on a line segment or at an edge between two line segments.
+     * The distance is positive if the point is left of the polyline (in
+     * definition direction), negative if it is right of it. The S position of
+     * such a point outside the reference line is the same as the S value of the
+     * projected point on the polyline.
+     *
+     * ## Nearest point (TYPE_POLYLINE)
+     *
+     * The projection point is the nearest point on the polyline (this point might
+     * either be on a line segment or at an edge between two line segments).
+     *
+     * Notes:
+     * - The "nearest point on the polyline" is determined in 3D (even if the
+     *   resulting T value is only the 2D distance), in order to choose the
+     *   correct point for 3D curves (think reference lines for roads in parking
+     *   decks).
+     * - If there are several "nearest points", the one with the smallest S
+     *   coordinate on the polyline is chosen.
+     *
+     * Example:
+     * \image html OSI_ReferenceLine1.svg "S, T calculation using nearest point"
+     *
+     * This shows a reference line (consisting of three points), and five points
+     * not on the reference line.
+     *
+     * - For \c P1, the situation is clear, since there is exactly one nearest
+     *   point on the polyline. The resulting ST coordinate uniquely maps back
+     *   to \c P1.
+     * - \c P2 has multiple points "nearest points" on the polyline.
+     *   As can be seen here, two  ST coordinates map to \c P2 (red and gray
+     *   dotted line).  Following the rules above, the one with the smallest S
+     *   value is chosen (the red dotted line).
+     * - \c P3 has a unique "nearest point" on the polyline. However, multiple
+     *   points map to the same ST coordinate as that of \c P3, e.g. \c P4
+     *   (drawn in gray).
+     * - Finally, \c P5 shows how the reference line is extended infinitely for
+     *   points that are "outside" the reference line.
+     *
+     * ## T axis definition (TYPE_POLYLINE_WITH_T_AXIS)
+     *
+     * The T axes of the two ReferenceLinePoints of each ReferenceLine segment
+     * define a sector (or strip if parallel) of the plane. A point is associated
+     * with the segment if it lies within this sector. For points being
+     * associated with multiple segments, the actual segment to consider is
+     * determined by the shortest 3D Euclidean distance between the point and the
+     * segments in question.
+     *
+     * The T axis (projecting axis) is the line going through P and the
+     * intersection point (I). I is defined as the intersection of both
+     * T axes of two consecutive ReferenceLinePoints (see example and
+     * image below for illustration).
+     *
+     * Special cases:
+     * 1. If both T axes of the consecutive ReferenceLinePoint are parallel (so
+     *    no intersection point exists), the resulting T axis orientation is equal
+     *    to the T axis of these ReferenceLinePoints.
+     * 2. For the extended lines outside the defined range the projection axis is
+     *    parallel to the T axis of the respective end point.
+     *
+     * ## Rules on the T axis
+     *
+     * For the T axis at a specific ReferenceLinePoint the following rules apply:
+     * - The T axis shall be close to the angle bisector (to the left in S
+     *   direction) of the neighboring ReferenceLine segments.
+     * - Small deviations from the angle bisector are allowed (e.g. to represent
+     *   the T axis of OpenDRIVE, which is perpendicular to the OpenDRIVE
+     *   reference line).
+     * - The T axis must be located inside the sectors spanned by rotating the
+     *   normal of one neighboring ReferenceLine segment into the normal of the
+     *   other ReferenceLine segment on the shortest way.
+     * - The T axis in the first and the last point of a ReferenceLine has to be
+     *   perpendicular to the first and last segment of the ReferenceLine,
+     *   respectively.
+     *
+     * Example:
+     * \image html OSI_ReferenceLine2.svg "S, T calculation using T axis"
+     *
+     * This shows a reference line (consisting of three points \c R0, \c R1 and
+     * \c R2) and two points (\c P1 and \c P2) not part of the reference line.
+     *
+     * Calculation of ST for \c P1:
+     * - Calculate the intersection point \c I of the T axes of \c R0 and \c R1.
+     * - As \c P1 lies in the sector defined by these T axes it is considered part
+     *   of the reference line section between \c R0 and \c R1.
+     * - The point \c P1 is projected onto the line segment [\c R0, \c R1] via the
+     *   straight line through \c I (by calculating the intersection of the line
+     *   segment and the projection axis), resulting in point \c P1_proj.
+     *   If the T axes are parallel, projection is applied in the direction of
+     *   these axes.
+     * - The S coordinate of \c P1 is the S coordinate of \c P1_proj
+     * - The T coordinate of \c P1 is the signed Euclidean distance to \c P1_proj.
+     *
+     * Calculation of \c P2 follows the same pattern.
+     *
+     * ## Defining angles
+     *
+     * Sometimes an angle to a reference line is needed. This shall be defined
+     * as follows:
+     * First the projected point on the polyline is determined, as described
+     * below. If this point is on a line segment, then the angle is calculated
+     * relative to the line segment on which the reference point lays.
+     * If the projected point is at the edge between line segments, then the
+     * angle of the following line shall be chosen.
+     *
+     * ## Converting between world coordinates and ST coordinates
+     *
+     * The above rules define an ST coordinate system across the whole XY plane.
+     * Every XY position has an ST coordinate, but not necessarily a unique ST
+     * coordinate.
+     *
+     * The sampling of the polyline must be chosen such that the error
+     * when converting coordinates is "small enough". The exact needed
+     * precision is defined for each user, where the reference line is
+     * referenced.
+     *
+     * ## Creating reference lines
+     *
+     * When OSI is generated from OpenDRIVE, typically the reference lines will
+     * be taken directly from the road reference lines in OpenDRIVE, and
+     * sampled according to the accuracy requirements outlined above.
+     *
+     * Other map formats may not have reference lines, so they will have to be
+     * synthesized by the tool generating OSI data. A few guidelines on this
+     * process:
+     *
+     * - The reference line should follow the road
+     * - It is preferable to have the reference line in the center of the road
+     *   (e.g. on a highway, it should be in the middle between the two driving
+     *   directions). Rationale: this makes S differences better approximate
+     *   Euclidean distances, compared to having the reference line at one side
+     *   of a curvy road.
+     *
+     * ## Various notes
+     *
+     * Notes on OpenDRIVE compatibility:
+     * Ideally, one would want the polyline to be fully compatible with
+     * OpenDRIVE, so that calculations done for OpenDRIVE directly match those
+     * in OSI. There are a few difficulties with this:
+     * - The T coordinate is nearly the same as for OpenDRIVE, but
+     *   unfortunately not perfectly. In OpenDRIVE, if the road is tilted using
+     *   superelevation, then the t coordinate system is tilted along, so the T
+     *   coordinate is no longer calculated in the XY plane (as proposed for
+     *   OSI). It doesn't seem feasible to implement the same tilting for OSI,
+     *   so simulation tools will have to consider superelevation and convert
+     *   the T coordinate accordingly: <code>t_OSI = t_OpenDRIVE *
+     *   cos(alpha)</code>, where alpha is the superelevation angle.
+     * - The angle will not be perfectly the same, due to the use of line
+     *   segments in OSI, and curves in OpenDRIVE. In the authors opinion, the
+     *   difference will be negligible if the #poly_line is suitably sampled.
+     *
+     * Notes on design decisions:
+     * - The S coordinate is included directly, both for OpenDRIVE
+     *   compatibility, and to speed up calculations.
+     * - The rules on S coordinates (e.g. the calculation in 2D space) are
+     *   there to ensure OpenDRIVE compatibility.
+     * - The rules on T coordinates are there to ensure OpenDRIVE compatibility
+     *   for lanes without superelevation, and to make it easier to convert
+     *   between OSI and OpenDRIVE in case superelevation is present.
+     */
+    poly_line?: ReferenceLine_ReferenceLinePoint[] | undefined;
+}
+/**
+ * ReferenceLine types
+ *
+ * ReferenceLinePoints might be interpreted differently depending on the type
+ * of the ReferenceLine.
+ *
+ * See also: "Adding T coordinates"
+ */
+declare enum ReferenceLine_Type {
+    /**
+     * POLYLINE - ReferenceLine is a polyline, where the coordinates of points are
+     * calculated by projection onto the nearest point on the line.
+     *
+     * \attention DEPRECATED: Due to the shortcomings documented below, this
+     *            type will be removed in 4.0.0.
+     */
+    POLYLINE = 0,
+    /**
+     * POLYLINE_WITH_T_AXIS - ReferenceLine is a polyline, where the coordinates of points are
+     * calculated using the T axis definition.
+     *
+     * \note If this type is used, ReferenceLinePoint::t_axis_yaw must be set.
+     */
+    POLYLINE_WITH_T_AXIS = 1
+}
+/** \brief A point on the reference line */
+interface ReferenceLine_ReferenceLinePoint {
+    /** A world position */
+    world_position?: Vector3d | undefined;
+    /** S position on the reference line */
+    s_position?: number | undefined;
+    /**
+     * Yaw angle of the T axis in the world coordinate system
+     *
+     * When converting from formats like OpenDRIVE, the yaw angle is equal to
+     * the angle of the normal to the reference line in the sampled point.
+     *
+     * Also see image "S, T coordinates" at #poly_line for reference.
+     *
+     * \note This field is only set if the type of the reference line is
+     *       TYPE_POLYLINE_WITH_T_AXIS.
+     */
+    t_axis_yaw?: number | undefined;
 }
 
 /**
@@ -13181,6 +17041,10 @@ interface GroundTruth {
     /**
      * The interface version used by the sender (i.e. the simulation
      * environment).
+     *
+     * \rules
+     * is_set
+     * \endrules
      */
     version?: InterfaceVersion | undefined;
     /**
@@ -13194,88 +17058,69 @@ interface GroundTruth {
      * notional simulation time the data applies to and the time it was sent
      * (there is no inherent latency for ground truth data, as opposed to
      * sensor data).
+     *
+     * \rules
+     * is_set
+     * \endrules
      */
     timestamp?: Timestamp | undefined;
     /**
      * The ID of the host vehicle object referencing to \c MovingObject .
      *
      * \note This ID has to be filled and is not optional!
+     *
+     * \rules
+     * refers_to: MovingObject
+     * is_set
+     * \endrules
      */
     host_vehicle_id?: Identifier | undefined;
     /**
      * The list of stationary objects (excluding traffic signs and traffic
      * lights).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     stationary_object?: StationaryObject[] | undefined;
-    /**
-     * The list of all other moving objects including all (host) vehicles.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** The list of all other moving objects including all (host) vehicles. */
     moving_object?: MovingObject[] | undefined;
-    /**
-     * The list of traffic signs.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** The list of traffic signs. */
     traffic_sign?: TrafficSign[] | undefined;
-    /**
-     * The list of traffic lights.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** The list of traffic lights. */
     traffic_light?: TrafficLight[] | undefined;
     /**
      * The list of road surface markings (lane markings are excluded and
      * defined as \c LaneBoundary).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     road_marking?: RoadMarking[] | undefined;
-    /**
-     * The list of lane boundaries.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** The list of lane boundaries. */
     lane_boundary?: LaneBoundary[] | undefined;
-    /**
-     * The list of lanes forming a road network.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** The list of lanes forming a road network. */
     lane?: Lane[] | undefined;
-    /**
-     * The list of passengers in the (host) vehicle(s).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** The list of passengers in the (host) vehicle(s). */
     occupant?: Occupant[] | undefined;
     /** Conditions of the environment. */
     environmental_conditions?: EnvironmentalConditions | undefined;
     /**
      * The ISO country code in 3 digit numeric format according to:
-     * ISO Code 3166/1 [1,2].
+     * ISO Code 3166/1 [1].
      * E.g. Germany = 276, USA = 840.
      *
-     * Unit: []
+     * \par Reference:
+     * [1] ISO International Organization for Standardization. (2013). <em>ISO 3166-1 Codes for the representation of names of countries and their subdivisions - Part 1: Country codes</em>. (ISO 3166-1:2013). Geneva, Switzerland.
      *
-     * \par References:
-     * - [1] [International Standard ISO 3166-1: Codes for the representation of
-     * names of countries and their subdivisions - Part 1: Country codes, third
-     * ed., 2013] (https://www.iso.org/obp/ui/)
-     * - [2] [Wikipedia ISO 3166/1] (https://en.wikipedia.org/wiki/ISO_3166-1)
+     * \rules
+     * is_iso_country_code
+     * \endrules
      */
     country_code?: number | undefined;
     /**
      * Projection string that allows to transform all coordinates in GroundTruth
-     * into a different cartographic projection.
+     * into a different cartographic projection after the \c proj_frame_offset
+     * has been applied.
      *
-     * The string follows the PROJ.4 project rules for projections [1].
+     * The string follows the PROJ rules for projections [1].
      *
-     * \par References:
-     * - [1] [Proj.4 Projections] (https://proj4.org/usage/projections.html)
+     * \par Reference:
+     * [1] PROJ contributors. (2019). <em>PROJ coordinate transformation software library</em>. Open Source Geospatial Foundation. Retrieved January 25, 2019, from https://proj.org/usage/projections.html
      */
     proj_string?: string | undefined;
     /**
@@ -13287,31 +17132,667 @@ interface GroundTruth {
      * \note It is implementation-specific how map_reference is resolved.
      */
     map_reference?: string | undefined;
+    /**
+     * Opaque reference of an associated 3D model.
+     *
+     * The model covers the static parts of the environment that are not
+     * provided as individual models referenced from ground truth objects
+     * like moving or stationary objects.
+     *
+     * \note Origin and orientation of the model have to coincide with the
+     * inertial coordinate frame of the ground truth.
+     *
+     * \note It is implementation-specific how model_references are resolved to
+     * 3d models. The parts the world model contains are also implementation-specific.
+     * For example, the world model can either contain street geometries or
+     * derives street geometries automatically from a map reference.
+     */
+    model_reference?: string | undefined;
+    /** Reference lines used by LogicalLane */
+    reference_line?: ReferenceLine[] | undefined;
+    /** Logical lane boundaries used by LogicalLane */
+    logical_lane_boundary?: LogicalLaneBoundary[] | undefined;
+    /** Logical lanes used e.g. by traffic agents */
+    logical_lane?: LogicalLane[] | undefined;
+    /** Coordinate frame offset to be used for PROJ transformations. */
+    proj_frame_offset?: GroundTruth_ProjFrameOffset | undefined;
+}
+/**
+ * \brief Coordinate frame offset to transform from OSI's global coordinate
+ * system to a coordinate reference system to be used for given PROJ
+ * transformations.
+ *
+ * If an offset is defined, always apply the \c proj_frame_offset on
+ * global OSI coordinates before applying any transformations defined in
+ * \c proj_string.
+ *
+ * To apply the offset, global coordinates are first translated by the given
+ * positional offset (x,y,z). Then, the yaw angle is used to rotate around
+ * the new origin.
+ *
+ * The offset is applied on global OSI coordinates using an affine
+ * transformation with rotation around z-axis:
+ *
+ * xWorld = xOSI * cos(yaw) - yOSI * sin(yaw) + xOffset
+ *
+ * yWorld = xOSI * sin(yaw) + yOSI * cos(yaw) + yOffset
+ *
+ * zWorld = zOSI + zOffset
+ *
+ * If no yaw is provided (recommended), the formulas simplify to:
+ *
+ * xWorld = xOSI + xOffset
+ *
+ * yWorld = yOSI + yOffset
+ *
+ * zWorld = zOSI + zOffset
+ */
+interface GroundTruth_ProjFrameOffset {
+    /** Positional offset for relocation of the coordinate frame. */
+    position?: Vector3d | undefined;
+    /**
+     * Yaw/heading angle for re-orientation of the coordinate frame around
+     * the z-axis.
+     */
+    yaw?: number | undefined;
 }
 
 /**
- * \brief Interface for host vehicle data that is available to sensors and
- * other functions due to host vehicle's internal communication.
+ * \brief A route in the road network
+ *
+ * A route is an e.g. planned or suggested path for an agent to travel from one
+ * location to another within the road network. It is composed of a list of route
+ * segments, which form a continuous path through the road network and should be
+ * traversed in the order they are listed.
+ * The route allows the simulation environment to provide agents with high level
+ * path information, similar to that of a map or a navigation system, without the
+ * need for the agent model to perform complex path planning on its own. This
+ * allows for an efficient control of the agent's general direction, while
+ * simultaneously giving it enough freedom on how to traverse the path.
+ *
+ * ## Example
+ *
+ * The example below shows the \link Route route\endlink of a vehicle.
+ *
+ * \image html OSI_Planned_Route.png "Route" width=850px
+ *
+ * The route is composed of three \link RouteSegment route segments\endlink RS1-3,
+ * each indicated by a yellow outline. Two of the route segments
+ * (RS2 and RS3) only contain a single \link LogicalLaneSegment logical lane segment\endlink
+ * (highlighted in blue), while RS1 is composed of three
+ * logical lane segments (green, blue and red).
+ */
+interface Route {
+    /**
+     * The unique id of the route.
+     *
+     * \note This field is mandatory.
+     *
+     * \note This id must be unique within all route messages exchanged with
+     * one traffic participant.
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    route_id?: Identifier | undefined;
+    /**
+     * Route segments that form the route of an agent.
+     *
+     * Consecutive segments should be connected without gaps, meaning that the
+     * two of them should form a continuous area.
+     */
+    route_segment?: Route_RouteSegment[] | undefined;
+}
+/**
+ * \brief A segment of a logical lane.
+ *
+ * \note The LogicalLaneSegment allows that start_s > end_s.
+ * If start_s < end_s, then the traffic agent should traverse the
+ * segment in the logical lane's reference line definition direction.
+ * If end_s > start_s, then the traffic agent should traverse the
+ * segment in the opposite of the logical lane's reference line
+ * definition direction.
+ */
+interface Route_LogicalLaneSegment {
+    /**
+     * The ID of the logical lane this segment belongs to.
+     *
+     * \rules
+     * refers_to: LogicalLane
+     * \endrules
+     */
+    logical_lane_id?: Identifier | undefined;
+    /** S position on the logical lane where the segment starts. */
+    start_s?: number | undefined;
+    /** S position on the logical lane where the segment ends. */
+    end_s?: number | undefined;
+}
+/**
+ * \brief A segment of a route.
+ *
+ * A route segment describes a segment of a traffic agent's route through the
+ * logical lanes of the road network.
+ *
+ * Each time there is a successor-predecessor relation between the logical
+ * lanes along the route (i.e. a logical lane ends, and is continued by another
+ * logical lane, e.g. at a junction border), a new RouteSegment starts. The
+ * RouteSegment then lists the logical lane segments that can be used to
+ * travel through this space of the road.
+ *
+ * Together, the listed logical lane segments should form a continuous area,
+ * where the traffic agent can move freely. These will mostly be parallel
+ * lanes, though lanes may overlap (e.g. if one lane splits into two on a
+ * junction). In general, the logical lane segments in a RouteSegment will
+ * have the same length, though there are exceptions (e.g. if a lane
+ * widening occurs, the newly appearing lane will have a shorter length).
+ *
+ * Typically a route segment will be either
+ * - a set of parallel lanes between two junctions, or
+ * - parallel lanes on an intersection with the same driving direction
+ *
+ * ## Example
+ *
+ * Consider the \link RouteSegment route segment\endlink between two intersections,
+ * shown in the image below.
+ *
+ * \image html OSI_Route_Segment.png "RouteSegment" width=850px
+ *
+ * In the example, a single route segment RS with three
+ * \link LogicalLaneSegment logical lane segments\endlink LL1, LL2 and LL3 is
+ * shown. The segments are indicated by the green, blue and red highlighted areas,
+ * one for each underlying logical lane The starting
+ * s-position of each segment is indicated by the yellow dotted line and the s- prefix
+ * (note that the start of LL2 lies further to the left, outside of the image),
+ * while the ending s-position of all segments is shown by the yellow dotted line e-RS.
+ *
+ * As it can be seen in the example, all logical lane segments are parallel,
+ * but two of them are opening at a later position, so their starting
+ * s-positions will be different.
+ */
+interface Route_RouteSegment {
+    /**
+     * Logical lane segments that form a route segment.
+     *
+     * The logical lane segments of a route segment should be connected without
+     * gaps, meaning that, together, the lane segments should form a continuous
+     * area.
+     */
+    lane_segment?: Route_LogicalLaneSegment[] | undefined;
+}
+
+/**
+ * \brief Host vehicle data is about the perception of the vehicle about its own internal states.
+ * It captures the knowledge the vehicle has internally, which can differ from the actual or global truth for various reasons.
+ * This message can also be understood as an interface container for the signals of a rest bus simulation.
+ *
+ * It consists of different messages categorizing the vehicle in:
+ * Basics, powertrain, brake system, steering, wheels and localization.
  *
  * \image html OSI_HostVehicle.svg
- *
- * All coordinates and orientations are relative to the global ground truth
- * coordinate system.
  */
 interface HostVehicleData {
+    /** The interface version used by the sender. */
+    version?: InterfaceVersion | undefined;
     /**
+     * The timestamp of the host vehicle data. Zero time is arbitrary but must be
+     * identical for all messages. Zero time does not need to coincide with
+     * the unix epoch. Recommended is the starting time point of the
+     * simulation or measurement.
+     *
+     * \note This is the point in time that the host vehicle data message becomes
+     * available as snapshot from the board net information.
+     */
+    timestamp?: Timestamp | undefined;
+    /** The ID of the host vehicle in any associated GroundTruth data. */
+    host_vehicle_id?: Identifier | undefined;
+    /**
+     * Deprecated: Will be removed in next major release. Moved to vehicle_localization.
      * Current estimated location based on GPS- and related navigation sensors.
      *
      * \note Note that dimension and base_polygon need not be set.
      */
     location?: BaseMoving | undefined;
     /**
-     * Current estimated location error based on GPS- and related navigation
+     * Deprecated: Will be removed in next major release. Moved to vehicle_localization.
+     * Current estimated location error based on GPS and related navigation
      * sensors.
      *
      * \note Note that dimension and base_polygon need not be set.
      */
     location_rmse?: BaseMoving | undefined;
+    /** The basic parameters and overall states of the vehicle. */
+    vehicle_basics?: HostVehicleData_VehicleBasics | undefined;
+    /** Interface regarding the powertrain. */
+    vehicle_powertrain?: HostVehicleData_VehiclePowertrain | undefined;
+    /** Interface regarding the brake system. */
+    vehicle_brake_system?: HostVehicleData_VehicleBrakeSystem | undefined;
+    /** Interface regarding the steering. */
+    vehicle_steering?: HostVehicleData_VehicleSteering | undefined;
+    /** Interface regarding the internal wheel states. */
+    vehicle_wheels?: HostVehicleData_VehicleWheels | undefined;
+    /** Interface regarding the localization. */
+    vehicle_localization?: HostVehicleData_VehicleLocalization | undefined;
+    /**
+     * State of any automated driving functions.
+     *
+     * This can include:
+     *  - information presented to the driver, for example, parking sensors
+     *  - warnings raised by the vehicle, for example, forward collision warning
+     *  - corrective action taken by the vehicle, for example, auto emergency braking
+     *  - full level 4 self driving systems
+     *
+     * \note OSI uses singular instead of plural for repeated field names.
+     */
+    vehicle_automated_driving_function?: HostVehicleData_VehicleAutomatedDrivingFunction[] | undefined;
+    /** Interface regarding the vehicle motion. */
+    vehicle_motion?: HostVehicleData_VehicleMotion | undefined;
+    /** Currently planned route of the vehicle */
+    route?: Route | undefined;
+}
+/** \brief Base parameters and overall states of the vehicle. */
+interface HostVehicleData_VehicleBasics {
+    /**
+     * The total mass of the vehicle (curb weight).
+     *
+     * Unit: kg
+     *
+     * \par Reference:
+     * Paragraph 42 of the German Road Traffic Admission Regulations (StVZO).
+     */
+    curb_weight?: number | undefined;
+    /** The operating state of the vehicle. */
+    operating_state?: HostVehicleData_VehicleBasics_OperatingState | undefined;
+}
+/**
+ * Possible operating states of the vehicle.
+ * It is user specific which states are used and how their transitions work.
+ */
+declare enum HostVehicleData_VehicleBasics_OperatingState {
+    /** UNKNOWN - The operating state is unknown. */
+    UNKNOWN = 0,
+    /** OTHER - The operating state is another one. */
+    OTHER = 1,
+    /**
+     * SLEEP - The minimum electrical state of the vehicle (and its ECUs).
+     * Usually the driver has left the vehicle a while ago.
+     */
+    SLEEP = 2,
+    /**
+     * STANDBY - Cabin lights and entertainment are off. The vehicle can not be driven.
+     * Some ECUs are still operating and not in their minimum electrical sate.
+     * Usually the driver has left (and closed) the vehicle recently.
+     */
+    STANDBY = 3,
+    /**
+     * BOARDING - Some features of the vehicle are available e.g. cabin lights.
+     * Entertainment is off and the vehicle can not be driven.
+     * Usually the driver wants to enter or leave the vehicle.
+     */
+    BOARDING = 4,
+    /**
+     * ENTERTAINMENT - Entertainment, navigation or similar systems can be used by the driver.
+     * The vehicle can not be driven.
+     * Usually the driver sits in the vehicle before or after a drive.
+     */
+    ENTERTAINMENT = 5,
+    /** DRIVING - The electrical state that is necessary to drive the vehicle. */
+    DRIVING = 6,
+    /** DIAGNOSTIC - The electrical state that is necessary for analysis and diagnostics. */
+    DIAGNOSTIC = 7
+}
+/** \brief State description of the powertrain. */
+interface HostVehicleData_VehiclePowertrain {
+    /**
+     * Position of the acceleration pedal.
+     * Range: 0-1 (Unpressed - fully pressed)
+     */
+    pedal_position_acceleration?: number | undefined;
+    /**
+     * Position of the clutch pedal.
+     * Range: 0-1 (Unpressed - fully pressed)
+     */
+    pedal_position_clutch?: number | undefined;
+    /**
+     * The actual gear of the transmission.
+     * For example, a gear lever can be on "D" and the transmission on "4", but not the
+     * other way around.
+     *
+     * The sign of this field is linked to the gear's mode as following:
+     * - zero: neutral position
+     * - positive: driving forward mode
+     * - negative: reverse mode (generally -1, but few vehicles have more than 1
+     *   reverse mode gears)
+     */
+    gear_transmission?: number | undefined;
+    /** Information about the motor(s). */
+    motor?: HostVehicleData_VehiclePowertrain_Motor[] | undefined;
+}
+/** \brief A description of the motor states. */
+interface HostVehicleData_VehiclePowertrain_Motor {
+    /** The type of the motor. */
+    type?: HostVehicleData_VehiclePowertrain_Motor_Type | undefined;
+    /**
+     * Revolutions per minute of the motor.
+     *
+     * Unit: 1/min
+     */
+    rpm?: number | undefined;
+    /**
+     * Torque of the motor.
+     *
+     * Unit: N*m
+     */
+    torque?: number | undefined;
+}
+/** Definition which type of motor is used. */
+declare enum HostVehicleData_VehiclePowertrain_Motor_Type {
+    /** UNKNOWN - The motor type is unknown. */
+    UNKNOWN = 0,
+    /** OTHER - It is another motor type. */
+    OTHER = 1,
+    /** OTTO - A motor working after the principle of Nicolaus Otto. */
+    OTTO = 2,
+    /** DIESEL - A motor working after the principle of Rudolf Diesel. */
+    DIESEL = 3,
+    /** ELECTRIC - A motor working electric. */
+    ELECTRIC = 4
+}
+/** \brief The focus here is on the description of the brake system. */
+interface HostVehicleData_VehicleBrakeSystem {
+    /**
+     * Position of the brake pedal.
+     * Range: 0-1 (Unpressed - fully pressed)
+     */
+    pedal_position_brake?: number | undefined;
+}
+/** \brief The focus here is on the description of the steering train. */
+interface HostVehicleData_VehicleSteering {
+    /** Description of the steering wheel. */
+    vehicle_steering_wheel?: VehicleSteeringWheel | undefined;
+}
+/** \brief The focus here is on the description of internal wheel states. */
+interface HostVehicleData_VehicleWheels {
+    /**
+     * Description of each wheel.
+     *
+     * \note OSI uses singular instead of plural for repeated field names.
+     */
+    wheel_data?: HostVehicleData_VehicleWheels_WheelData[] | undefined;
+}
+/** \brief The focus here is on the description of internal wheel states. */
+interface HostVehicleData_VehicleWheels_WheelData {
+    /**
+     * The axle which contains this wheel. A value of 0 represents the
+     * foremost axle of the vehicle, with higher numbers ascending
+     * towards the rearmost axle.
+     */
+    axle?: number | undefined;
+    /**
+     * The index of the wheel on the axle, counted in positive y- direction,
+     * that is, right-to-left.
+     *
+     * For example, on a standard 2-axle, 4-wheel car, the rear-right
+     * wheel would be (axle=1, index=0).
+     * This concept also works for twin tires.
+     */
+    index?: number | undefined;
+    /**
+     * Rotation rate of the wheel based on the processed output of the hall sensor measurements at the wheel.
+     * The rotation rate around the y-axis with respect to the wheel's coordinate system.
+     *
+     * Unit: rad/s.
+     *
+     * The sign convention is defined using the right-hand rule.
+     * It is applied on the y-axis of the vehicle's reference system, that is, the center of bounding box.
+     * Counterclockwise is positive and clockwise is negative.
+     *
+     * \image html OSI_RotationRate.svg
+     * \note The vehicle's reference coordinate system is only used to determine the sign convention of the rotation rate.
+     */
+    rotation_rate?: number | undefined;
+    /**
+     * Contains the longitudinal, measured slip of the tire.
+     * \par References:
+     * [1] kfz-tech.de, Schlupf, Retrieved June 30, 2021, from https://www.kfz-tech.de/Biblio/Formelsammlung/Schlupf.htm
+     *
+     * Unit: %
+     *
+     * The sign convention is defined using the right-hand rule.
+     * It is applied on the y-axis of the vehicle's reference system, that is, the center of bounding box.
+     * Counterclockwise is positive and clockwise is negative.
+     */
+    slip?: number | undefined;
+}
+/**
+ * \brief Current calculated and estimated location that can be based on GNSS and related navigation sensors.
+ * This message does not contain the individual sensor values of the sensor technology.
+ *
+ * This message contains the most accurate information the vehicle knows about its position
+ * available in the on-board network.
+ * Because of this the values can differ from the "true" values calculated out of
+ * GroundTruth::proj_string, GroundTruth::MovingObject::BaseMoving::position, GroundTruth::host_vehicle_id.
+ *
+ * This data uses the reference point coincident with the center (x,y,z) of the bounding box.
+ */
+interface HostVehicleData_VehicleLocalization {
+    /**
+     * Most accurate position information of the vehicle available in the on-board network
+     * measured in context to the global coordinate system.
+     */
+    position?: Vector3d | undefined;
+    /**
+     * Most accurate orientation information of the vehicle available in the on-board network
+     * measured in context to the global coordinate system.
+     */
+    orientation?: Orientation3d | undefined;
+    /** Most accurate geodetic information of the vehicle available in the on-board network. */
+    geodetic_position?: GeodeticPosition | undefined;
+}
+/**
+ * \brief Current calculated and estimated motion related information.
+ *
+ * This message contains the most accurate information the vehicle knows about its motion
+ * including vehicle dynamics and control related information available in the on-board network,
+ * which can differ from the "true" values calculated out of the ground truth.
+ *
+ * This data uses the reference point coincident with the middle (in x, y and z) of rear axle
+ * under neutral load conditions as defined in \c MovingObject::VehicleAttributes::bbcenter_to_rear.
+ */
+interface HostVehicleData_VehicleMotion {
+    /**
+     * Most accurate position of the vehicle available in the on-board network
+     * measured in the cartesian global coordinate system.
+     */
+    position?: Vector3d | undefined;
+    /**
+     * Most accurate orientation information of the vehicle available in the on-board network
+     * measured on the vehicle coordinate system in context of the global inertial system.
+     */
+    orientation?: Orientation3d | undefined;
+    /**
+     * Most accurate velocity information of the vehicle, available in the on-board network
+     * measured on the vehicle coordinate system in context of the global inertial system.
+     */
+    velocity?: Vector3d | undefined;
+    /**
+     * Most accurate orientation rate of the vehicle, available in the on-board network
+     * measured on the vehicle coordinate system in context of the global inertial system.
+     */
+    orientation_rate?: Orientation3d | undefined;
+    /**
+     * Most accurate acceleration information of the vehicle, available in the on-board network
+     * measured on the vehicle coordinate system in context of the global inertial system.
+     */
+    acceleration?: Vector3d | undefined;
+    /**
+     * Most accurate curvature currently followed by vehicle and available in the on-board network
+     *
+     * Unit: m^-1
+     */
+    current_curvature?: number | undefined;
+}
+/** \brief State of one automated driving function on the host vehicle. */
+interface HostVehicleData_VehicleAutomatedDrivingFunction {
+    /** The particular driving function being reported about. */
+    name?: HostVehicleData_VehicleAutomatedDrivingFunction_Name | undefined;
+    /**
+     * Custom driving function name.
+     *
+     * Only used if name is set to NAME_OTHER.
+     */
+    custom_name?: string | undefined;
+    /**
+     * The state of the function.
+     *
+     * This is whether the function has actually been triggered, for
+     * example, a warning has been raised, or additional braking is
+     * in effect.
+     */
+    state?: HostVehicleData_VehicleAutomatedDrivingFunction_State | undefined;
+    /**
+     * Custom state.
+     *
+     * Only used if the state is set to STATE_OTHER.
+     */
+    custom_state?: string | undefined;
+    /** Whether, and how, the driver has overridden this function. */
+    driver_override?: HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride | undefined;
+    /**
+     * Custom detail.
+     *
+     * An opaque set of key-value pairs which capture any user specific
+     * details that may be relevant.  This could include details about
+     * how a warning was raised (dashboard, audible, etc.) or it could
+     * be about settings which would influence evaluation, such as
+     * sensitivity settings.
+     */
+    custom_detail?: KeyValuePair[] | undefined;
+}
+/**
+ * A list of possible automated driving features.
+ *
+ * \note This can span (in theory) from Level 0 all the way to Level 5.
+ *
+ * \par References:
+ * [1] CLEARING THE CONFUSION: Recommended Common Naming for Advanced Driver Assistance Technologies, SAE International, Retrieved October 22, 2021, from https://www.sae.org/binaries/content/assets/cm/content/miscellaneous/adas-nomenclature.pdf
+ * [2] Automated Driving, German Association of the Automotive Industry (VDA), Retrieved October 22, 2021, from https://www.vda.de/en/topics/innovation-and-technology/automated-driving/automated-driving
+ */
+declare enum HostVehicleData_VehicleAutomatedDrivingFunction_Name {
+    /** UNKNOWN - Unknown feature, should not be used. */
+    UNKNOWN = 0,
+    /** OTHER - Custom feature, see custom_name. */
+    OTHER = 1,
+    /** BLIND_SPOT_WARNING - Blind spot warning. */
+    BLIND_SPOT_WARNING = 2,
+    /** FORWARD_COLLISION_WARNING - Forward collision warning. */
+    FORWARD_COLLISION_WARNING = 3,
+    /** LANE_DEPARTURE_WARNING - Lane departure warning. */
+    LANE_DEPARTURE_WARNING = 4,
+    /** PARKING_COLLISION_WARNING - Parking collision warning. */
+    PARKING_COLLISION_WARNING = 5,
+    /** REAR_CROSS_TRAFFIC_WARNING - Rear cross-traffic warning */
+    REAR_CROSS_TRAFFIC_WARNING = 6,
+    /** AUTOMATIC_EMERGENCY_BRAKING - Automatic emergency braking */
+    AUTOMATIC_EMERGENCY_BRAKING = 7,
+    /** AUTOMATIC_EMERGENCY_STEERING - Emergency steering */
+    AUTOMATIC_EMERGENCY_STEERING = 8,
+    /** REVERSE_AUTOMATIC_EMERGENCY_BRAKING - Reverse automatic emergency braking */
+    REVERSE_AUTOMATIC_EMERGENCY_BRAKING = 9,
+    /** ADAPTIVE_CRUISE_CONTROL - Adaptive cruise control */
+    ADAPTIVE_CRUISE_CONTROL = 10,
+    /** LANE_KEEPING_ASSIST - Lane keeping assist */
+    LANE_KEEPING_ASSIST = 11,
+    /** ACTIVE_DRIVING_ASSISTANCE - Active driving assistance */
+    ACTIVE_DRIVING_ASSISTANCE = 12,
+    /** BACKUP_CAMERA - Backup camera */
+    BACKUP_CAMERA = 13,
+    /** SURROUND_VIEW_CAMERA - Surround view camera */
+    SURROUND_VIEW_CAMERA = 14,
+    /** ACTIVE_PARKING_ASSISTANCE - Active parking assistance */
+    ACTIVE_PARKING_ASSISTANCE = 15,
+    /** REMOTE_PARKING_ASSISTANCE - Remote parking assistance */
+    REMOTE_PARKING_ASSISTANCE = 16,
+    /** TRAILER_ASSISTANCE - Trailer assistance */
+    TRAILER_ASSISTANCE = 17,
+    /** AUTOMATIC_HIGH_BEAMS - Automatic high beams */
+    AUTOMATIC_HIGH_BEAMS = 18,
+    /** DRIVER_MONITORING - Driver monitoring */
+    DRIVER_MONITORING = 19,
+    /** HEAD_UP_DISPLAY - Head up display */
+    HEAD_UP_DISPLAY = 20,
+    /** NIGHT_VISION - Night vision */
+    NIGHT_VISION = 21,
+    /** URBAN_DRIVING - Urban driving */
+    URBAN_DRIVING = 22,
+    /** HIGHWAY_AUTOPILOT - Highway autopilot. */
+    HIGHWAY_AUTOPILOT = 23,
+    /** CRUISE_CONTROL - Cruise control. */
+    CRUISE_CONTROL = 24,
+    /** SPEED_LIMIT_CONTROL - Speed limit control */
+    SPEED_LIMIT_CONTROL = 25
+}
+/**
+ * The state that the feature is in.
+ *
+ * \note Not all of these will be applicable for all vehicles
+ * and features.
+ */
+declare enum HostVehicleData_VehicleAutomatedDrivingFunction_State {
+    /** UNKNOWN - An unknown state, this should not be used. */
+    UNKNOWN = 0,
+    /**
+     * OTHER - Used for custom states not covered by the definitions below.
+     *
+     * A string state can be specified in custom_state.
+     */
+    OTHER = 1,
+    /** ERRORED - The function has thrown an error in some way that renders it ineffective. */
+    ERRORED = 2,
+    /**
+     * UNAVAILABLE - The function cannot be used due to unfulfilled preconditions,
+     * for example it is a highway only feature and the vehicle is in
+     * an urban environment.
+     */
+    UNAVAILABLE = 3,
+    /**
+     * AVAILABLE - The function can be used as all preconditions are satisfied, but
+     * it hasn't been enabled.
+     */
+    AVAILABLE = 4,
+    /**
+     * STANDBY - The function is available but conditions have not caused it to be
+     * triggered, for example, no vehicles in front to trigger a forward collision warning.
+     */
+    STANDBY = 5,
+    /**
+     * ACTIVE - The function is currently active, for example, a warning is being
+     * shown to the driver, or emergency braking is being applied/
+     */
+    ACTIVE = 6
+}
+/**
+ * \brief Driver override information
+ *
+ * Information about whether and how and driver may have overridden
+ * an automated driving function.
+ */
+interface HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride {
+    /**
+     * The feature has been overridden by a driver action.
+     *
+     * \note If false, the rest of this message should be ignored.
+     */
+    active?: boolean | undefined;
+    /** What driver inputs have caused the override. */
+    override_reason?: HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride_Reason[] | undefined;
+}
+/** Ways in which a driver could override a driving function. */
+declare enum HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride_Reason {
+    /** BRAKE_PEDAL - The driver has applied sufficient input via the break pedal. */
+    BRAKE_PEDAL = 0,
+    /** STEERING_INPUT - The driver has applied sufficient steering input. */
+    STEERING_INPUT = 1
 }
 
 /**
@@ -13370,7 +17851,13 @@ interface HostVehicleData {
  * not always be the preferred approach for reasons of IP protection.
  */
 interface SensorViewConfiguration {
-    /** The interface version used by the sender (simulation environment). */
+    /**
+     * The interface version used by the sender (simulation environment).
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
     version?: InterfaceVersion | undefined;
     /**
      * The ID of the sensor at host vehicle's mounting_position.
@@ -13381,6 +17868,10 @@ interface SensorViewConfiguration {
      *
      * The ID is to be provided by the environment simulation, the sensor
      * model is not in a position to provide a useful default value.
+     *
+     * \rules
+     * is_set
+     * \endrules
      */
     sensor_id?: Identifier | undefined;
     /**
@@ -13399,8 +17890,8 @@ interface SensorViewConfiguration {
      * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
      * right hand system
      *
-     * \par References:
-     * - [1] DIN ISO 8855:2013-11
+     * \par Reference:
+     * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
      *
      * \note The origin of vehicle's coordinate system in world frame is
      * ( \c MovingObject::base . \c BaseMoving::position +
@@ -13425,7 +17916,9 @@ interface SensorViewConfiguration {
      * that the simulation environment has to provide.
      * Viewing range: [- \c #field_of_view_horizontal/2,  \c
      * #field_of_view_horizontal/2] azimuth in the sensor frame as defined in \c
-     * Spherical3d. Unit: [rad]
+     * Spherical3d.
+     *
+     * Unit: rad
      */
     field_of_view_horizontal?: number | undefined;
     /**
@@ -13437,7 +17930,7 @@ interface SensorViewConfiguration {
      * #field_of_view_vertical/2] elevation in the sensor frame at zero azimuth
      * as defined in \c Spherical3d.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     field_of_view_vertical?: number | undefined;
     /**
@@ -13446,7 +17939,11 @@ interface SensorViewConfiguration {
      * This determines the limit of the cone of interest of ground truth
      * that the simulation environment has to provide.
      *
-     * Unit: [m]
+     * Unit: m
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     range?: number | undefined;
     /**
@@ -13455,7 +17952,7 @@ interface SensorViewConfiguration {
      * This specifies the rate at which the sensor model is provided with
      * new input data.
      *
-     * Unit: [s]
+     * Unit: s
      * \note In the case of FMU packaging this will correspond to the
      * communication step size.
      */
@@ -13476,9 +17973,9 @@ interface SensorViewConfiguration {
      * update to the sensor input should happen at 0.048s, or 0.018s
      * after simulation start. This convention is needed to ensure
      * stable phase position of the offset in the case of changing
-     * simulation start times, e.g. for partial resimulation.
+     * simulation start times, e.g. for partial re-simulation.
      *
-     * Unit: [s]
+     * Unit: s
      */
     update_cycle_offset?: Timestamp | undefined;
     /**
@@ -13488,38 +17985,32 @@ interface SensorViewConfiguration {
      * has chosen. This field has no defined meaning if provided by
      * the sensor model.
      *
-     * Unit: [s]
+     * Unit: s
      */
     simulation_start_time?: Timestamp | undefined;
     /**
-     * Generic Sensor View Configuration(s).
+     * Omit Static Information
      *
-     * \note OSI uses singular instead of plural for repeated field names.
+     * This flag specifies whether \c GroundTruth information that
+     * was already provided using a GroundTruthInit parameter (e.g. <a href="https://opensimulationinterface.github.io/osi-antora-generator/asamosi/latest/sensor-model/spec/ground_truth_init_parameters.html">OSMP GroundTruthInit</a>)
+     * at initialization time shall be omitted from the \c SensorView
+     * ground truth information.
+     *
+     * Setting the \c #omit_static_information field allows a clear split
+     * between the dynamic simulation data, which is contained in ground truth
+     * messages with the \c #omit_static_information flag, and the static
+     * simulation data, which is contained in the (OSMP) GroundTruthInit.
      */
+    omit_static_information?: boolean | undefined;
+    /** Generic Sensor View Configuration(s). */
     generic_sensor_view_configuration?: GenericSensorViewConfiguration[] | undefined;
-    /**
-     * Radar-specific Sensor View Configuration(s).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** Radar-specific Sensor View Configuration(s). */
     radar_sensor_view_configuration?: RadarSensorViewConfiguration[] | undefined;
-    /**
-     * Lidar-specific Sensor View Configuration(s).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** Lidar-specific Sensor View Configuration(s). */
     lidar_sensor_view_configuration?: LidarSensorViewConfiguration[] | undefined;
-    /**
-     * Camera-specific Sensor View Configuration(s).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** Camera-specific Sensor View Configuration(s). */
     camera_sensor_view_configuration?: CameraSensorViewConfiguration[] | undefined;
-    /**
-     * Ultrasonic-specific Sensor View Configuration(s).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** Ultrasonic-specific Sensor View Configuration(s). */
     ultrasonic_sensor_view_configuration?: UltrasonicSensorViewConfiguration[] | undefined;
 }
 /**
@@ -13549,8 +18040,8 @@ interface GenericSensorViewConfiguration {
      * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
      * right hand system
      *
-     * \par References:
-     * - [1] DIN ISO 8855:2013-11
+     * \par Reference:
+     * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
      *
      * \note The origin of vehicle's coordinate system in world frame is
      * ( \c MovingObject::base . \c BaseMoving::position +
@@ -13575,7 +18066,7 @@ interface GenericSensorViewConfiguration {
      * #field_of_view_horizontal/2] azimuth in the sensor frame as defined in \c
      * Spherical3d.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     field_of_view_horizontal?: number | undefined;
     /**
@@ -13585,7 +18076,7 @@ interface GenericSensorViewConfiguration {
      * #field_of_view_vertical/2] elevation in the sensor frame at zero azimuth
      * as defined in \c Spherical3d.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     field_of_view_vertical?: number | undefined;
 }
@@ -13616,8 +18107,8 @@ interface RadarSensorViewConfiguration {
      * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
      * right hand system
      *
-     * \par References:
-     * - [1] DIN ISO 8855:2013-11
+     * \par Reference:
+     * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
      *
      * \note The origin of vehicle's coordinate system in world frame is
      * ( \c MovingObject::base . \c BaseMoving::position +
@@ -13642,7 +18133,7 @@ interface RadarSensorViewConfiguration {
      * #field_of_view_horizontal/2] azimuth in the sensor frame as defined in \c
      * Spherical3d.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     field_of_view_horizontal?: number | undefined;
     /**
@@ -13652,7 +18143,7 @@ interface RadarSensorViewConfiguration {
      * #field_of_view_vertical/2] elevation in the sensor frame at zero azimuth
      * as defined in \c Spherical3d.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     field_of_view_vertical?: number | undefined;
     /**
@@ -13660,6 +18151,10 @@ interface RadarSensorViewConfiguration {
      *
      * \note This is a characteristic of the ray tracing engine of the
      * environment simulation, not a direct characteristic of the sensor.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 1
+     * \endrules
      */
     number_of_rays_horizontal?: number | undefined;
     /**
@@ -13667,6 +18162,10 @@ interface RadarSensorViewConfiguration {
      *
      * \note This is a characteristic of the ray tracing engine of the
      * environment simulation, not a direct characteristic of the sensor.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 1
+     * \endrules
      */
     number_of_rays_vertical?: number | undefined;
     /**
@@ -13674,6 +18173,10 @@ interface RadarSensorViewConfiguration {
      *
      * \note This is a characteristic of the ray tracing engine of the
      * environment simulation, not a direct characteristic of the sensor.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 1
+     * \endrules
      */
     max_number_of_interactions?: number | undefined;
     /**
@@ -13687,20 +18190,16 @@ interface RadarSensorViewConfiguration {
      * through frequency adjustments. For material and geometry interaction
      * purposes the frequency is also relevant.
      *
-     * Unit: [Hz]
+     * Unit: Hz
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     emitter_frequency?: number | undefined;
-    /**
-     * This represents the TX antenna diagram
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** This represents the TX antenna diagram */
     tx_antenna_diagram?: RadarSensorViewConfiguration_AntennaDiagramEntry[] | undefined;
-    /**
-     * This represents the RX antenna diagram
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** This represents the RX antenna diagram */
     rx_antenna_diagram?: RadarSensorViewConfiguration_AntennaDiagramEntry[] | undefined;
 }
 /**
@@ -13713,21 +18212,21 @@ interface RadarSensorViewConfiguration_AntennaDiagramEntry {
      * Horizontal deflection (azimuth) of entry in sensor/antenna
      * coordinates.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     horizontal_angle?: number | undefined;
     /**
      * Vertical deflection (elevation) of entry in sensor/antenna
      * coordinates.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     vertical_angle?: number | undefined;
     /**
      * Response of antenna at this point (positive dB is gain,
      * negative dB is attenuation).
      *
-     * Unit: [dB]
+     * Unit: dB
      */
     response?: number | undefined;
 }
@@ -13758,8 +18257,8 @@ interface LidarSensorViewConfiguration {
      * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
      * right hand system
      *
-     * \par References:
-     * - [1] DIN ISO 8855:2013-11
+     * \par Reference:
+     * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
      *
      * \note The origin of vehicle's coordinate system in world frame is
      * ( \c MovingObject::base . \c BaseMoving::position +
@@ -13784,7 +18283,7 @@ interface LidarSensorViewConfiguration {
      * #field_of_view_horizontal/2] azimuth in the sensor frame as defined in \c
      * Spherical3d.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     field_of_view_horizontal?: number | undefined;
     /**
@@ -13794,7 +18293,7 @@ interface LidarSensorViewConfiguration {
      * #field_of_view_vertical/2] elevation in the sensor frame at zero azimuth
      * as defined in \c Spherical3d.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     field_of_view_vertical?: number | undefined;
     /**
@@ -13802,6 +18301,10 @@ interface LidarSensorViewConfiguration {
      *
      * \note This is a characteristic of the ray tracing engine of the
      * environment simulation, not a direct characteristic of the sensor.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 1
+     * \endrules
      */
     number_of_rays_horizontal?: number | undefined;
     /**
@@ -13809,6 +18312,10 @@ interface LidarSensorViewConfiguration {
      *
      * \note This is a characteristic of the ray tracing engine of the
      * environment simulation, not a direct characteristic of the sensor.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 1
+     * \endrules
      */
     number_of_rays_vertical?: number | undefined;
     /**
@@ -13816,6 +18323,10 @@ interface LidarSensorViewConfiguration {
      *
      * \note This is a characteristic of the ray tracing engine of the
      * environment simulation, not a direct characteristic of the sensor.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 1
+     * \endrules
      */
     max_number_of_interactions?: number | undefined;
     /**
@@ -13829,13 +18340,21 @@ interface LidarSensorViewConfiguration {
      * through frequency adjustments. For material and geometry interaction
      * purposes the frequency is also relevant.
      *
-     * Unit: [Hz]
+     * Unit: Hz
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 0
+     * \endrules
      */
     emitter_frequency?: number | undefined;
     /**
      * Number of pixels in frame.
      *
      * This field includes the number of pixels in each frame
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 1
+     * \endrules
      */
     num_of_pixels?: number | undefined;
     /**
@@ -13881,8 +18400,8 @@ interface CameraSensorViewConfiguration {
      * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
      * right hand system
      *
-     * \par References:
-     * - [1] DIN ISO 8855:2013-11
+     * \par Reference:
+     * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
      *
      * \note The origin of vehicle's coordinate system in world frame is
      * ( \c MovingObject::base . \c BaseMoving::position +
@@ -13907,7 +18426,7 @@ interface CameraSensorViewConfiguration {
      * #field_of_view_horizontal/2] azimuth in the sensor frame as defined in \c
      * Spherical3d.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     field_of_view_horizontal?: number | undefined;
     /**
@@ -13917,7 +18436,7 @@ interface CameraSensorViewConfiguration {
      * #field_of_view_vertical/2] elevation in the sensor frame at zero azimuth
      * as defined in \c Spherical3d.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     field_of_view_vertical?: number | undefined;
     /**
@@ -13925,6 +18444,10 @@ interface CameraSensorViewConfiguration {
      *
      * \note This is a characteristic of the rendering engine of the
      * environment simulation, not a direct characteristic of the sensor.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 1
+     * \endrules
      */
     number_of_pixels_horizontal?: number | undefined;
     /**
@@ -13932,6 +18455,10 @@ interface CameraSensorViewConfiguration {
      *
      * \note This is a characteristic of the rendering engine of the
      * environment simulation, not a direct characteristic of the sensor.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 1
+     * \endrules
      */
     number_of_pixels_vertical?: number | undefined;
     /**
@@ -13948,8 +18475,86 @@ interface CameraSensorViewConfiguration {
      * be one of the values the sensor model requested - or there
      * must be no value, indicating that the simulation environment
      * cannot provide image data in one of the requested formats.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 1
+     * \endrules
      */
     channel_format?: CameraSensorViewConfiguration_ChannelFormat[] | undefined;
+    /**
+     * Number of samples per pixel.
+     *
+     * \note This is a characteristic of the ray tracing engine of the
+     * environment simulation, not a direct characteristic of the sensor.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 1
+     * \endrules
+     */
+    samples_per_pixel?: number | undefined;
+    /**
+     * Maximum number of interactions to take into account.
+     *
+     * \note This is a characteristic of the ray tracing engine of the
+     * environment simulation, not a direct characteristic of the sensor.
+     *
+     * \rules
+     * is_greater_than_or_equal_to: 1
+     * \endrules
+     */
+    max_number_of_interactions?: number | undefined;
+    /**
+     * In use-cases where a spectral ray-tracer is used, this message
+     * determines the range of the wavelength and its desired number
+     * of samples.
+     */
+    wavelength_data?: WavelengthData[] | undefined;
+    /**
+     * Indicates if and how the the pixel data is ordered
+     *
+     * The default value (PIXEL_ORDER_DEFAULT) indicates standard image
+     * pixel order (left-to-right, top-to-bottom). The other values can
+     * be used to indicate/request mirroring (right to left or bottom to top).
+     *
+     * \note For rotations of the pixel data, use the camera coordinate system.
+     */
+    pixel_order?: CameraSensorViewConfiguration_PixelOrder | undefined;
+}
+/**
+ * Pixel layout
+ *
+ * Pixel layout documents the order of pixels in the \c image_data
+ * in CameraSensorView.
+ *
+ * \note this enum does not contain an entry to do mirroring upside down
+ * and left-to-right at the same time, because this is equivalent to a
+ * 180-degree rotation, which should be indicated in the sensor coordinate
+ * system.
+ */
+declare enum CameraSensorViewConfiguration_PixelOrder {
+    /**
+     * DEFAULT - Pixel data is not mirrored (Default).
+     * Pixels are ordered left-to-right, top-to-bottom.
+     */
+    DEFAULT = 0,
+    /**
+     * OTHER - Known pixel order that is not supported by OSI.
+     * Consider proposing an additional format if using
+     * \c #PIXEL_ORDER_OTHER.
+     */
+    OTHER = 1,
+    /**
+     * RIGHT_LEFT_TOP_BOTTOM - Pixels are ordered right-to-left, top-to-bottom.
+     * Pixel data is mirrored along the vertical axis.
+     * The image is mirrored left-to-right.
+     */
+    RIGHT_LEFT_TOP_BOTTOM = 2,
+    /**
+     * LEFT_RIGHT_BOTTOM_TOP - Pixels are ordered left-to-right, bottom-to-top.
+     * Pixel data is mirrored along the horizontal axis.
+     * The image is mirrored top-to-bottom.
+     */
+    LEFT_RIGHT_BOTTOM_TOP = 3
 }
 /** Channel format. */
 declare enum CameraSensorViewConfiguration_ChannelFormat {
@@ -13977,14 +18582,38 @@ declare enum CameraSensorViewConfiguration_ChannelFormat {
     RGB_U32_LIN = 8,
     /** RGB_F32_LIN - Packed RGB Channels (no padding) Single Precision FP Linear. */
     RGB_F32_LIN = 9,
-    /** BAYER_BGGR_U8_LIN - Bayer RGGB Channels UINT8 FP Linear. */
+    /** BAYER_BGGR_U8_LIN - Bayer BGGR Channels UINT8 FP Linear. */
     BAYER_BGGR_U8_LIN = 10,
-    /** BAYER_BGGR_U16_LIN - Bayer RGGB Channels UINT16 FP Linear. */
+    /** BAYER_BGGR_U16_LIN - Bayer BGGR Channels UINT16 FP Linear. */
     BAYER_BGGR_U16_LIN = 11,
-    /** BAYER_BGGR_U32_LIN - Bayer RGGB Channels UINT32 FP Linear. */
+    /** BAYER_BGGR_U32_LIN - Bayer BGGR Channels UINT32 FP Linear. */
     BAYER_BGGR_U32_LIN = 12,
-    /** BAYER_BGGR_F32_LIN - Bayer RGGB Channels Single Precision FP Linear. */
-    BAYER_BGGR_F32_LIN = 13
+    /** BAYER_BGGR_F32_LIN - Bayer BGGR Channels Single Precision FP Linear. */
+    BAYER_BGGR_F32_LIN = 13,
+    /** BAYER_RGGB_U8_LIN - Bayer RGGB Channels UINT8 FP Linear. */
+    BAYER_RGGB_U8_LIN = 14,
+    /** BAYER_RGGB_U16_LIN - Bayer RGGB Channels UINT16 FP Linear. */
+    BAYER_RGGB_U16_LIN = 15,
+    /** BAYER_RGGB_U32_LIN - Bayer RGGB Channels UINT32 FP Linear. */
+    BAYER_RGGB_U32_LIN = 16,
+    /** BAYER_RGGB_F32_LIN - Bayer RGGB Channels Single Precision FP Linear. */
+    BAYER_RGGB_F32_LIN = 17,
+    /** RCCC_U8_LIN - Red Clear Clear Clear Channels UINT8 FP Linear. */
+    RCCC_U8_LIN = 18,
+    /** RCCC_U16_LIN - Red Clear Clear Clear Channels UINT16 FP Linear. */
+    RCCC_U16_LIN = 19,
+    /** RCCC_U32_LIN - Red Clear Clear Clear Channels UINT32 FP Linear. */
+    RCCC_U32_LIN = 20,
+    /** RCCC_F32_LIN - Red Clear Clear Clear Channels Single Precision FP Linear. */
+    RCCC_F32_LIN = 21,
+    /** RCCB_U8_LIN - Red Clear Clear Blue Channels UINT8 FP Linear. */
+    RCCB_U8_LIN = 22,
+    /** RCCB_U16_LIN - Red Clear Clear Blue Channels UINT16 FP Linear. */
+    RCCB_U16_LIN = 23,
+    /** RCCB_U32_LIN - Red Clear Clear Blue Channels UINT32 FP Linear. */
+    RCCB_U32_LIN = 24,
+    /** RCCB_F32_LIN - Red Clear Clear Blue Channels Single Precision FP Linear. */
+    RCCB_F32_LIN = 25
 }
 /**
  * \brief The configuration settings for the Ultrasonic Sensor View to be
@@ -14013,8 +18642,8 @@ interface UltrasonicSensorViewConfiguration {
      * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
      * right hand system
      *
-     * \par References:
-     * - [1] DIN ISO 8855:2013-11
+     * \par Reference:
+     * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
      *
      * \note The origin of vehicle's coordinate system in world frame is
      * ( \c MovingObject::base . \c BaseMoving::position +
@@ -14039,7 +18668,7 @@ interface UltrasonicSensorViewConfiguration {
      * #field_of_view_horizontal/2] azimuth in the sensor frame as defined in \c
      * Spherical3d.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     field_of_view_horizontal?: number | undefined;
     /**
@@ -14049,7 +18678,7 @@ interface UltrasonicSensorViewConfiguration {
      * #field_of_view_vertical/2] elevation in the sensor frame at zero azimuth
      * as defined in \c Spherical3d.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     field_of_view_vertical?: number | undefined;
 }
@@ -14077,7 +18706,13 @@ interface UltrasonicSensorViewConfiguration {
  * depending on model architecture.
  */
 interface SensorView {
-    /** The interface version used by the sender (simulation environment). */
+    /**
+     * The interface version used by the sender (simulation environment).
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
     version?: InterfaceVersion | undefined;
     /**
      * The data timestamp of the simulation environment. Zero time is arbitrary
@@ -14089,6 +18724,10 @@ interface SensorView {
      * notional simulation time the data applies to and the time it was sent
      * (there is no inherent latency for sensor view data, as opposed to
      * sensor data).
+     *
+     * \rules
+     * is_set
+     * \endrules
      */
     timestamp?: Timestamp | undefined;
     /**
@@ -14097,26 +18736,32 @@ interface SensorView {
      * This is the ID of the virtual sensor, to be used in its detected
      * object output; it is distinct from the IDs of its physical detectors,
      * which are used in the detected features.
+     *
+     * \rules
+     * is_set
+     * \endrules
      */
     sensor_id?: Identifier | undefined;
     /**
-     * The virtual mounting position of the sensor (origin and orientation
-     * of the sensor coordinate system) given in vehicle coordinates [1].
-     * The virtual position pertains to the sensor as a whole, regardless
-     * of the actual position of individual physical detectors, and governs
-     * the sensor-relative coordinates in detected objects of the sensor
-     * as a whole. Individual features detected by individual physical
-     * detectors are governed by the actual physical mounting positions
-     * of the detectors, as indicated in the technology-specific sub-views
-     * and sub-view configurations.
+     * The virtual mounting position of the sensor (origin and orientation of
+     * the sensor frame). Both origin and orientation are given in and with
+     * respect to the host vehicle coordinate system [1].
+     *
+     * The virtual position pertains to the sensor as a whole, regardless of the
+     * actual position of individual physical detectors, and governs the
+     * sensor-relative coordinates in detected objects of the sensor as a whole.
+     * Individual features detected by individual physical detectors are
+     * governed by the actual physical mounting positions of the detectors, as
+     * indicated in the technology-specific sub-views and sub-view
+     * configurations.
      *
      * \arg \b x-direction of sensor coordinate system: sensor viewing direction
      * \arg \b z-direction of sensor coordinate system: sensor (up)
      * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
      * right hand system
      *
-     * \par References:
-     * - [1] DIN ISO 8855:2013-11
+     * \par Reference:
+     * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
      *
      * \note This field is usually static during the simulation.
      * \note The origin of vehicle's coordinate system in world frame is
@@ -14127,6 +18772,10 @@ interface SensorView {
      * the vehicle's coordinate system is equal to the orientation of the
      * vehicle's bounding box \c MovingObject::base . \c
      * BaseMoving::orientation.
+     *
+     * \rules
+     * is_set
+     * \endrules
      */
     mounting_position?: MountingPosition | undefined;
     /** The root mean squared error of the mounting position. */
@@ -14143,45 +18792,37 @@ interface SensorView {
      * Ground truth w.r.t. global coordinate system.
      *
      * This is the ground truth that is provided to the sensor model by the
-     * simulation environment. It is filtered as per the requirements of the
-     * sensor model as expressed by the \c SensorViewConfiguration message(s)
-     * that where exchanged during the simulation initialization phase.
+     * simulation environment. It may be filtered as per the requirements of
+     * the sensor model as expressed by the \c SensorViewConfiguration
+     * message(s) that where exchanged during the simulation initialization
+     * phase.
      *
      * \note The host vehicle is always contained in the ground truth provided,
-     * regardless of any filtering.
+     * regardless of any filtering. The ground truth MUST contain at least as
+     * much of the ground truth data, as is requested by the sensor model, but
+     * MAY always contain more data, since the filtering is intended only as
+     * an optimization mechanism, not as a replacement of a proper sensor
+     * field of view modeling.
      */
     global_ground_truth?: GroundTruth | undefined;
-    /** The ID of the host vehicle in the \c #global_ground_truth data. */
+    /**
+     * The ID of the host vehicle in the \c #global_ground_truth data.
+     *
+     * \rules
+     * refers_to: 'MovingObject'
+     * is_set
+     * \endrules
+     */
     host_vehicle_id?: Identifier | undefined;
-    /**
-     * Generic SensorView(s).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** Generic SensorView(s). */
     generic_sensor_view?: GenericSensorView[] | undefined;
-    /**
-     * Radar-specific SensorView(s).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** Radar-specific SensorView(s). */
     radar_sensor_view?: RadarSensorView[] | undefined;
-    /**
-     * Lidar-specific SensorView(s).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** Lidar-specific SensorView(s). */
     lidar_sensor_view?: LidarSensorView[] | undefined;
-    /**
-     * Camera-specific SensorView(s).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** Camera-specific SensorView(s). */
     camera_sensor_view?: CameraSensorView[] | undefined;
-    /**
-     * Ultrasonic-specific SensorView(s).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** Ultrasonic-specific SensorView(s). */
     ultrasonic_sensor_view?: UltrasonicSensorView[] | undefined;
 }
 /**
@@ -14206,8 +18847,6 @@ interface RadarSensorView {
      *
      * This field includes one entry for each ray, in left-to-right,
      * top-to-bottom order (think of scan lines in a TV).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     reflection?: RadarSensorView_Reflection[] | undefined;
 }
@@ -14221,7 +18860,7 @@ interface RadarSensorView_Reflection {
      * into account, and will, when multiplied by TX power yield the
      * actual RX power.
      *
-     * Unit: [dB]
+     * Unit: dB
      */
     signal_strength?: number | undefined;
     /**
@@ -14230,7 +18869,7 @@ interface RadarSensorView_Reflection {
      * This is the time of flight of the reflection, which is directly
      * proportional to the distance traveled.
      *
-     * Unit: [s]
+     * Unit: s
      */
     time_of_flight?: number | undefined;
     /**
@@ -14238,7 +18877,7 @@ interface RadarSensorView_Reflection {
      *
      * Shift in frequency based on the specified TX frequency.
      *
-     * Unit: [Hz]
+     * Unit: Hz
      */
     doppler_shift?: number | undefined;
     /**
@@ -14247,7 +18886,7 @@ interface RadarSensorView_Reflection {
      * Horizontal angle of incidence of the source of the reflection
      * at the TX antenna.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     source_horizontal_angle?: number | undefined;
     /**
@@ -14256,7 +18895,7 @@ interface RadarSensorView_Reflection {
      * Vertical angle of incidence of the source of the reflection
      * at the TX antenna.
      *
-     * Unit: [rad]
+     * Unit: rad
      */
     source_vertical_angle?: number | undefined;
 }
@@ -14273,8 +18912,6 @@ interface LidarSensorView {
      *
      * This field includes one entry for each ray, in left-to-right,
      * top-to-bottom order (think of scan lines in a TV).
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     reflection?: LidarSensorView_Reflection[] | undefined;
 }
@@ -14287,7 +18924,7 @@ interface LidarSensorView_Reflection {
      * into account, and will, when multiplied by TX power yield the
      * potential RX power (disregarding any other RX/TX losses).
      *
-     * Unit: [dB]
+     * Unit: dB
      */
     signal_strength?: number | undefined;
     /**
@@ -14296,7 +18933,7 @@ interface LidarSensorView_Reflection {
      * This is the time of flight of the reflection, which is directly
      * proportional to the distance traveled.
      *
-     * Unit: [s]
+     * Unit: s
      */
     time_of_flight?: number | undefined;
     /**
@@ -14304,21 +18941,21 @@ interface LidarSensorView_Reflection {
      *
      * Shift in frequency based on the specified TX frequency.
      *
-     * Unit: [Hz]
+     * Unit: Hz
      */
     doppler_shift?: number | undefined;
     /**
      * normal to surface angle.
      *
-     * The normal of the transmitted beam to the object, roadmarking etc
+     * The normal of the transmitted beam to the object, road marking, etc.
      * encounter. \note data is in Lidar coordinate system
      *
-     * Unit: [unit vector]
+     * Unit: unit vector
      */
     normal_to_surface?: Vector3d | undefined;
     /**
      * ID of the detected object this reflection is associated to.
-     * can be used for raytracing debug
+     * can be used for ray tracing debug
      *
      * \note ID = MAX(uint64) indicates no reference to an object.
      */
@@ -14335,8 +18972,10 @@ interface CameraSensorView {
     /**
      * Raw image data.
      *
-     * The raw image data in the memory layout and order specified by the
-     * camera sensor input configuration.
+     * The raw image data in the memory layout specified by the camera
+     * sensor input configuration. The pixel order is specified in
+     * CameraSensorViewConfiguration.pixel_order with the
+     * default value PIXEL_ORDER_DEFAULT (i.e. left-to-right, top-to-bottom).
      */
     image_data?: Uint8Array | undefined;
 }
@@ -14407,13 +19046,19 @@ declare enum DetectedEntityHeader_DataQualifier {
  *
  * Sensor fusion models can consolidate multiple \c SensorData interfaces into
  * one consolidated \c SensorData interface.  This can happen either in
- * seperate logical models, consuming and producing \c SensorData interfaces,
+ * separate logical models, consuming and producing \c SensorData interfaces,
  * or it can happen as part of a combined sensor/logical model, that consumes
  * \c SensorView interfaces and directly produces one consolidated \c SensorData
  * output.
  */
 interface SensorData {
-    /** The interface version used by the sender. */
+    /**
+     * The interface version used by the sender.
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
     version?: InterfaceVersion | undefined;
     /**
      * The timestamp of the sensor data. Zero time is arbitrary but must be
@@ -14440,6 +19085,10 @@ interface SensorData {
      * For a sensor model that does not know its own internal latencies (e.g.
      * a dumb sensor with no internal time concept), the two timestamps might
      * also be identical, but delayed from the \c GroundTruth timestamp.
+     *
+     * \rules
+     * is_set
+     * \endrules
      */
     timestamp?: Timestamp | undefined;
     /**
@@ -14467,6 +19116,10 @@ interface SensorData {
      * This is the ID of the virtual sensor, to be used in its detected
      * object output; it is distinct from the IDs of its physical detectors,
      * which are used in the detected features.
+     *
+     * \rules
+     * is_set
+     * \endrules
      */
     sensor_id?: Identifier | undefined;
     /**
@@ -14485,8 +19138,8 @@ interface SensorData {
      * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
      * right hand system
      *
-     * \par References:
-     * - [1] DIN ISO 8855:2013-11
+     * \par Reference:
+     * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
      *
      * \note This field is usually static during the simulation.
      * \note The origin of vehicle's coordinate system in world frame is
@@ -14497,6 +19150,10 @@ interface SensorData {
      * the vehicle's coordinate system is equal to the orientation of the
      * vehicle's bounding box \c MovingObject::base . \c
      * BaseMoving::orientation.
+     *
+     * \rules
+     * is_set
+     * \endrules
      */
     mounting_position?: MountingPosition | undefined;
     /** The root mean squared error of the mounting position. */
@@ -14507,8 +19164,6 @@ interface SensorData {
      * This provides a copy of the \c SensorView data received by the sensor
      * for reference purposes.  For complex sensors or logic models this
      * can be multiple copies.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     sensor_view?: SensorView[] | undefined;
     /**
@@ -14529,58 +19184,34 @@ interface SensorData {
     /**
      * The list of moving objects detected by the sensor as perceived by
      * the sensor.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     moving_object?: DetectedMovingObject[] | undefined;
     /** General information about the \c DetectedTrafficSign . */
     traffic_sign_header?: DetectedEntityHeader | undefined;
-    /**
-     * The list of traffic signs detected by the sensor.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** The list of traffic signs detected by the sensor. */
     traffic_sign?: DetectedTrafficSign[] | undefined;
     /** General information about the \c DetectedTrafficLight . */
     traffic_light_header?: DetectedEntityHeader | undefined;
-    /**
-     * The list of traffic lights detected by the sensor.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** The list of traffic lights detected by the sensor. */
     traffic_light?: DetectedTrafficLight[] | undefined;
     /** General information about the \c DetectedRoadMarking . */
     road_marking_header?: DetectedEntityHeader | undefined;
     /**
      * The list of road markings detected by the sensor.
      * This excludes lane boundary markings.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
      */
     road_marking?: DetectedRoadMarking[] | undefined;
     /** General information about the \c DetectedLaneBoundary . */
     lane_boundary_header?: DetectedEntityHeader | undefined;
-    /**
-     * The list of lane boundary markings detected by the sensor.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** The list of lane boundary markings detected by the sensor. */
     lane_boundary?: DetectedLaneBoundary[] | undefined;
     /** General information about the \c DetectedLane . */
     lane_header?: DetectedEntityHeader | undefined;
-    /**
-     * The list of lanes detected by the sensor
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** The list of lanes detected by the sensor */
     lane?: DetectedLane[] | undefined;
     /** General information about the \c DetectedOccupant . */
     occupant_header?: DetectedEntityHeader | undefined;
-    /**
-     * The list of occupants of the host vehicle
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** The list of occupants of the host vehicle */
     occupant?: DetectedOccupant[] | undefined;
     /**
      * Low level feature data interface.
@@ -14590,6 +19221,52 @@ interface SensorData {
      * object hypothesis and tracking.
      */
     feature_data?: FeatureData | undefined;
+    /**
+     * Logical detection data interface.
+     *
+     * Logical detection data are provided by a transformation
+     * (and optional sensor fusion)
+     * performed by a sensor model or a logical model
+     * that fuses multiple sensors and/or sensor types
+     * into a single reference frame
+     * of the so called logical/virtual sensor.
+     * Therefore, all information is given with respect to
+     * the reference frame of the logical/virtual sensor
+     * \c SensorView::mounting_position (e.g. center of rear axle of the ego car)
+     * in cartesian coordinates.
+     */
+    logical_detection_data?: LogicalDetectionData | undefined;
+    /** Virtual detection area of the sensor */
+    virtual_detection_area?: SensorData_VirtualDetectionArea | undefined;
+    /**
+     * The system time of the modeled source of the sensor data, given
+     * in UTC (Unix Epoch timestamp).
+     *
+     * The system time can be used to transmit the internal time of the
+     * simulated component that supplies the sensor data, which might
+     * not coincide with the simulation time as transmitted in the
+     * timestamp field. Example use cases include recorded data traces
+     * or the simulation of time synchronization mechanisms and errors.
+     */
+    system_time?: Timestamp | undefined;
+}
+/**
+ * \brief Virtual detection area of a sensor
+ *
+ * The virtual detection area describes the nominal area the sensor is capable of covering
+ * in its current operating mode, without taking occlusion or other statistical effects into account.
+ * This information can be used for visualization or other development purposes as a rough guide
+ * to nominal sensor performance.
+ *
+ * It is described by a set of polygons in cartesian coordinates as a pragmatic approximation for
+ * the rough shapes expected.
+ */
+interface SensorData_VirtualDetectionArea {
+    /**
+     * List of polygons. Each polygon represents a surface of the virtual detection area
+     * and is given with respect to the virtual sensor coordinate system.
+     */
+    polygon?: Polygon3d[] | undefined;
 }
 
 /**
@@ -14597,11 +19274,7 @@ interface SensorData {
  * recording or internal buffering by some sensor models.
  */
 interface SensorDataSeries {
-    /**
-     * List of sensor data messages for subsequent timesteps.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** List of sensor data messages for subsequent time steps. */
     sensor_data?: SensorData[] | undefined;
 }
 /**
@@ -14609,12 +19282,938 @@ interface SensorDataSeries {
  * \c SensorData messages.
  */
 interface SensorDataSeriesList {
-    /**
-     * List of sensor data for multiple sensors at subsequent timesteps.
-     *
-     * \note OSI uses singular instead of plural for repeated field names.
-     */
+    /** List of sensor data for multiple sensors at subsequent time steps. */
     sensor?: SensorDataSeries[] | undefined;
 }
 
-export { type BaseMoving, type BaseStationary, type CameraDetection, type CameraDetectionData, type CameraDetectionSpecificHeader, CameraDetection_Color, CameraDetection_ImageShapeType, type CameraPoint, type CameraSensorView, type CameraSensorViewConfiguration, CameraSensorViewConfiguration_ChannelFormat, type CameraSpecificObjectData, type DetectedEntityHeader, DetectedEntityHeader_DataQualifier, type DetectedItemHeader, DetectedItemHeader_MeasurementState, type DetectedLane, type DetectedLaneBoundary, type DetectedLaneBoundary_CandidateLaneBoundary, type DetectedLane_CandidateLane, type DetectedMovingObject, type DetectedMovingObject_CandidateMovingObject, DetectedMovingObject_MovementState, DetectedMovingObject_ReferencePoint, type DetectedOccupant, type DetectedOccupant_CandidateOccupant, type DetectedRoadMarking, type DetectedRoadMarking_CandidateRoadMarking, type DetectedStationaryObject, type DetectedStationaryObject_CandidateStationaryObject, type DetectedTrafficLight, type DetectedTrafficLight_CandidateTrafficLight, type DetectedTrafficSign, type DetectedTrafficSign_DetectedMainSign, type DetectedTrafficSign_DetectedMainSign_CandidateMainSign, DetectedTrafficSign_DetectedMainSign_Geometry, type DetectedTrafficSign_DetectedSupplementarySign, type DetectedTrafficSign_DetectedSupplementarySign_CandidateSupplementarySign, DetectionClassification, type Dimension3d, type EnvironmentalConditions, EnvironmentalConditions_AmbientIllumination, EnvironmentalConditions_Fog, EnvironmentalConditions_Precipitation, type EnvironmentalConditions_TimeOfDay, type FeatureData, type GenericSensorView, type GenericSensorViewConfiguration, type GroundTruth, type HostVehicleData, type Identifier, type InterfaceVersion, type Lane, type LaneBoundary, type LaneBoundary_BoundaryPoint, type LaneBoundary_Classification, LaneBoundary_Classification_Color, LaneBoundary_Classification_Type, type Lane_Classification, type Lane_Classification_LanePairing, type Lane_Classification_RoadCondition, Lane_Classification_Type, type LidarDetection, type LidarDetectionData, type LidarSensorView, type LidarSensorViewConfiguration, type LidarSensorView_Reflection, type LidarSpecificObjectData, type MountingPosition, type MovingObject, MovingObject_Type, type MovingObject_VehicleAttributes, type MovingObject_VehicleClassification, type MovingObject_VehicleClassification_LightState, MovingObject_VehicleClassification_LightState_BrakeLightState, MovingObject_VehicleClassification_LightState_GenericLightState, MovingObject_VehicleClassification_LightState_IndicatorState, MovingObject_VehicleClassification_Type, type Occupant, type Occupant_Classification, Occupant_Classification_Seat, Occupant_Classification_SteeringControl, type Orientation3d, type RadarDetection, type RadarDetectionData, type RadarSensorView, type RadarSensorViewConfiguration, type RadarSensorViewConfiguration_AntennaDiagramEntry, type RadarSensorView_Reflection, type RadarSpecificObjectData, type RoadMarking, type RoadMarking_Classification, RoadMarking_Classification_Color, RoadMarking_Classification_Type, type SensorData, type SensorDataSeries, type SensorDataSeriesList, type SensorDetectionHeader, SensorDetectionHeader_DataQualifier, SensorDetectionHeader_ExtendedQualifier, type SensorView, type SensorViewConfiguration, type Spherical3d, type StationaryObject, type StationaryObject_Classification, StationaryObject_Classification_Color, StationaryObject_Classification_Density, StationaryObject_Classification_Material, StationaryObject_Classification_Type, type Timestamp, type TrafficLight, type TrafficLight_Classification, TrafficLight_Classification_Color, TrafficLight_Classification_Icon, TrafficLight_Classification_Mode, type TrafficSign, type TrafficSignValue, TrafficSignValue_Unit, type TrafficSign_MainSign, type TrafficSign_MainSign_Classification, TrafficSign_MainSign_Classification_DirectionScope, TrafficSign_MainSign_Classification_Type, type TrafficSign_SupplementarySign, type TrafficSign_SupplementarySign_Classification, TrafficSign_SupplementarySign_Classification_Actor, type TrafficSign_SupplementarySign_Classification_Arrow, TrafficSign_SupplementarySign_Classification_Arrow_Direction, TrafficSign_SupplementarySign_Classification_Type, TrafficSign_Variability, type UltrasonicDetection, type UltrasonicDetectionData, type UltrasonicDetectionSpecificHeader, type UltrasonicIndirectDetection, type UltrasonicSensorView, type UltrasonicSensorViewConfiguration, type UltrasonicSpecificObjectData, type UltrasonicSpecificObjectData_Signalway, UltrasonicSpecificObjectData_Trend, UltrasonicSpecificObjectData_TrilaterationStatus, type Vector2d, type Vector3d };
+/**
+ * \brief This message is intended as an interface between a
+ * motion-planning function and the actuator management.
+ * The motion-planning function can thereby be a representation of a
+ * highly-automated driving function, a human driving behavior model, etc.
+ *
+ * The motion-planning function can either send a desired future trajectory or a desired
+ * future state. The message can be defined by an additional variable.
+ *
+ * \note The coordinate system is defined as right-handed.
+ * All coordinates and orientations are relative to the global coordinate system.
+ * The reference point of the vehicle is the middle of the rear axis.
+ * Units are m for positions, m/s for velocities, and m/s^2 for accelerations.
+ */
+interface MotionRequest {
+    /**
+     * The interface version used by the sender (simulation environment).
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    version?: InterfaceVersion | undefined;
+    /**
+     * The data timestamp of the simulation environment.
+     * A reference to \c Timestamp message.
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    timestamp?: Timestamp | undefined;
+    /**
+     * Define the type that is used to specify the motion request.
+     * This must be set. Additionally, the field corresponding to the specified
+     * option must be set.
+     */
+    motion_request_type?: MotionRequest_MotionRequestType | undefined;
+    /**
+     * Defines a desired state.
+     * If the output option is set to DESIRED_STATE, this field must be set.
+     */
+    desired_state?: MotionRequest_DesiredState | undefined;
+    /**
+     * Defines a desired trajectory.
+     * If the output option is set to DESIRED_TRAJECTORY, this field must be set.
+     */
+    desired_trajectory?: MotionRequest_DesiredTrajectory | undefined;
+}
+/**
+ * Define different options for function output.
+ * Each option corresponds to a field in the message.
+ */
+declare enum MotionRequest_MotionRequestType {
+    /** DESIRED_STATE - Desired state calculated by the function. */
+    DESIRED_STATE = 0,
+    /** TRAJECTORY - Desired trajectory calculated by the function. */
+    TRAJECTORY = 1
+}
+/**
+ * \brief The desired state is calculated by the function as a result of
+ * the motion planning stack.
+ *
+ * The actuator management is supposed to reach the desired state at the
+ * specified time.
+ */
+interface MotionRequest_DesiredState {
+    /** A reference to \c Timestamp message. */
+    timestamp?: Timestamp | undefined;
+    /** Intended position to be reached in in x-, y-, and z-direction. */
+    position?: Vector3d | undefined;
+    /** Intended orientation to be reached containing yaw, pitch and roll angle. */
+    orientation?: Orientation3d | undefined;
+    /**
+     * Intended velocity to be reached in in x-, y-, and z-direction.
+     *
+     * Unit: m/s
+     */
+    velocity?: Vector3d | undefined;
+    /**
+     * Intended acceleration to be reached in x-, y-, and z-direction.
+     *
+     * Unit: m/s^2
+     */
+    acceleration?: Vector3d | undefined;
+}
+/**
+ * \brief Defined trajectory desired by the function.
+ *
+ * This trajectory is the result of the trajectory planning step in the function.
+ * The task of the actuator management is to follow this trajectory as closely as possible.
+ * The timestamps inside the trajectory must be defined in global simulation time.
+ *
+ * \note The trajectory is kept as a separate message for future extensions.
+ */
+interface MotionRequest_DesiredTrajectory {
+    /**
+     * The trajectory consists of intended position (x, y, and z) and
+     * orientation (yaw, pitch and roll) of intended state to be reached.
+     * A reference to \c StatePoint message.
+     *
+     * \note The position within the trajectory point references to the
+     * middle point of the rear axis.
+     */
+    trajectory_point?: StatePoint[] | undefined;
+}
+
+/**
+ * \brief The streaming update interface enables simulation entities to send
+ * partial updates to other modules that favor performance (especially latency)
+ * over data completeness/consistency (e.g. visualization applications).
+ *
+ * Static and/or non-relevant objects can be omitted as required for the
+ * specific use case. Adding an object's unique id to the repeated field \c
+ * obsolete_id indicates that it will no longer be updated from then on.
+ *
+ * \note The receiver of partial streaming update messages can only rely on the
+ * most up-to-date information at the corresponding timestamp. E.g. omitting
+ * objects does not indicate static behavior but it may be sufficient for the
+ * use case to update certain objects at a later point in time.
+ */
+interface StreamingUpdate {
+    /**
+     * The interface version used by the sender.
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    version?: InterfaceVersion | undefined;
+    /**
+     * The data timestamp where the information of contained objects is calculated.
+     *
+     * Zero time is arbitrary but must be identical for all messages.
+     * Zero time does not need to coincide with the UNIX epoch.
+     * Recommended is the starting time point of the simulation.
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    timestamp?: Timestamp | undefined;
+    /**
+     * The list of stationary objects (excluding traffic signs and traffic
+     * lights).
+     */
+    stationary_object_update?: StationaryObject[] | undefined;
+    /** The list of moving objects. */
+    moving_object_update?: MovingObject[] | undefined;
+    /** The list of traffic signs. */
+    traffic_sign_update?: TrafficSign[] | undefined;
+    /** The list of traffic lights. */
+    traffic_light_update?: TrafficLight[] | undefined;
+    /** Conditions of the environment. */
+    environmental_conditions_update?: EnvironmentalConditions | undefined;
+    /**
+     * Host vehicle data.
+     *
+     * Host vehicle data is data that the host vehicle knows about itself,
+     * e.g. from location sensors, internal sensors and ECU bus data, etc.,
+     * that is made available to sensors as input.
+     *
+     * The ID inside this message allows an association to moving object data.
+     */
+    host_vehicle_data_update?: HostVehicleData[] | undefined;
+    /**
+     * Entities that will no longer be updated, because they are considered
+     * obsolete by the sender.
+     *
+     * \note IDs are globally unique.
+     */
+    obsolete_id?: Identifier[] | undefined;
+}
+
+/**
+ * \brief The scenario engine provides control commands in the traffic command
+ * message to traffic participant models. The control commands are based on
+ * the scenario.
+ *
+ * \note This interface is currently just a placeholder and will be
+ * changed in experimental ways to support basic scenario execution.
+ * In the future this interface shall be aligned with the level of
+ * atomic actions as described in OpenSCENARIO 1.0 or later.
+ */
+interface TrafficCommand {
+    /**
+     * The interface version used by the sender (scenario engine).
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    version?: InterfaceVersion | undefined;
+    /**
+     * The data timestamp of the simulation environment. Zero time is arbitrary
+     * but must be identical for all messages. Zero time does not need to
+     * coincide with the UNIX epoch. It is recommended to use zero timestamp as
+     * the starting time point of the simulation.
+     *
+     * \note For traffic command data the timestamp coincides both with
+     * the notional simulation time the data applies to and the time it was sent
+     * There is no inherent latency for traffic command data, as opposed
+     * to sensor data.
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    timestamp?: Timestamp | undefined;
+    /**
+     * The ID of this traffic participant.
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    traffic_participant_id?: Identifier | undefined;
+    /**
+     * Commanded traffic action(s) if any.
+     *
+     * \note If more than one action is supplied in one command message
+     * all actions are executed in parallel.
+     */
+    action?: TrafficAction[] | undefined;
+}
+/**
+ * \brief Atomic traffic actions to be performed.
+ *
+ * The transmitted commands are the atomic traffic actions described by
+ * this message.
+ *
+ * \note This message is notionally a multiple choice selection, that is, only
+ * certain combinations of atomic traffic actions shall be transmitted within
+ * certain time intervals, for example, for plausibility reasons. The restrictions
+ * regarding that are not part of this message, yet are seen as a task of the
+ * scenario description, for example, OpenSCENARIO.
+ *
+ * \note All traffic actions are sent only once just before they are about
+ * to start. This is also true, if their execution is expected to
+ * take simulation time. To inform the traffic participant
+ * model that certain actions must or shall be terminated, there are
+ * explicit actions nested inside this message (AbortActionsAction,
+ * EndActionsAction), which hold a reference to the respective actions.
+ * Furthermore, there exists a \c TrafficCommandUpdate message for the
+ * traffic participant to report back on potentially dismissed actions.
+ */
+interface TrafficAction {
+    /** A FollowTrajectoryAction. */
+    follow_trajectory_action?: TrafficAction_FollowTrajectoryAction | undefined;
+    /** A FollowPathAction. */
+    follow_path_action?: TrafficAction_FollowPathAction | undefined;
+    /** An AcquireGlobalPositionAction. */
+    acquire_global_position_action?: TrafficAction_AcquireGlobalPositionAction | undefined;
+    /** A LaneChangeAction. */
+    lane_change_action?: TrafficAction_LaneChangeAction | undefined;
+    /** A SpeedAction. */
+    speed_action?: TrafficAction_SpeedAction | undefined;
+    /** An AbortActionsAction. */
+    abort_actions_action?: TrafficAction_AbortActionsAction | undefined;
+    /** An EndActionsAction. */
+    end_actions_action?: TrafficAction_EndActionsAction | undefined;
+    /** A CustomAction. */
+    custom_action?: TrafficAction_CustomAction | undefined;
+    /** A LongitudinalDistanceAction. */
+    longitudinal_distance_action?: TrafficAction_LongitudinalDistanceAction | undefined;
+    /** A LaneOffsetAction. */
+    lane_offset_action?: TrafficAction_LaneOffsetAction | undefined;
+    /** A LateralDistanceAction. */
+    lateral_distance_action?: TrafficAction_LateralDistanceAction | undefined;
+    /** A TeleportAction. */
+    teleport_action?: TrafficAction_TeleportAction | undefined;
+}
+/** Definition of following mode. */
+declare enum TrafficAction_FollowingMode {
+    /**
+     * POSITION - Following mode position forces the traffic participant to
+     * follow a path/trajectory explicitly, disregarding any internal
+     * constraints, for example, steering dynamics.
+     */
+    POSITION = 0,
+    /**
+     * FOLLOW - Following mode follow allows the traffic participant to
+     * treat a path/trajectory as a target, to be achieved as closely
+     * as possible while retaining any internal constraints,
+     * for example, steering dynamics.
+     */
+    FOLLOW = 1
+}
+/** Definition of dynamic shapes. */
+declare enum TrafficAction_DynamicsShape {
+    /** UNSPECIFIED - Shape is unspecified. */
+    UNSPECIFIED = 0,
+    /** LINEAR - Shape is linear. */
+    LINEAR = 1,
+    /** CUBIC - Shape is cubic. */
+    CUBIC = 2,
+    /** SINUSOIDAL - Shape is sinusoidal. */
+    SINUSOIDAL = 3,
+    /** STEP - Shape is a step function. */
+    STEP = 4
+}
+/** \brief The action header */
+interface TrafficAction_ActionHeader {
+    /**
+     * The unique id of the action.
+     *
+     * \note This field is mandatory.
+     *
+     * \note This id must be unique within all traffic command
+     * messages exchanged with one traffic participant.
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    action_id?: Identifier | undefined;
+}
+/**
+ * \brief DynamicConstraints
+ *
+ * This message is used in Longitudinal and Lateral Distance Actions as
+ * constraints on the TrafficParticipant not allowing them to exceed/drop below
+ * certain speeds/acceleration levels.
+ */
+interface TrafficAction_DynamicConstraints {
+    /**
+     * Maximum acceleration the distance controller is allowed to use for keeping distance.
+     *
+     * Unit: m/s^2
+     */
+    max_acceleration?: number | undefined;
+    /**
+     * Maximum deceleration the distance controller is allowed to use for keeping distance.
+     *
+     * Unit: m/s^2
+     */
+    max_deceleration?: number | undefined;
+    /**
+     * Maximum speed the distance controller is allowed to use for keeping distance.
+     *
+     * Unit: m/s
+     */
+    max_speed?: number | undefined;
+}
+/**
+ * \brief Follow trajectory action.
+ *
+ * Controls a traffic participant to follow a trajectory using vertices
+ * with timings. It specifies the motion in space as a function of time.
+ *
+ * \note The StatePoint messages in trajectory_point requires a
+ * specified timestamp.
+ *
+ * \note This action is aligned with the FollowTrajectoryAction of
+ * OpenSCENARIO 1.0 using a 4/7D trajectory with shape Polyline.
+ */
+interface TrafficAction_FollowTrajectoryAction {
+    /** The action header. */
+    action_header?: TrafficAction_ActionHeader | undefined;
+    /**
+     * A list of trajectory StatePoints.
+     *
+     * Set the timestamp fields and position fields for all
+     * trajectory points. The orientation fields can be set
+     * depending on the constrain_orientation field being true.
+     *
+     * \note OSI uses singular instead of plural for repeated field names.
+     */
+    trajectory_point?: StatePoint[] | undefined;
+    /**
+     * Constrain the orientation of the traffic participant as specified
+     * by the trajectory points.
+     *
+     * This boolean flag defines whether orientation values supplied in
+     * the trajectory points (if any) shall be used to constrain the
+     * orientation of the traffic participant or not.
+     */
+    constrain_orientation?: boolean | undefined;
+    /**
+     * Specify the following mode that should be employed in executing
+     * the trajectory.
+     */
+    following_mode?: TrafficAction_FollowingMode | undefined;
+}
+/**
+ * \brief Follow path action.
+ *
+ * Controls a traffic participant to follow a path using vertices. It
+ * specifies the motion in space independent of time.
+ *
+ * \note The StatePoint messages in path_point only requires a specified
+ * position field. The orientation can be set optionally. Any
+ * timestamp StatePoint values are ignored.
+ *
+ * \note This action is aligned with the FollowTrajectoryAction of
+ * OpenSCENARIO 1.0 using a 3/6D trajectory with shape Polyline.
+ */
+interface TrafficAction_FollowPathAction {
+    /** The action header */
+    action_header?: TrafficAction_ActionHeader | undefined;
+    /**
+     * A list of path StatePoints
+     *
+     * Set the position fields for all path points.
+     * The timestamp field are not required and ignored.
+     * The orientation fields can be set depending on the constrain_orientation
+     * field being true.
+     *
+     * \note OSI uses singular instead of plural for repeated field names.
+     */
+    path_point?: StatePoint[] | undefined;
+    /**
+     * Constrain the orientation of the traffic participant as specified
+     * by the path points.
+     *
+     * This boolean flag defines whether orientation values supplied in
+     * the path points shall be used to constrain the orientation
+     * of the traffic participant or not.
+     */
+    constrain_orientation?: boolean | undefined;
+    /**
+     * Specify the following mode that should be employed in executing
+     * the path.
+     */
+    following_mode?: TrafficAction_FollowingMode | undefined;
+}
+/**
+ * \brief Acquire global position action.
+ *
+ * This action assigns a route to a traffic participant. The route
+ * assigned will be the shortest route (along roads or satisfying any
+ * other constraints a traffic participant is operating under) between
+ * the traffic participant's current position and the position specified.
+ *
+ * As with all routing actions, the exact way this route is achieved is
+ * under the control of the traffic participant model.
+ *
+ * \note This action is aligned with the AcquirePositionAction of
+ * OpenSCENARIO 1.0 using a WorldPosition position argument.
+ */
+interface TrafficAction_AcquireGlobalPositionAction {
+    /** The action header. */
+    action_header?: TrafficAction_ActionHeader | undefined;
+    /**
+     * Position in the global coordinate system.
+     *
+     * The position refers to the center (x,y,z) of the bounding box.
+     *
+     * \note Remark: The definition of the reference point follows the
+     * specification of the \c BaseMoving message.
+     */
+    position?: Vector3d | undefined;
+    /**
+     * Orientation in the global coordinate system.
+     *
+     * This is optional. If no orientation is given, the end orientation
+     * is under control of the traffic participant.
+     */
+    orientation?: Orientation3d | undefined;
+}
+/**
+ * \brief Lane change action.
+ *
+ * This action assigns a lane change to a traffic participant. The fields
+ * of this message enable different levels of constraint for the traffic
+ * participant depending on the use case. In case the constraints are
+ * supposed to be small, the dynamics shape or even the duration and
+ * the distance for the lane change can be omitted.
+ *
+ * \note This action is aligned with LaneChangeAction of OpenSCENARIO 1.0
+ * defining the targeted lane and optionally the parametrization of the
+ * lane change.
+ */
+interface TrafficAction_LaneChangeAction {
+    /** The action header. */
+    action_header?: TrafficAction_ActionHeader | undefined;
+    /**
+     * Targeted lane relative to the current lane.
+     *
+     * Convention: +1 means to the right, -1 means to the left.
+     */
+    relative_target_lane?: number | undefined;
+    /**
+     * Specified shape of the lane change action.
+     * If the shape is unspecified (enum value 0), the shape of the
+     * lane change is open to the traffic participant model.
+     */
+    dynamics_shape?: TrafficAction_DynamicsShape | undefined;
+    /**
+     * Duration of the lane change.
+     *
+     * A value of 0.0 (the default value) imposes no constraint
+     * on the duration, unless the dynamics shape is a step function,
+     * where an immediate step is effected.
+     *
+     * Unit: s
+     */
+    duration?: number | undefined;
+    /**
+     * Distance of the lane change.
+     *
+     * A value of 0.0 (the default value) imposes no constraint
+     * on the distance, unless the dynamics shape is a step function,
+     * where an immediate step is effected.
+     *
+     * Unit: m
+     */
+    distance?: number | undefined;
+}
+/**
+ * \brief Speed action.
+ *
+ * This action assigns a targeted speed to a traffic participant.
+ * The action can be constrained by specifying the dynamics
+ * shape or even the duration and the distance of the acceleration /
+ * deceleration process.
+ *
+ * \note This action is aligned with SpeedAction of OpenSCENARIO 1.0
+ * defining the targeted speed and optionally the parametrization of the
+ * speed transition.
+ */
+interface TrafficAction_SpeedAction {
+    /** The action header */
+    action_header?: TrafficAction_ActionHeader | undefined;
+    /** Targeted absolute speed. */
+    absolute_target_speed?: number | undefined;
+    /**
+     * Specified transition shape of the speed change action.
+     * If the shape is unspecified (enum value 0), the shape of the
+     * speed change is open to the traffic participant model.
+     */
+    dynamics_shape?: TrafficAction_DynamicsShape | undefined;
+    /**
+     * Duration of the speed change.
+     *
+     * A value of 0.0 (the default value) imposes no constraint
+     * on the duration, unless the dynamics shape is a step function,
+     * where an immediate step is effected.
+     *
+     * Unit: s
+     */
+    duration?: number | undefined;
+    /**
+     * Distance of the speed change.
+     *
+     * A value of 0.0 (the default value) imposes no constraint
+     * on the distance, unless the dynamics shape is a step function,
+     * where an immediate step is effected.
+     *
+     * Unit: m
+     */
+    distance?: number | undefined;
+}
+/**
+ * \brief AbortActionsAction.
+ *
+ * This action tells a traffic participant that it should immediately
+ * abort the execution of other actions referenced within this action.
+ * In contrast to the EndActionsAction this action forces a hard
+ * termination of the referenced actions.
+ */
+interface TrafficAction_AbortActionsAction {
+    /** The action header */
+    action_header?: TrafficAction_ActionHeader | undefined;
+    /**
+     * Actions which must be aborted immediately.
+     *
+     * These fields hold the action ids of the actions that must be
+     * aborted immediately.
+     */
+    target_action_id?: Identifier[] | undefined;
+}
+/**
+ * \brief End actions action.
+ *
+ * This action tells a traffic participant that the execution of the
+ * referenced actions is regarded as successfully performed. The
+ * termination of the referenced actions is allowed to be performed
+ * gracefully.
+ */
+interface TrafficAction_EndActionsAction {
+    /** The action header */
+    action_header?: TrafficAction_ActionHeader | undefined;
+    /**
+     * Actions which are regarded as successfully executed.
+     *
+     * These fields hold the action ids of the actions that are regarded
+     * as successfully executed and shall be terminated gracefully.
+     */
+    target_action_id?: Identifier[] | undefined;
+}
+/**
+ * \brief Custom Action.
+ *
+ * This action assigns a custom command to a traffic participant.
+ * The syntax and semantics of this action is implementation defined.
+ * It is entirely up to each individual traffic participant which
+ * custom commands it supports, if any, and how they must be phrased.
+ *
+ * \note This action is aligned with CustomCommandAction of OpenSCENARIO 1.0
+ * providing a customizable user defined action.
+ */
+interface TrafficAction_CustomAction {
+    /** The Action Header. */
+    action_header?: TrafficAction_ActionHeader | undefined;
+    /**
+     * The custom command given to the traffic participant. Used to convey a specific instruction
+     * (for example, "exit_highway"), or event (for example, "left_indicator_activated").
+     *
+     * \note This corresponds to the content of the OpenSCENARIO 1.0 CustomCommandAction field.
+     */
+    command?: string | undefined;
+    /**
+     * The type of the custom command given to the traffic participant. Can be used to simplify
+     * how commands are grouped. For example, the command_type could be "sensor_failure" and the
+     * command value could be "front_right_camera".  This avoids long commands, like
+     * "sensor_failure: front_right_camera".
+     *
+     * \note This corresponds to the "type" attribute of the OpenSCENARIO 1.0 CustomCommandAction.
+     */
+    command_type?: string | undefined;
+}
+/**
+ * \brief Longitudinal Distance Action
+ *
+ * The action tells the (host) traffic participant to reach a certain longitudinal distance
+ * relative to a target traffic participant. The longitudinal distance is defined as the distance
+ * along the centerline of the lane, on which the (host) traffic participant is currently located.
+ * The interpolation strategy between centerline points for calculating
+ * that distance along the centerline is open to the traffic participant modeler.
+ *
+ * \note This action is aligned with LongitudinalDistanceAction of OpenSCENARIO 1.0
+ * defining the reference traffic participant and the distance.
+ *
+ * \note Limitation: This concept currently only works for lanes with a centerline, i.e. for lanes
+ * of TYPE_DRIVING, not for lanes of TYPE_NONDRIVING or TYPE_INTERSECTION.
+ */
+interface TrafficAction_LongitudinalDistanceAction {
+    /** Action Header of the message */
+    action_header?: TrafficAction_ActionHeader | undefined;
+    /** Unique Id of the reference traffic participant to which the distance is defined. */
+    target_traffic_participant_id?: Identifier | undefined;
+    /**
+     * The distance to reach along the lane
+     *
+     * Unit: m
+     */
+    distance?: number | undefined;
+    /**
+     * Determine the measurement of longitudinal distance between the traffic
+     * participant receiving this action and the reference traffic
+     * participant.
+     * True: Longitudinal distance is measured using the distance between closest bounding box points.
+     * False: Longitudinal distance is measured using the distance between the center of each object's bounding box.
+     */
+    freespace?: boolean | undefined;
+    /**
+     * Define whether the traffic participant should only reach the distance once
+     * or if it should also keep the distance after having reached it.
+     * True: the traffic participant shall approach the reference participant
+     * and follow with the distance specified until the action is aborted (communicate with AbortActionsAction).
+     * False: the action ends as soon as the traffic participant has reached
+     * the specified distance (communicate with EndActionsAction).
+     */
+    follow?: boolean | undefined;
+    /**
+     * Parameter that assigns either unlimited dynamics (if omitted)
+     * or limited maxAcceleration/maxDeceleration/maxSpeed to the action.
+     */
+    dynamic_constraints?: TrafficAction_DynamicConstraints | undefined;
+}
+/**
+ * \brief Lateral Distance Action
+ *
+ * The action tells the (host) traffic participant to reach a certain lateral distance relative to
+ * a target traffic participant. The lateral distance is defined along an imaginative perpendicular line
+ * with respect to the centerline of the current (host) traffic participant's lane.
+ * The interpolation strategy between centerline points for calculating that distance along the imaginative
+ * perpendicular line is open to the traffic participant modeler.
+ *
+ * \note This action is aligned with LateralDistanceAction of OpenSCENARIO 1.0
+ * defining the reference traffic participant and the distance.
+ *
+ * \note Limitation: This concept currently only works for lanes with a centerline, i.e. for lanes
+ * of TYPE_DRIVING, not for lanes of TYPE_NONDRIVING or TYPE_INTERSECTION.
+ */
+interface TrafficAction_LateralDistanceAction {
+    /** Action Header of the message */
+    action_header?: TrafficAction_ActionHeader | undefined;
+    /** Id of the reference entity the lateral distance shall be kept to. */
+    target_traffic_participant_id?: Identifier | undefined;
+    /**
+     * Lateral distance value.
+     *
+     * Unit: m
+     */
+    distance?: number | undefined;
+    /**
+     * Determine the measurement of lateral distance between the traffic
+     * participant receiving this action and the reference traffic
+     * participant.
+     * True: Lateral distance is measured using the distance between closest bounding box points.
+     * False: Lateral distance is measured using the distance between the center of each object's bounding box.
+     */
+    freespace?: boolean | undefined;
+    /**
+     * Define whether the traffic participant should only reach the distance once
+     * or if it should also keep the distance after having reached it.
+     * True: the traffic participant shall approach the reference participant
+     * and follow with the distance specified until the action is aborted (communicate with AbortActionsAction).
+     * False: the action ends as soon as the traffic participant has reached
+     * the specified distance (communicate with EndActionsAction).
+     */
+    follow?: boolean | undefined;
+    /**
+     * Parameter that assigns either unlimited dynamics (if omitted)
+     * or limited maxAcceleration/maxDeceleration/maxSpeed to the action.
+     */
+    dynamic_constraints?: TrafficAction_DynamicConstraints | undefined;
+}
+/**
+ * \brief Lane Offset Action
+ *
+ * This action assigns a targeted lane offset to a traffic participant.
+ * The action can be constrained by specifying the dynamics shape of the
+ * lateral transition profile.
+ *
+ * \note This action is aligned with LaneOffsetAction of OpenSCENARIO 1.0.
+ */
+interface TrafficAction_LaneOffsetAction {
+    /** The Action Header */
+    action_header?: TrafficAction_ActionHeader | undefined;
+    /**
+     * Targeted lane offset in meters relative to the centerline of the
+     * current traffic participant's lane. Positive values mean left of the centerline,
+     * negative values mean right of the centerline.
+     *
+     * Unit: m
+     */
+    target_lane_offset?: number | undefined;
+    /**
+     * Specified transition shape of reaching the lane offset.
+     * If the shape is unspecified (enum value 0), the shape of the
+     * transition is open to the traffic participant model.
+     */
+    dynamics_shape?: TrafficAction_DynamicsShape | undefined;
+}
+/**
+ * \brief Teleport Action
+ *
+ * This Action allows to immediately place a traffic participant to
+ * another position.
+ *
+ * \note This action is aligned with the TeleportAction of
+ * OpenSCENARIO 1.0 using a WorldPosition position argument.
+ */
+interface TrafficAction_TeleportAction {
+    /** The Action Header */
+    action_header?: TrafficAction_ActionHeader | undefined;
+    /**
+     * Position in the global coordinate system.
+     *
+     * The position refers to the center (x,y,z) of the bounding box.
+     *
+     * \note Remark: The definition of the reference point follows the
+     * specification of the \c BaseMoving message.
+     */
+    position?: Vector3d | undefined;
+    /**
+     * Orientation in the global coordinate system.
+     *
+     * This is optional, if no orientation is given, the end orientation
+     * is under control of the traffic participant.
+     */
+    orientation?: Orientation3d | undefined;
+}
+
+/**
+ * \brief This message enables the traffic participant model to send updates
+ * to the scenario engine about the execution of its received \c TrafficCommand input.
+ * While traffic actions are usually executed successfully by the traffic participant,
+ * there may be actions which the traffic participant is not able to execute
+ * either for capability or situation-specific reasons.
+ *
+ * This message allows a traffic participant to send feedback if an action
+ * cannot happen as requested by the \c TrafficCommand. Currently, it is out of
+ * scope to standardize the exact reason for non-executability or failed execution
+ * because the reason can have multiple explanations. The responsibility for deciding
+ * about successful or unsuccessful scenario execution lies fully on the side of the
+ * scenario engine.
+ *
+ * \note This interface is currently just a placeholder and could be
+ * changed in experimental ways to support semantics of upcoming OpenSCENARIO
+ * versions.
+ */
+interface TrafficCommandUpdate {
+    /**
+     * The interface version used by the sender (traffic participant model).
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    version?: InterfaceVersion | undefined;
+    /**
+     * The data timestamp of the simulation environment. Zero time is arbitrary
+     * but must be identical for all messages. Zero time does not need to
+     * coincide with the UNIX epoch. It is recommended to use zero timestamp as
+     * the starting time point of the simulation.
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    timestamp?: Timestamp | undefined;
+    /**
+     * The ID of this traffic participant which must coincide with a prior sent ID, cf.
+     * \c TrafficCommand::traffic_participant_id.
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    traffic_participant_id?: Identifier | undefined;
+    /**
+     * Actions which a traffic participant dismisses and which are not yet ended or
+     * aborted by the scenario engine (via a \c TrafficCommand::action.end_actions_action or a
+     * \c TrafficCommand::action.abort_actions_action).
+     * Thus, the valid time interval for this action is after the \c TrafficCommand::timestamp
+     * for the respective action, which tells a traffic participant to perform an action, has
+     * been sent, but must not be after a \c TrafficCommand::timestamp of the respective End-Actions-Action
+     * or Abort-Actions-Action, which tells a traffic participant to end or abort that action.
+     *
+     * Furthermore, a \c TrafficCommand::action.end_actions_action or a
+     * \c TrafficCommand::action.abort_actions_action must not be sent after this action
+     * (the \c TrafficCommandUpdate::dismissed_action) for a respective action has been sent.
+     *
+     * \note If more than one dismissed action is supplied it means that
+     * multiple actions are regarded as dismissed.
+     */
+    dismissed_action?: TrafficCommandUpdate_DismissedAction[] | undefined;
+}
+/** \brief Action which a traffic participant dismisses. */
+interface TrafficCommandUpdate_DismissedAction {
+    /**
+     * Dismissed traffic action id from the perspective of this traffic participant, if any.
+     *
+     * \note A dismissed traffic action id identifies a \c TrafficCommand::action which cannot be executed or
+     * completed by the traffic participant. This field must have the same value as the
+     * \c ActionHeader::action_id of a prior sent \c TrafficCommand and must correspond
+     * to the same traffic participant.
+     */
+    dismissed_action_id?: Identifier | undefined;
+    /**
+     * Information about the reason of failure.
+     *
+     * \note This is a custom, informal string without a standardized meaning.
+     */
+    failure_reason?: string | undefined;
+}
+
+/**
+ * \brief The traffic update message is provided by traffic participant
+ * models to provide updates to their position, state and future
+ * trajectory back to the simulation environment. The message is
+ * designed to update data of exactly one traffic participant,
+ * optionally with an attached trailer.
+ *
+ * \note For reasons of convenience and consistency, the updated
+ * information is provided as a MovingObject.  Certain fields of this
+ * sub-message are not required to be set and will be ignored by the
+ * simulation environment, because they are static information.
+ * Instead of creating a separate message type for only the non-static
+ * information, re-use existing message.
+ */
+interface TrafficUpdate {
+    /**
+     * The interface version used by the sender (traffic participant model).
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    version?: InterfaceVersion | undefined;
+    /**
+     * The data timestamp of the simulation environment. Zero time is arbitrary
+     * but must be identical for all messages. Zero time does not need to
+     * coincide with the UNIX epoch. Recommended is the starting time point of
+     * the simulation.
+     *
+     * \note For moving object update data the timestamp coincides both with
+     * the notional simulation time the data applies to and the time it was sent.
+     * There is no inherent latency for moving object update data, as opposed
+     * to sensor data.
+     *
+     * \rules
+     * is_set
+     * \endrules
+     */
+    timestamp?: Timestamp | undefined;
+    /**
+     * Updated traffic participant data
+     *
+     * \note It is not expected that static fields are populated. If they
+     * are, they may be ignored by the receiver of this message, for example, dimensions,
+     * or vehicle category.  All dynamic fields should be populated where known,
+     * for example, velocity, light states, or future trajectory.
+     *
+     * \note The field is repeated because it is possible to have a trailer attached to
+     * a vehicle, see MovingObject::VehicleClassification::has_trailer and
+     * MovingObject::VehicleClassification::trailer_id.
+     */
+    update?: MovingObject[] | undefined;
+    /**
+     * Internal state for each vehicle.
+     *
+     * This is an optional field as internal state may not be known or relevant,
+     * for example, a trailer might not have any internal state.
+     * It is also allowed to only specify internal_state for a subset of the
+     * objects referenced in the update.
+     *
+     * \note This covers any information which cannot be externally perceived
+     * and therefore cannot be included in messages available in ground truth.
+     *
+     * \note The id field from this should match the id in the update field
+     * above where the same vehicle is being referenced.
+     */
+    internal_state?: HostVehicleData[] | undefined;
+}
+
+export { type BaseMoving, type BaseStationary, type BoundingBox, BoundingBox_Type, type CameraDetection, type CameraDetectionData, type CameraDetectionSpecificHeader, CameraDetection_Color, CameraDetection_ImageShapeType, type CameraPoint, type CameraSensorView, type CameraSensorViewConfiguration, CameraSensorViewConfiguration_ChannelFormat, CameraSensorViewConfiguration_PixelOrder, type CameraSpecificObjectData, type ColorCMYK, type ColorDescription, type ColorGrey, type ColorHSV, type ColorLUV, type ColorRGB, type ColorRGBIR, type DetectedEntityHeader, DetectedEntityHeader_DataQualifier, type DetectedItemHeader, DetectedItemHeader_MeasurementState, type DetectedLane, type DetectedLaneBoundary, type DetectedLaneBoundary_CandidateLaneBoundary, type DetectedLane_CandidateLane, type DetectedMovingObject, type DetectedMovingObject_CandidateMovingObject, DetectedMovingObject_MovementState, DetectedMovingObject_ReferencePoint, type DetectedOccupant, type DetectedOccupant_CandidateOccupant, type DetectedRoadMarking, type DetectedRoadMarking_CandidateRoadMarking, type DetectedStationaryObject, type DetectedStationaryObject_CandidateStationaryObject, type DetectedTrafficLight, type DetectedTrafficLight_CandidateTrafficLight, type DetectedTrafficSign, type DetectedTrafficSign_DetectedMainSign, type DetectedTrafficSign_DetectedMainSign_CandidateMainSign, DetectedTrafficSign_DetectedMainSign_Geometry, type DetectedTrafficSign_DetectedSupplementarySign, type DetectedTrafficSign_DetectedSupplementarySign_CandidateSupplementarySign, DetectionClassification, type Dimension3d, type EnvironmentalConditions, EnvironmentalConditions_AmbientIllumination, type EnvironmentalConditions_CloudLayer, EnvironmentalConditions_CloudLayer_FractionalCloudCover, EnvironmentalConditions_Fog, EnvironmentalConditions_Precipitation, type EnvironmentalConditions_Sun, type EnvironmentalConditions_TimeOfDay, type EnvironmentalConditions_Wind, type ExternalReference, type FeatureData, type GenericSensorView, type GenericSensorViewConfiguration, type GeodeticPosition, type GroundTruth, type GroundTruth_ProjFrameOffset, type HostVehicleData, type HostVehicleData_VehicleAutomatedDrivingFunction, type HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride, HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride_Reason, HostVehicleData_VehicleAutomatedDrivingFunction_Name, HostVehicleData_VehicleAutomatedDrivingFunction_State, type HostVehicleData_VehicleBasics, HostVehicleData_VehicleBasics_OperatingState, type HostVehicleData_VehicleBrakeSystem, type HostVehicleData_VehicleLocalization, type HostVehicleData_VehicleMotion, type HostVehicleData_VehiclePowertrain, type HostVehicleData_VehiclePowertrain_Motor, HostVehicleData_VehiclePowertrain_Motor_Type, type HostVehicleData_VehicleSteering, type HostVehicleData_VehicleWheels, type HostVehicleData_VehicleWheels_WheelData, type Identifier, type InterfaceVersion, type KeyValuePair, type Lane, type LaneBoundary, type LaneBoundary_BoundaryPoint, LaneBoundary_BoundaryPoint_Dash, type LaneBoundary_Classification, LaneBoundary_Classification_Color, LaneBoundary_Classification_Type, type Lane_Classification, type Lane_Classification_LanePairing, type Lane_Classification_RoadCondition, Lane_Classification_Subtype, Lane_Classification_Type, type LidarDetection, type LidarDetectionData, type LidarSensorView, type LidarSensorViewConfiguration, type LidarSensorView_Reflection, type LidarSpecificObjectData, type LogicalDetection, LogicalDetectionClassification, type LogicalDetectionData, type LogicalDetectionDataHeader, LogicalDetectionDataHeader_DataQualifier, type LogicalLane, type LogicalLaneAssignment, type LogicalLaneBoundary, type LogicalLaneBoundary_LogicalBoundaryPoint, LogicalLaneBoundary_PassingRule, type LogicalLane_LaneConnection, type LogicalLane_LaneRelation, LogicalLane_MoveDirection, type LogicalLane_PhysicalLaneReference, type LogicalLane_TrafficRule, type LogicalLane_TrafficRule_SpeedLimit, LogicalLane_TrafficRule_TrafficRuleType, type LogicalLane_TrafficRule_TrafficRuleValidity, type LogicalLane_TrafficRule_TrafficRuleValidity_TypeValidity, LogicalLane_Type, type MotionRequest, type MotionRequest_DesiredState, type MotionRequest_DesiredTrajectory, MotionRequest_MotionRequestType, type MountingPosition, type MovingObject, type MovingObject_MovingObjectClassification, type MovingObject_PedestrianAttributes, type MovingObject_PedestrianAttributes_Bone, MovingObject_PedestrianAttributes_Bone_Type, MovingObject_Type, type MovingObject_VehicleAttributes, type MovingObject_VehicleAttributes_WheelData, type MovingObject_VehicleClassification, type MovingObject_VehicleClassification_LightState, MovingObject_VehicleClassification_LightState_BrakeLightState, MovingObject_VehicleClassification_LightState_GenericLightState, MovingObject_VehicleClassification_LightState_IndicatorState, MovingObject_VehicleClassification_Role, MovingObject_VehicleClassification_Type, type Occupant, type Occupant_Classification, Occupant_Classification_Seat, Occupant_Classification_SteeringControl, type Orientation3d, type Pedalry, type Polygon3d, type RadarDetection, type RadarDetectionData, type RadarSensorView, type RadarSensorViewConfiguration, type RadarSensorViewConfiguration_AntennaDiagramEntry, type RadarSensorView_Reflection, type RadarSpecificObjectData, type ReferenceLine, type ReferenceLine_ReferenceLinePoint, ReferenceLine_Type, type RoadMarking, type RoadMarking_Classification, RoadMarking_Classification_Color, RoadMarking_Classification_Type, type Route, type Route_LogicalLaneSegment, type Route_RouteSegment, type SensorData, type SensorDataSeries, type SensorDataSeriesList, type SensorData_VirtualDetectionArea, type SensorDetectionHeader, SensorDetectionHeader_DataQualifier, SensorDetectionHeader_ExtendedQualifier, type SensorView, type SensorViewConfiguration, type SpatialSignalStrength, type Spherical3d, type StatePoint, type StationaryObject, type StationaryObject_Classification, StationaryObject_Classification_Color, StationaryObject_Classification_Density, type StationaryObject_Classification_EmittingStructureAttribute, StationaryObject_Classification_Material, StationaryObject_Classification_Type, type StreamingUpdate, type Timestamp, type TrafficAction, type TrafficAction_AbortActionsAction, type TrafficAction_AcquireGlobalPositionAction, type TrafficAction_ActionHeader, type TrafficAction_CustomAction, type TrafficAction_DynamicConstraints, TrafficAction_DynamicsShape, type TrafficAction_EndActionsAction, type TrafficAction_FollowPathAction, type TrafficAction_FollowTrajectoryAction, TrafficAction_FollowingMode, type TrafficAction_LaneChangeAction, type TrafficAction_LaneOffsetAction, type TrafficAction_LateralDistanceAction, type TrafficAction_LongitudinalDistanceAction, type TrafficAction_SpeedAction, type TrafficAction_TeleportAction, type TrafficCommand, type TrafficCommandUpdate, type TrafficCommandUpdate_DismissedAction, type TrafficLight, type TrafficLight_Classification, TrafficLight_Classification_Color, TrafficLight_Classification_Icon, TrafficLight_Classification_Mode, type TrafficSign, type TrafficSignValue, TrafficSignValue_Unit, type TrafficSign_MainSign, type TrafficSign_MainSign_Classification, TrafficSign_MainSign_Classification_DirectionScope, TrafficSign_MainSign_Classification_Type, type TrafficSign_SupplementarySign, type TrafficSign_SupplementarySign_Classification, TrafficSign_SupplementarySign_Classification_Actor, type TrafficSign_SupplementarySign_Classification_Arrow, TrafficSign_SupplementarySign_Classification_Arrow_Direction, TrafficSign_SupplementarySign_Classification_Type, TrafficSign_Variability, type TrafficUpdate, type UltrasonicDetection, type UltrasonicDetectionData, type UltrasonicDetectionSpecificHeader, type UltrasonicIndirectDetection, type UltrasonicSensorView, type UltrasonicSensorViewConfiguration, type UltrasonicSpecificObjectData, type UltrasonicSpecificObjectData_Signalway, UltrasonicSpecificObjectData_Trend, UltrasonicSpecificObjectData_TrilaterationStatus, type Vector2d, type Vector3d, type VehicleSteeringWheel, type WavelengthData };

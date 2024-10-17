@@ -5,7 +5,7 @@
 // source: osi_detectedtrafficlight.proto
 
 /* eslint-disable */
-import { type BaseStationary } from "./osi_common";
+import { type BaseStationary, type ColorDescription } from "./osi_common";
 import { type DetectedItemHeader } from "./osi_detectedobject";
 import { type TrafficLight_Classification } from "./osi_trafficlight";
 
@@ -17,6 +17,15 @@ import { type TrafficLight_Classification } from "./osi_trafficlight";
  * One detected traffic light message defines a single 'bulb' and not a box of
  * several bulbs, e.g. red, yellow, green are three separate detected traffic
  * lights.
+ *
+ * The parent frame of a detected traffic light is the virtual sensor coordinate
+ * system.
+ *
+ * /note The virtual sensor coordinate system is relative to the vehicle coordinate
+ * system which has its origin in the center of the rear axle of the ego
+ * vehicle. This means if virtual sensor mounting position and orientation are
+ * set to (0,0,0) the virtual sensor coordinate system coincides with the
+ * vehicle coordinate system.
  */
 export interface DetectedTrafficLight {
   /** Common information of one detected item. */
@@ -43,10 +52,18 @@ export interface DetectedTrafficLight {
   /**
    * A list of candidates for this traffic light as estimated by the
    * sensor.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
-  candidate?: DetectedTrafficLight_CandidateTrafficLight[] | undefined;
+  candidate?:
+    | DetectedTrafficLight_CandidateTrafficLight[]
+    | undefined;
+  /**
+   * The visual color of the traffic light.
+   *
+   * \note This does not represent the semantic classification but the visual
+   * appearance.  For semantic classification of the traffic light use the color
+   * field in \c CandidateTrafficLight::classification.
+   */
+  color_description?: ColorDescription | undefined;
 }
 
 /**
@@ -61,7 +78,10 @@ export interface DetectedTrafficLight_CandidateTrafficLight {
    * given under the condition of
    * \c DetectedItemHeader::existence_probability.
    *
-   * Range: [0,1]
+   * \rules
+   * is_less_than_or_equal_to: 1
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   probability?:
     | number

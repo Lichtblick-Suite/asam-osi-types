@@ -16,6 +16,15 @@ import {
  * \brief A traffic sign in the environment as detected by the sensor.
  *
  * \image html OSI_DetectedSign.svg
+ *
+ * The parent frame of a detected traffic sign is the virtual sensor coordinate
+ * system.
+ *
+ * \note The virtual sensor coordinate system is relative to the vehicle coordinate
+ * system which has its origin in the center of the rear axle of the ego
+ * vehicle. This means if virtual sensor mounting position and orientation are
+ * set to (0,0,0) the virtual sensor coordinate system coincides with the
+ * vehicle coordinate system.
  */
 export interface DetectedTrafficSign {
   /** Common information of one detected item. */
@@ -26,11 +35,7 @@ export interface DetectedTrafficSign {
   main_sign?:
     | DetectedTrafficSign_DetectedMainSign
     | undefined;
-  /**
-   * A list of additional supplementary sign(s) as detected by the sensor.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** A list of additional supplementary sign(s) as detected by the sensor. */
   supplementary_sign?: DetectedTrafficSign_DetectedSupplementarySign[] | undefined;
 }
 
@@ -54,11 +59,14 @@ export interface DetectedTrafficSign_DetectedMainSign {
    *
    * The orientation of the bounding box \c #base
    * ( \c BaseStationary::orientation ) is defined as follows:
+   *
    * The z-axis of the given \c BaseStationary::orientation is the vector
    * from the bottom to the top of the traffic sign's 2D image plate.
    * (Normally it is equal to the ground truth z-axis.)
+   *
    * The x-axis of the given \c BaseStationary::orientation is view
    * normal of the traffic sign's image.
+   *
    * This x-axis points from the traffic sign's image in the direction
    * from where a 'viewer' could see the traffic sign image.
    */
@@ -99,7 +107,7 @@ export enum DetectedTrafficSign_DetectedMainSign_Geometry {
   SQUARE = 5,
   /**
    * POLE - Traffic sign that has a pole geometry. (height is bigger than
-   * width e.g. pole indicating highways exit in xx [m]). (4 corners)
+   * width e.g. pole indicating highways exit in xx m). (4 corners)
    */
   POLE = 6,
   /**
@@ -140,7 +148,10 @@ export interface DetectedTrafficSign_DetectedMainSign_CandidateMainSign {
    * probability is given under the condition of \c
    * DetectedItemHeader::existence_probability.
    *
-   * Range: [0,1]
+   * \rules
+   * is_less_than_or_equal_to: 1
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   probability?:
     | number
@@ -207,7 +218,10 @@ export interface DetectedTrafficSign_DetectedSupplementarySign_CandidateSuppleme
    * probability is given under the condition of \c
    * DetectedItemHeader::existence_probability.
    *
-   * Range: [0,1]
+   * \rules
+   * is_less_than_or_equal_to: 1
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   probability?:
     | number

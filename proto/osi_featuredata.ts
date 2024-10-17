@@ -5,7 +5,14 @@
 // source: osi_featuredata.proto
 
 /* eslint-disable */
-import { type Identifier, type MountingPosition, type Spherical3d, type Timestamp, type Vector3d } from "./osi_common";
+import {
+  type ColorDescription,
+  type Identifier,
+  type MountingPosition,
+  type Spherical3d,
+  type Timestamp,
+  type Vector3d,
+} from "./osi_common";
 import { type InterfaceVersion } from "./osi_version";
 
 /** Definition of a basic detection classifications. */
@@ -45,39 +52,25 @@ export interface FeatureData {
   version?:
     | InterfaceVersion
     | undefined;
-  /**
-   * Radar detections for multiple radar sensors (sensor fusion).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** Radar detections for multiple radar sensors (sensor fusion). */
   radar_sensor?:
     | RadarDetectionData[]
     | undefined;
-  /**
-   * Lidar detections for multiple lidar sensors (sensor fusion).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** Lidar detections for multiple lidar sensors (sensor fusion). */
   lidar_sensor?:
     | LidarDetectionData[]
     | undefined;
   /**
    * Ultrasonic detections for multiple ultrasonic sensors (sensor fusion).
    *
-   * \note OSI uses singular instead of plural for repeated field names.
-   *
    * \note Required for ultrasonic sensors: Detections will be send by the
    * emitting ultrasonic sensor, including all indirect detections received
-   * by neighbouring sensors.
+   * by neighboring sensors.
    */
   ultrasonic_sensor?:
     | UltrasonicDetectionData[]
     | undefined;
-  /**
-   * Camera detections for multiple camera sensors (sensor fusion).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** Camera detections for multiple camera sensors (sensor fusion). */
   camera_sensor?: CameraDetectionData[] | undefined;
 }
 
@@ -99,15 +92,18 @@ export interface SensorDetectionHeader {
    * Monotonous counter to identify the exact cycle.
    * In general the detection function is called periodically and
    * \c #cycle_counter corresponds to the number of periods.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   cycle_counter?:
     | number
     | undefined;
   /**
-   * Mounting position of the sensor (origin and orientation of the sensor
-   * frame). Both origin and orientation are given in and with respect to the
-   * host vehicle coordinate system (see: \c MovingObject::Vehicle vehicle
-   * reference point) [1].
+   * The physical mounting position of the sensor (origin and orientation of
+   * the sensor frame). Both origin and orientation are given in and with
+   * respect to the host vehicle coordinate system [1].
    *
    * The sensor frame's x-axis is pointing in the central viewing direction of
    * the sensor. It is the angle bisector of the sensor's horizontal and
@@ -124,8 +120,12 @@ export interface SensorDetectionHeader {
    * identical to sensor detection frame's origin. Detections are defined in
    * the sensor detection frame which uses e.g. spherical coordinates.
    *
-   * \par References:
-   * - [1] DIN ISO 8855:2013-11
+   * \par Reference:
+   * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
+   *
+   * \rules
+   * is_set
+   * \endrules
    */
   mounting_position?:
     | MountingPosition
@@ -153,6 +153,10 @@ export interface SensorDetectionHeader {
    * The current number of valid detections in the detections list.
    *
    * \note This value has to be set if the list contains invalid detections.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   number_of_valid_detections?:
     | number
@@ -162,6 +166,10 @@ export interface SensorDetectionHeader {
    *
    * This ID can equal \c SensorData::sensor_id, if \c SensorData holds only
    * data from one sensor/sensor model.
+   *
+   * \rules
+   * is_set
+   * \endrules
    */
   sensor_id?:
     | Identifier
@@ -221,7 +229,7 @@ export enum SensorDetectionHeader_ExtendedQualifier {
   REDUCED_FIELD_OF_VIEW = 8,
   /** INPUT_NOT_AVAILABLE - Input not available. */
   INPUT_NOT_AVAILABLE = 9,
-  /** INTERNAL_REASON - Internal reason (e.g. an internal HW or SW error has occurred). */
+  /** INTERNAL_REASON - Internal reason (e.g. an internal hardware or software error has occurred). */
   INTERNAL_REASON = 10,
   /**
    * EXTERNAL_DISTURBANCE - External disturbance, sensor specific for front radar (e.g.
@@ -238,11 +246,7 @@ export interface RadarDetectionData {
   header?:
     | SensorDetectionHeader
     | undefined;
-  /**
-   * List of radar detections constituting the radar detection list.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** List of radar detections constituting the radar detection list. */
   detection?: RadarDetection[] | undefined;
 }
 
@@ -252,10 +256,13 @@ export interface RadarDetection {
    * Existence probability of the detection not based on history. Value does
    * not depend on any past experience with similar detections.
    *
-   * Range: [0.0, 1.0]
-   *
    * \note Use as confidence measure where a low value means less confidence
    * and a high value indicates strong confidence.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   existence_probability?:
     | number
@@ -264,6 +271,10 @@ export interface RadarDetection {
    * ID of the detected object this detection is associated to.
    *
    * \note ID = MAX(uint64) indicates no reference to an object.
+   *
+   * \rules
+   * refers_to: DetectedObject
+   * \endrules
    */
   object_id?:
     | Identifier
@@ -280,9 +291,9 @@ export interface RadarDetection {
     | Spherical3d
     | undefined;
   /**
-   * Absolute radial (in direction to the sensor) velocity of the detection.
+   * Radial velocity of the detection positive in direction to the sensor.
    *
-   * Unit: [m/s]
+   * Unit: m/s
    */
   radial_velocity?:
     | number
@@ -290,7 +301,11 @@ export interface RadarDetection {
   /**
    * Root mean squared error of the object measured radial velocity.
    *
-   * Unit: [m/s]
+   * Unit: m/s
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   radial_velocity_rmse?:
     | number
@@ -298,7 +313,7 @@ export interface RadarDetection {
   /**
    * The radar cross section (RCS) of the radar detection.
    *
-   * Unit: [dB m^2]
+   * Unit: dB m^2
    */
   rcs?:
     | number
@@ -306,7 +321,7 @@ export interface RadarDetection {
   /**
    * The signal to noise ratio (SNR) of the radar detection.
    *
-   * Unit: [dB]
+   * Unit: dB
    */
   snr?:
     | number
@@ -315,7 +330,10 @@ export interface RadarDetection {
    * Describes the possibility whether more than one object may have led to
    * this detection.
    *
-   * Range: [0.0, 1.0]
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   point_target_probability?:
     | number
@@ -327,7 +345,7 @@ export interface RadarDetection {
    *
    * \note Unambiguous measurements have the ambiguity ID 0.
    *
-   * \note Multiple seperate detections, from e.g. a large object, do not
+   * \note Multiple separate detections, from e.g. a large object, do not
    * necessarily on their own create any ambiguity. Therefore they do not
    * usually share an ambiguity ID. They can however be ambiguous
    * with other detections.
@@ -345,11 +363,7 @@ export interface LidarDetectionData {
   header?:
     | SensorDetectionHeader
     | undefined;
-  /**
-   * List of lidar detections.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** List of lidar detections. */
   detection?: LidarDetection[] | undefined;
 }
 
@@ -359,10 +373,13 @@ export interface LidarDetection {
    * Existence probability of the detection not based on history. Value does
    * not depend on any past experience with similar detections.
    *
-   * Range: [0.0, 1.0]
-   *
    * \note Used as confidence measure where a low value means less confidence
    * and a high value indicates strong confidence.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   existence_probability?:
     | number
@@ -371,6 +388,10 @@ export interface LidarDetection {
    * ID of the detected object this detection is associated to.
    *
    * \note ID = MAX(uint64) indicates no reference to an object.
+   *
+   * \rules
+   * refers_to: DetectedObject
+   * \endrules
    */
   object_id?:
     | Identifier
@@ -390,7 +411,11 @@ export interface LidarDetection {
    * The height value which is required when multiple scan points are
    * vertically clustered. Only vertical clustering is allowed (z-axis).
    *
-   * Unit: [m]
+   * Unit: m
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   height?:
     | number
@@ -398,7 +423,11 @@ export interface LidarDetection {
   /**
    * Root mean squared error of the object height.
    *
-   * Unit: [m]
+   * Unit: m
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   height_rmse?:
     | number
@@ -406,7 +435,12 @@ export interface LidarDetection {
   /**
    * Intensity or equivalent value of the detection's echo.
    *
-   * Unit: [%]
+   * Unit: %
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 100
+   * \endrules
    */
   intensity?:
     | number
@@ -415,7 +449,10 @@ export interface LidarDetection {
    * The free space probability in the range [0.0, 1.0] from the origin of the
    * sensor up to this detection, as given by the distance.
    *
-   * Range: [0.0, 1.0]
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   free_space_probability?:
     | number
@@ -425,7 +462,39 @@ export interface LidarDetection {
     | DetectionClassification
     | undefined;
   /** Lambertian reflectivity. */
-  reflectivity?: number | undefined;
+  reflectivity?:
+    | number
+    | undefined;
+  /**
+   * Echo pulse width of the detection's echo.
+   * Several sensors output an echo pulse width instead of an intensity for each individual detection.
+   * The echo pulse is measured in m and measures the extent of the object parts or atmospheric particles that produce the echo.
+   * \note For more details see [1] Fig. 7 and 8.
+   * \note Fig. 7 shows an example where the two echos are reflected from the edges A-B and C-D.
+   * \note Fig. 8 shows how the echo pulse width is measured as the range between the rising edge and the falling edge that crosses the intensity threshold.
+   *
+   * Unit: m
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
+   *
+   * \par Reference:
+   * [1] Rosenberger, P., Holder, M.F., Cianciaruso, N. et al. (2020). <em>Sequential lidar sensor system simulation: a modular approach for simulation-based safety validation of automated driving</em> Automotive Engine Technology 5, Fig 7, Fig 8. Retrieved May 10, 2021, from https://doi.org/10.1007/s41104-020-00066-x
+   */
+  echo_pulse_width?:
+    | number
+    | undefined;
+  /**
+   * Radial velocity of the detection positive in direction to the sensor.
+   *
+   * Unit: m/s
+   */
+  radial_velocity?:
+    | number
+    | undefined;
+  /** ID of the corresponding lidar beam. */
+  beam_id?: Identifier | undefined;
 }
 
 /** \brief Specific header extension for ultrasonic sensors. */
@@ -433,7 +502,7 @@ export interface UltrasonicDetectionSpecificHeader {
   /**
    * Maximal range of the ultrasonic sensor.
    *
-   * Unit: [m]
+   * Unit: m
    */
   max_range?:
     | number
@@ -463,7 +532,7 @@ export interface UltrasonicDetectionSpecificHeader {
  *
  * \image html OSI_USSensor.svg
  *
- * \note Direct detecions lies on circles with the sending sensor as centre.
+ * \note Direct detections lie on circles with the sending sensor as center.
  */
 export interface UltrasonicDetectionData {
   /** Header attributes of ultrasonic detection from one ultrasonic sensor. */
@@ -477,19 +546,13 @@ export interface UltrasonicDetectionData {
   specific_header?:
     | UltrasonicDetectionSpecificHeader
     | undefined;
-  /**
-   * List of ultrasonic detections.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** List of ultrasonic detections. */
   detection?:
     | UltrasonicDetection[]
     | undefined;
   /**
    * List of ultrasonic indirect detections (sender and receiver sensors are
    * not the same).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
   indirect_detection?: UltrasonicIndirectDetection[] | undefined;
 }
@@ -506,17 +569,20 @@ export interface UltrasonicDetectionData {
  *
  * \image html OSI_USSensor_direct.svg
  *
- * \note Direct detecions lies on circles with the sensor as centre.
+ * \note Direct detections lie on circles with the sensor as center.
  */
 export interface UltrasonicDetection {
   /**
    * Existence probability of the detection not based on history. Value does
    * not depend on any past experience with similar detections.
    *
-   * Range: [0.0, 1.0]
-   *
    * \note Used as confidence measure where a low value means less confidence
    * and a high value indicates strong confidence.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   existence_probability?:
     | number
@@ -525,6 +591,10 @@ export interface UltrasonicDetection {
    * ID of the detected object this detection is associated to.
    *
    * \note ID = MAX(uint64) indicates no reference to an object.
+   *
+   * \rules
+   * refers_to: DetectedObject
+   * \endrules
    */
   object_id?:
     | Identifier
@@ -532,7 +602,11 @@ export interface UltrasonicDetection {
   /**
    * Measured distance (radius) of the detection.
    *
-   * Unit: [m]
+   * Unit: m
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   distance?: number | undefined;
 }
@@ -549,7 +623,7 @@ export interface UltrasonicDetection {
  *
  * \image html OSI_USSensor_indirect.svg
  *
- * \note Indirect detecions lies on ellipses with the sending resp. receiving
+ * \note Indirect detections lie on ellipses with the sending resp. receiving
  * sensor in the focal points.
  */
 export interface UltrasonicIndirectDetection {
@@ -557,10 +631,13 @@ export interface UltrasonicIndirectDetection {
    * Existence probability of the detection not based on history. Value does
    * not depend on any past experience with similar detections.
    *
-   * Range: [0.0, 1.0]
-   *
    * \note Used as confidence measure where a low value means less confidence
    * and a high value indicates strong confidence.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   existence_probability?:
     | number
@@ -569,6 +646,10 @@ export interface UltrasonicIndirectDetection {
    * ID of the detected object this detection is associated to.
    *
    * \note ID = MAX(uint64) indicates no reference to an object.
+   *
+   * \rules
+   * refers_to: DetectedObject
+   * \endrules
    */
   object_id?:
     | Identifier
@@ -576,7 +657,7 @@ export interface UltrasonicIndirectDetection {
   /**
    * First parameter b of an ellipsoid equation.
    *
-   * Unit: [m]
+   * Unit: m
    */
   ellipsoid_radial?:
     | number
@@ -584,7 +665,7 @@ export interface UltrasonicIndirectDetection {
   /**
    * Second parameter b of an ellipsoid equation.
    *
-   * Unit: [m]
+   * Unit: m
    */
   ellipsoid_axial?:
     | number
@@ -610,6 +691,10 @@ export interface CameraDetectionSpecificHeader {
    * refer.
    *
    * \note This value has to be set if the list contains invalid points.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   number_of_valid_points?: number | undefined;
 }
@@ -624,19 +709,11 @@ export interface CameraDetectionData {
   specific_header?:
     | CameraDetectionSpecificHeader
     | undefined;
-  /**
-   * List of camera detections.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** List of camera detections. */
   detection?:
     | CameraDetection[]
     | undefined;
-  /**
-   * List of points which are used by detections.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** List of points which are used by detections. */
   point?: CameraPoint[] | undefined;
 }
 
@@ -646,10 +723,13 @@ export interface CameraDetection {
    * Existence probability of the detection not based on history. Value does
    * not depend on any past experience with similar detections.
    *
-   * Range: [0.0, 1.0]
-   *
    * \note Used as confidence measure where a low value means less confidence
    * and a high value indicates strong confidence.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   existence_probability?:
     | number
@@ -658,6 +738,10 @@ export interface CameraDetection {
    * ID of the detected object this detection is associated to.
    *
    * \note ID = MAX(uint64) indicates no reference to an object.
+   *
+   * \rules
+   * refers_to: DetectedObject
+   * \endrules
    */
   object_id?:
     | Identifier
@@ -680,14 +764,12 @@ export interface CameraDetection {
    * The defined shape is background.
    * The probability for this classification is at least
    * \c #shape_classification_probability.
-   *
-   * Range: [0.0, 1.0]
    */
   shape_classification_background?:
     | boolean
     | undefined;
   /**
-   * The defined shape is foregroud.
+   * The defined shape is foreground.
    * The probability for this classification is at least
    * \c #shape_classification_probability.
    */
@@ -855,22 +937,34 @@ export interface CameraDetection {
     | boolean
     | undefined;
   /**
-   * This probability defines the mininimum probability for each selected
+   * This probability defines the minimum probability for each selected
    * shape classification.
    *
-   * Range: [0.0, 1.0]
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   shape_classification_probability?:
     | number
     | undefined;
-  /** The dominant color of the shape. */
+  /**
+   * The dominant color of the shape.
+   *
+   * \attention DEPRECATED: This color enum will be removed in version
+   * 4.0.0. Use the field \c #color_description (\c ColorDescription)
+   * instead.
+   */
   color?:
     | CameraDetection_Color
     | undefined;
   /**
    * The probability of the shape's color.
    *
-   * Range: [0.0, 1.0]
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   color_probability?:
     | number
@@ -892,11 +986,24 @@ export interface CameraDetection {
   /**
    * Number of points which defines the shape.
    * \c #image_shape_type may restrict the number of possible values.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
-  number_of_points?: number | undefined;
+  number_of_points?:
+    | number
+    | undefined;
+  /** The dominant color of the shape. */
+  color_description?: ColorDescription | undefined;
 }
 
-/** Definition of shape dominant color. */
+/**
+ * Definition of shape dominant color.
+ *
+ * \attention DEPRECATED: This color enum will be removed in version
+ * 4.0.0. Use \c ColorDescription instead.
+ */
 export enum CameraDetection_Color {
   /**
    * UNKNOWN - Color of the shape is unknown (must not be used in ground
@@ -907,7 +1014,13 @@ export enum CameraDetection_Color {
   OTHER = 1,
   /** BLACK - Shape with black color. */
   BLACK = 2,
-  /** GREY - Shape with grey color. */
+  /** GRAY - Shape with gray color. */
+  GRAY = 3,
+  /**
+   * GREY - Shape with gray color.
+   *
+   * \note Deprecated variant spelling of COLOR_GRAY
+   */
   GREY = 3,
   /** WHITE - Shape with white color. */
   WHITE = 4,
@@ -945,7 +1058,7 @@ export enum CameraDetection_ImageShapeType {
    * Allowed number of referenced points: 2 or 3
    *
    * Allowed number of referenced points = 2: first and third corner of
-   * the box. Box is alligned horizontal resp. vertical.
+   * the box. Box is aligned horizontal resp. vertical.
    *
    * Allowed number of referenced points = 3: first, second and third
    * corner of the box. fourth corner is calculated by first+third-second
@@ -1000,16 +1113,19 @@ export interface CameraPoint {
    * Existence probability of the point not based on history. Value does
    * not depend on any past experience with similar points.
    *
-   * Range: [0.0, 1.0]
-   *
    * \note Used as confidence measure where a low value means less confidence
    * and a high value indicates strong confidence.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   existence_probability?:
     | number
     | undefined;
   /**
-   * Measured point refered by one camera detection given in spherical
+   * Measured point referred by one camera detection given in spherical
    * coordinates in the sensor coordinate system.
    */
   point?:

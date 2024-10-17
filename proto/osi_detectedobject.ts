@@ -5,8 +5,15 @@
 // source: osi_detectedobject.proto
 
 /* eslint-disable */
-import { type BaseMoving, type BaseStationary, type Identifier, type Orientation3d } from "./osi_common";
 import {
+  type BaseMoving,
+  type BaseStationary,
+  type ColorDescription,
+  type Identifier,
+  type Orientation3d,
+} from "./osi_common";
+import {
+  type MovingObject_MovingObjectClassification,
   type MovingObject_Type,
   type MovingObject_VehicleClassification,
   type StationaryObject_Classification,
@@ -25,16 +32,16 @@ import {
 export interface DetectedItemHeader {
   /**
    * Specific ID of the detected item as assigned by the sensor internally.
-   * Need not match with \c #ground_truth_id.
+   * Needs not to match with \c #ground_truth_id.
+   *
+   * \rules
+   * is_set
+   * \endrules
    */
   tracking_id?:
     | Identifier
     | undefined;
-  /**
-   * The ID of the original detected item in the ground truth.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** The ID of the original detected item in the ground truth. */
   ground_truth_id?:
     | Identifier[]
     | undefined;
@@ -45,7 +52,10 @@ export interface DetectedItemHeader {
    * \note Use as confidence measure where a low value means less confidence
    * and a high value indicates strong confidence.
    *
-   * Range: [0,1]
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   existence_probability?:
     | number
@@ -58,7 +68,7 @@ export interface DetectedItemHeader {
    * \f$ Timestamp - Age := \f$ 'point in time' when the object has
    * been observed for the first time.
    *
-   * Unit: [s]
+   * Unit: s
    */
   age?:
     | number
@@ -77,8 +87,6 @@ export interface DetectedItemHeader {
    * \note This information can be determined via the detected entities'
    * detections ( \c ...Detection::object_id = 'this detected item' ) and
    * the sensors (their IDs) to which these detections belong.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
   sensor_id?: Identifier[] | undefined;
 }
@@ -92,10 +100,10 @@ export enum DetectedItemHeader_MeasurementState {
    * of this enum list).
    */
   OTHER = 1,
-  /** MEASURED - Entity has been measured by the sensor in the current timestep. */
+  /** MEASURED - Entity has been measured by the sensor in the current time step. */
   MEASURED = 2,
   /**
-   * PREDICTED - Entity has not been measured by the sensor in the current timestep.
+   * PREDICTED - Entity has not been measured by the sensor in the current time step.
    * Values provided by tracking only.
    */
   PREDICTED = 3,
@@ -106,6 +114,15 @@ export enum DetectedItemHeader_MeasurementState {
  * the sensor.
  *
  * \image html OSI_DetectedStationaryObject.svg
+ *
+ * The parent frame of a detected stationary object is the virtual sensor
+ * coordinate system.
+ *
+ * /note The virtual sensor coordinate system is relative to the vehicle coordinate
+ * system which has its origin in the center of the rear axle of the ego
+ * vehicle. This means if virtual sensor mounting position and orientation are
+ * set to (0,0,0) the virtual sensor coordinate system coincides with the
+ * vehicle coordinate system.
  */
 export interface DetectedStationaryObject {
   /** Common information of one detected item. */
@@ -127,10 +144,48 @@ export interface DetectedStationaryObject {
   /**
    * A list of candidates for this stationary object as estimated by the
    * sensor.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
-  candidate?: DetectedStationaryObject_CandidateStationaryObject[] | undefined;
+  candidate?:
+    | DetectedStationaryObject_CandidateStationaryObject[]
+    | undefined;
+  /** The dominating color of the material of the structure. */
+  color_description?:
+    | ColorDescription
+    | undefined;
+  /**
+   * Additional data that is specific to radar sensors.
+   *
+   * \note Field needs not to be set if simulated sensor is not a radar
+   * sensor.
+   */
+  radar_specifics?:
+    | RadarSpecificObjectData
+    | undefined;
+  /**
+   * Additional data that is specific to lidar sensors.
+   *
+   * \note Field needs not to be set if simulated sensor is not a lidar
+   * sensor.
+   */
+  lidar_specifics?:
+    | LidarSpecificObjectData
+    | undefined;
+  /**
+   * Additional data that is specific to camera sensors.
+   *
+   * \note Field needs not to be set if simulated sensor is not a camera
+   * sensor.
+   */
+  camera_specifics?:
+    | CameraSpecificObjectData
+    | undefined;
+  /**
+   * Additional data that is specific to ultrasonic sensors.
+   *
+   * \note Field needs not to be set if simulated sensor is not an ultrasonic
+   * sensor.
+   */
+  ultrasonic_specifics?: UltrasonicSpecificObjectData | undefined;
 }
 
 /**
@@ -145,7 +200,10 @@ export interface DetectedStationaryObject_CandidateStationaryObject {
    * given under the condition of
    * \c DetectedItemHeader::existence_probability.
    *
-   * Range: [0,1]
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   probability?:
     | number
@@ -155,8 +213,17 @@ export interface DetectedStationaryObject_CandidateStationaryObject {
 }
 
 /**
- * \brief Moving object in the environment as detected and perceived by
- * the sensor.
+ * \brief Moving object in the environment as detected and perceived by the
+ * sensor.
+ *
+ * The parent frame of a detected moving object is the virtual sensor coordinate
+ * system.
+ *
+ * /note The virtual sensor coordinate system is relative to the vehicle coordinate
+ * system which has its origin in the center of the rear axle of the ego
+ * vehicle. This means if virtual sensor mounting position and orientation are
+ * set to (0,0,0) the virtual sensor coordinate system coincides with the
+ * vehicle coordinate system.
  */
 export interface DetectedMovingObject {
   /** Common information of one detected item. */
@@ -166,8 +233,9 @@ export interface DetectedMovingObject {
   /**
    * The base parameters of the moving object.
    *
-   * \note The bounding box does NOT includes mirrors for vehicles.
-   * \note The parent frame of \c base is the sensor's vehicle frame.
+   * \note The bounding box does NOT include mirrors for vehicles.
+   * \note The height includes the ground_clearance. It always goes from the
+   * top to the ground.
    */
   base?:
     | BaseMoving
@@ -176,8 +244,6 @@ export interface DetectedMovingObject {
    * The root mean squared error of the base parameters of the detected
    * moving object (e.g. car). \c MovingObject::base has to be
    * identical for all \c #candidate moving objects.
-   *
-   * \note The parent frame of \c base is the sensor's vehicle frame.
    */
   base_rmse?:
     | BaseMoving
@@ -202,6 +268,14 @@ export interface DetectedMovingObject {
    * Percentage side lane left.
    *
    * Percentage value of the object width in the corresponding lane.
+   *
+   * \note DEPRECATED: Use assigned_lane_percentage in MovingObjectClassification
+   * instead.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 100
+   * \endrules
    */
   percentage_side_lane_left?:
     | number
@@ -210,6 +284,14 @@ export interface DetectedMovingObject {
    * Percentage side lane right.
    *
    * Percentage value of the object width in the corresponding lane.
+   *
+   * \note DEPRECATED: Use assigned_lane_percentage in MovingObjectClassification
+   * instead.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 100
+   * \endrules
    */
   percentage_side_lane_right?:
     | number
@@ -217,16 +299,18 @@ export interface DetectedMovingObject {
   /**
    * A list of candidates for this moving object as estimated by the
    * sensor (e.g. pedestrian, car).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
   candidate?:
     | DetectedMovingObject_CandidateMovingObject[]
     | undefined;
+  /** The dominating color of the material of the moving object. */
+  color_description?:
+    | ColorDescription
+    | undefined;
   /**
    * Additional data that is specific to radar sensors.
    *
-   * \note Field need not be set if simulated sensor is not a radar
+   * \note Field needs not to be set if simulated sensor is not a radar
    * sensor.
    */
   radar_specifics?:
@@ -235,7 +319,7 @@ export interface DetectedMovingObject {
   /**
    * Additional data that is specific to lidar sensors.
    *
-   * \note Field need not be set if simulated sensor is not a lidar
+   * \note Field needs not to be set if simulated sensor is not a lidar
    * sensor.
    */
   lidar_specifics?:
@@ -244,7 +328,7 @@ export interface DetectedMovingObject {
   /**
    * Additional data that is specific to camera sensors.
    *
-   * \note Field need not be set if simulated sensor is not a camera
+   * \note Field needs not to be set if simulated sensor is not a camera
    * sensor.
    */
   camera_specifics?:
@@ -253,7 +337,7 @@ export interface DetectedMovingObject {
   /**
    * Additional data that is specific to ultrasonic sensors.
    *
-   * \note Field need not be set if simulated sensor is not an ultrasonic
+   * \note Field needs not to be set if simulated sensor is not an ultrasonic
    * sensor.
    */
   ultrasonic_specifics?: UltrasonicSpecificObjectData | undefined;
@@ -327,7 +411,10 @@ export interface DetectedMovingObject_CandidateMovingObject {
    * given under the condition of
    * \c DetectedItemHeader::existence_probability.
    *
-   * Range: [0,1]
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   probability?:
     | number
@@ -341,6 +428,10 @@ export interface DetectedMovingObject_CandidateMovingObject {
    *
    * \note This field is mandatory if the \c CandidateMovingObject::type
    * is \c MovingObject::TYPE_VEHICLE .
+   *
+   * \rules
+   * check_if this.type is_equal_to 2 else do_check is_set
+   * \endrules
    */
   vehicle_classification?:
     | MovingObject_VehicleClassification
@@ -349,9 +440,8 @@ export interface DetectedMovingObject_CandidateMovingObject {
    * Pedestrian head pose for behavior prediction. Describes the head
    * orientation w.r.t. the host vehicle orientation.
    * The x-axis of the right-handed head frame is pointing along the
-   * pedestrian's straight ahead viewing direction and the z-axis is
-   * pointing upwards (cranial direction [1] i.e. to pedestrian's skull
-   * cap).
+   * pedestrian's straight ahead viewing direction (anterior), the y-axis lateral to the left,
+   * and the z-axis is pointing upwards (superior) [1].
    *
    * ``View_normal_base_coord_system =
    * Inverse_Rotation(#head_pose)*Unit_vector_x``
@@ -359,8 +449,13 @@ export interface DetectedMovingObject_CandidateMovingObject {
    * \note This field is mandatory if the \c CandidateMovingObject.type is
    * \c MovingObject::TYPE_PEDESTRIAN
    *
-   * \par References:
-   * - [1] https://en.wikipedia.org/wiki/Anatomical_terms_of_location
+   * \rules
+   * check_if this.type is_equal_to 3 else do_check is_set
+   * \endrules
+   *
+   * \par Reference:
+   *
+   * [1] Patton, K. T. & Thibodeau, G. A. (2015). <em>Anatomy & Physiology</em>. 9th Edition. Elsevier. Missouri, U.S.A. ISBN 978-0-323-34139-4. p. 1229.
    */
   head_pose?:
     | Orientation3d
@@ -369,9 +464,9 @@ export interface DetectedMovingObject_CandidateMovingObject {
    * Pedestrian upper body pose for behavior prediction. Describes the
    * upper body orientation w.r.t. the host vehicle orientation.
    * The x-axis of the right-handed upper body frame is pointing along the
-   * pedestrian's upper body ventral direction [2] (i.e. usually
-   * pedestrian's intended moving direction) and the z-axis is pointing
-   * upwards (to pedestrian's head).
+   * pedestrian's upper body ventral (anterior) direction (i.e. usually
+   * pedestrian's intended moving direction), the y-axis lateral to the left,
+   * and the z-axis is pointing upwards (superior, to the pedestrian's head) [1].
    *
    * ``View_normal_base_coord_system =
    * Inverse_Rotation(#upper_body_pose)*Unit_vector_x``
@@ -379,8 +474,16 @@ export interface DetectedMovingObject_CandidateMovingObject {
    * \note This field is mandatory if the \c CandidateMovingObject::type
    * is \c MovingObject::TYPE_PEDESTRIAN
    *
-   * \par References:
-   * - [2] https://en.wikipedia.org/wiki/Anatomical_terms_of_location
+   * \rules
+   * check_if this.type is_equal_to 3 else do_check is_set
+   * \endrules
+   *
+   * \par Reference:
+   * [1] Patton, K. T. & Thibodeau, G. A. (2015). <em>Anatomy & Physiology</em>. 9th Edition. Elsevier. Missouri, U.S.A. ISBN 978-0-323-34139-4. p. 1229.
    */
-  upper_body_pose?: Orientation3d | undefined;
+  upper_body_pose?:
+    | Orientation3d
+    | undefined;
+  /** Specific information about the classification of a moving object. */
+  moving_object_classification?: MovingObject_MovingObjectClassification | undefined;
 }

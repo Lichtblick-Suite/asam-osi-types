@@ -5,6 +5,7 @@
 // source: osi_detectedlane.proto
 
 /* eslint-disable */
+import { type ColorDescription } from "./osi_common";
 import { type DetectedItemHeader } from "./osi_detectedobject";
 import {
   type Lane_Classification,
@@ -18,11 +19,7 @@ export interface DetectedLane {
   header?:
     | DetectedItemHeader
     | undefined;
-  /**
-   * A list of candidates for this lane as estimated by the sensor.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** A list of candidates for this lane as estimated by the sensor. */
   candidate?: DetectedLane_CandidateLane[] | undefined;
 }
 
@@ -38,7 +35,10 @@ export interface DetectedLane_CandidateLane {
    * given under the condition of
    * \c DetectedItemHeader::existence_probability.
    *
-   * Range: [0,1]
+   * \rules
+   * is_less_than_or_equal_to: 1
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   probability?:
     | number
@@ -56,6 +56,15 @@ export interface DetectedLane_CandidateLane {
  * \brief A lane boundary segment as detected by the sensor.
  *
  * \image html OSI_DetectedLaneBoundary.svg
+ *
+ * The parent frame of a detected lane boundary is the virtual sensor coordinate
+ * system.
+ *
+ * /note The virtual sensor coordinate system is relative to the vehicle coordinate
+ * system which has its origin in the center of the rear axle of the ego
+ * vehicle. This means if virtual sensor mounting position and orientation are
+ * set to (0,0,0) the virtual sensor coordinate system coincides with the
+ * vehicle coordinate system.
  */
 export interface DetectedLaneBoundary {
   /** Common information of one detected item. */
@@ -65,8 +74,6 @@ export interface DetectedLaneBoundary {
   /**
    * A list of candidates for this lane boundary as estimated by the
    * sensor.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
   candidate?:
     | DetectedLaneBoundary_CandidateLaneBoundary[]
@@ -105,9 +112,22 @@ export interface DetectedLaneBoundary {
    * one \c #boundary_line_confidences confidence value is
    * specified which is suitable for all candidates.
    *
-   * Range: [0,1]
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
-  boundary_line_confidences?: number[] | undefined;
+  boundary_line_confidences?:
+    | number[]
+    | undefined;
+  /**
+   * The visual color of the material of the lane boundary.
+   *
+   * \note This does not represent the semantic classification but the visual
+   * appearance. For semantic classification of the lane boundary use the color
+   * field in \c CandidateLaneBoundary::classification.
+   */
+  color_description?: ColorDescription | undefined;
 }
 
 /**
@@ -122,7 +142,10 @@ export interface DetectedLaneBoundary_CandidateLaneBoundary {
    * given under the condition of
    * \c DetectedItemHeader::existence_probability.
    *
-   * Range: [0,1]
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 1
+   * \endrules
    */
   probability?:
     | number

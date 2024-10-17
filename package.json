@@ -1,11 +1,11 @@
 {
   "name": "asam-osi-types",
-  "version": "3.1.2",
+  "version": "3.7.0",
   "description": "Open Simulation Interface types for Typescript",
   "scripts": {
-    "setup": "pip install open-simulation-interface && rm -rf open-simulation-interface/osi3 proto",
+    "setup": "cd open-simulation-interface && pip install ./ && cd .. && rm -rf open-simulation-interface/osi3 proto",
     "generate": "buf generate",
-    "build": "npm run setup && npm run generate",
+    "build": "npm run setup && npm run generate && tsup index.ts --format cjs,esm --dts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

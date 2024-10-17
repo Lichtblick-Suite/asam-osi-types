@@ -1,3 +1,15 @@
+// proto/osi_common.ts
+var BoundingBox_Type = /* @__PURE__ */ ((BoundingBox_Type2) => {
+  BoundingBox_Type2[BoundingBox_Type2["UNKNOWN"] = 0] = "UNKNOWN";
+  BoundingBox_Type2[BoundingBox_Type2["OTHER"] = 1] = "OTHER";
+  BoundingBox_Type2[BoundingBox_Type2["BASE_STRUCTURE"] = 2] = "BASE_STRUCTURE";
+  BoundingBox_Type2[BoundingBox_Type2["PROTRUDING_STRUCTURE"] = 3] = "PROTRUDING_STRUCTURE";
+  BoundingBox_Type2[BoundingBox_Type2["CARGO"] = 4] = "CARGO";
+  BoundingBox_Type2[BoundingBox_Type2["DOOR"] = 5] = "DOOR";
+  BoundingBox_Type2[BoundingBox_Type2["SIDE_MIRROR"] = 6] = "SIDE_MIRROR";
+  return BoundingBox_Type2;
+})(BoundingBox_Type || {});
+
 // proto/osi_detectedobject.ts
 var DetectedItemHeader_MeasurementState = /* @__PURE__ */ ((DetectedItemHeader_MeasurementState2) => {
   DetectedItemHeader_MeasurementState2[DetectedItemHeader_MeasurementState2["UNKNOWN"] = 0] = "UNKNOWN";
@@ -61,7 +73,7 @@ var EnvironmentalConditions_Precipitation = /* @__PURE__ */ ((EnvironmentalCondi
   return EnvironmentalConditions_Precipitation2;
 })(EnvironmentalConditions_Precipitation || {});
 var EnvironmentalConditions_Fog = /* @__PURE__ */ ((EnvironmentalConditions_Fog2) => {
-  EnvironmentalConditions_Fog2[EnvironmentalConditions_Fog2["UNKOWN"] = 0] = "UNKOWN";
+  EnvironmentalConditions_Fog2[EnvironmentalConditions_Fog2["UNKNOWN"] = 0] = "UNKNOWN";
   EnvironmentalConditions_Fog2[EnvironmentalConditions_Fog2["OTHER"] = 1] = "OTHER";
   EnvironmentalConditions_Fog2[EnvironmentalConditions_Fog2["EXCELLENT_VISIBILITY"] = 2] = "EXCELLENT_VISIBILITY";
   EnvironmentalConditions_Fog2[EnvironmentalConditions_Fog2["GOOD_VISIBILITY"] = 3] = "GOOD_VISIBILITY";
@@ -87,6 +99,21 @@ var EnvironmentalConditions_AmbientIllumination = /* @__PURE__ */ ((Environmenta
   EnvironmentalConditions_AmbientIllumination2[EnvironmentalConditions_AmbientIllumination2["LEVEL9"] = 10] = "LEVEL9";
   return EnvironmentalConditions_AmbientIllumination2;
 })(EnvironmentalConditions_AmbientIllumination || {});
+var EnvironmentalConditions_CloudLayer_FractionalCloudCover = /* @__PURE__ */ ((EnvironmentalConditions_CloudLayer_FractionalCloudCover2) => {
+  EnvironmentalConditions_CloudLayer_FractionalCloudCover2[EnvironmentalConditions_CloudLayer_FractionalCloudCover2["UNKNOWN"] = 0] = "UNKNOWN";
+  EnvironmentalConditions_CloudLayer_FractionalCloudCover2[EnvironmentalConditions_CloudLayer_FractionalCloudCover2["OTHER"] = 1] = "OTHER";
+  EnvironmentalConditions_CloudLayer_FractionalCloudCover2[EnvironmentalConditions_CloudLayer_FractionalCloudCover2["ZERO_OKTAS"] = 2] = "ZERO_OKTAS";
+  EnvironmentalConditions_CloudLayer_FractionalCloudCover2[EnvironmentalConditions_CloudLayer_FractionalCloudCover2["ONE_OKTAS"] = 3] = "ONE_OKTAS";
+  EnvironmentalConditions_CloudLayer_FractionalCloudCover2[EnvironmentalConditions_CloudLayer_FractionalCloudCover2["TWO_OKTAS"] = 4] = "TWO_OKTAS";
+  EnvironmentalConditions_CloudLayer_FractionalCloudCover2[EnvironmentalConditions_CloudLayer_FractionalCloudCover2["THREE_OKTAS"] = 5] = "THREE_OKTAS";
+  EnvironmentalConditions_CloudLayer_FractionalCloudCover2[EnvironmentalConditions_CloudLayer_FractionalCloudCover2["FOUR_OKTAS"] = 6] = "FOUR_OKTAS";
+  EnvironmentalConditions_CloudLayer_FractionalCloudCover2[EnvironmentalConditions_CloudLayer_FractionalCloudCover2["FIVE_OKTAS"] = 7] = "FIVE_OKTAS";
+  EnvironmentalConditions_CloudLayer_FractionalCloudCover2[EnvironmentalConditions_CloudLayer_FractionalCloudCover2["SIX_OKTAS"] = 8] = "SIX_OKTAS";
+  EnvironmentalConditions_CloudLayer_FractionalCloudCover2[EnvironmentalConditions_CloudLayer_FractionalCloudCover2["SEVEN_OKTAS"] = 9] = "SEVEN_OKTAS";
+  EnvironmentalConditions_CloudLayer_FractionalCloudCover2[EnvironmentalConditions_CloudLayer_FractionalCloudCover2["EIGHT_OKTAS"] = 10] = "EIGHT_OKTAS";
+  EnvironmentalConditions_CloudLayer_FractionalCloudCover2[EnvironmentalConditions_CloudLayer_FractionalCloudCover2["SKY_OBSCURED"] = 11] = "SKY_OBSCURED";
+  return EnvironmentalConditions_CloudLayer_FractionalCloudCover2;
+})(EnvironmentalConditions_CloudLayer_FractionalCloudCover || {});
 
 // proto/osi_featuredata.ts
 var DetectionClassification = /* @__PURE__ */ ((DetectionClassification2) => {
@@ -129,6 +156,7 @@ var CameraDetection_Color = /* @__PURE__ */ ((CameraDetection_Color2) => {
   CameraDetection_Color2[CameraDetection_Color2["UNKNOWN"] = 0] = "UNKNOWN";
   CameraDetection_Color2[CameraDetection_Color2["OTHER"] = 1] = "OTHER";
   CameraDetection_Color2[CameraDetection_Color2["BLACK"] = 2] = "BLACK";
+  CameraDetection_Color2[CameraDetection_Color2["GRAY"] = 3] = "GRAY";
   CameraDetection_Color2[CameraDetection_Color2["GREY"] = 3] = "GREY";
   CameraDetection_Color2[CameraDetection_Color2["WHITE"] = 4] = "WHITE";
   CameraDetection_Color2[CameraDetection_Color2["YELLOW"] = 5] = "YELLOW";
@@ -152,6 +180,71 @@ var CameraDetection_ImageShapeType = /* @__PURE__ */ ((CameraDetection_ImageShap
   return CameraDetection_ImageShapeType2;
 })(CameraDetection_ImageShapeType || {});
 
+// proto/osi_hostvehicledata.ts
+var HostVehicleData_VehicleBasics_OperatingState = /* @__PURE__ */ ((HostVehicleData_VehicleBasics_OperatingState2) => {
+  HostVehicleData_VehicleBasics_OperatingState2[HostVehicleData_VehicleBasics_OperatingState2["UNKNOWN"] = 0] = "UNKNOWN";
+  HostVehicleData_VehicleBasics_OperatingState2[HostVehicleData_VehicleBasics_OperatingState2["OTHER"] = 1] = "OTHER";
+  HostVehicleData_VehicleBasics_OperatingState2[HostVehicleData_VehicleBasics_OperatingState2["SLEEP"] = 2] = "SLEEP";
+  HostVehicleData_VehicleBasics_OperatingState2[HostVehicleData_VehicleBasics_OperatingState2["STANDBY"] = 3] = "STANDBY";
+  HostVehicleData_VehicleBasics_OperatingState2[HostVehicleData_VehicleBasics_OperatingState2["BOARDING"] = 4] = "BOARDING";
+  HostVehicleData_VehicleBasics_OperatingState2[HostVehicleData_VehicleBasics_OperatingState2["ENTERTAINMENT"] = 5] = "ENTERTAINMENT";
+  HostVehicleData_VehicleBasics_OperatingState2[HostVehicleData_VehicleBasics_OperatingState2["DRIVING"] = 6] = "DRIVING";
+  HostVehicleData_VehicleBasics_OperatingState2[HostVehicleData_VehicleBasics_OperatingState2["DIAGNOSTIC"] = 7] = "DIAGNOSTIC";
+  return HostVehicleData_VehicleBasics_OperatingState2;
+})(HostVehicleData_VehicleBasics_OperatingState || {});
+var HostVehicleData_VehiclePowertrain_Motor_Type = /* @__PURE__ */ ((HostVehicleData_VehiclePowertrain_Motor_Type2) => {
+  HostVehicleData_VehiclePowertrain_Motor_Type2[HostVehicleData_VehiclePowertrain_Motor_Type2["UNKNOWN"] = 0] = "UNKNOWN";
+  HostVehicleData_VehiclePowertrain_Motor_Type2[HostVehicleData_VehiclePowertrain_Motor_Type2["OTHER"] = 1] = "OTHER";
+  HostVehicleData_VehiclePowertrain_Motor_Type2[HostVehicleData_VehiclePowertrain_Motor_Type2["OTTO"] = 2] = "OTTO";
+  HostVehicleData_VehiclePowertrain_Motor_Type2[HostVehicleData_VehiclePowertrain_Motor_Type2["DIESEL"] = 3] = "DIESEL";
+  HostVehicleData_VehiclePowertrain_Motor_Type2[HostVehicleData_VehiclePowertrain_Motor_Type2["ELECTRIC"] = 4] = "ELECTRIC";
+  return HostVehicleData_VehiclePowertrain_Motor_Type2;
+})(HostVehicleData_VehiclePowertrain_Motor_Type || {});
+var HostVehicleData_VehicleAutomatedDrivingFunction_Name = /* @__PURE__ */ ((HostVehicleData_VehicleAutomatedDrivingFunction_Name2) => {
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["UNKNOWN"] = 0] = "UNKNOWN";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["OTHER"] = 1] = "OTHER";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["BLIND_SPOT_WARNING"] = 2] = "BLIND_SPOT_WARNING";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["FORWARD_COLLISION_WARNING"] = 3] = "FORWARD_COLLISION_WARNING";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["LANE_DEPARTURE_WARNING"] = 4] = "LANE_DEPARTURE_WARNING";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["PARKING_COLLISION_WARNING"] = 5] = "PARKING_COLLISION_WARNING";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["REAR_CROSS_TRAFFIC_WARNING"] = 6] = "REAR_CROSS_TRAFFIC_WARNING";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["AUTOMATIC_EMERGENCY_BRAKING"] = 7] = "AUTOMATIC_EMERGENCY_BRAKING";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["AUTOMATIC_EMERGENCY_STEERING"] = 8] = "AUTOMATIC_EMERGENCY_STEERING";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["REVERSE_AUTOMATIC_EMERGENCY_BRAKING"] = 9] = "REVERSE_AUTOMATIC_EMERGENCY_BRAKING";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["ADAPTIVE_CRUISE_CONTROL"] = 10] = "ADAPTIVE_CRUISE_CONTROL";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["LANE_KEEPING_ASSIST"] = 11] = "LANE_KEEPING_ASSIST";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["ACTIVE_DRIVING_ASSISTANCE"] = 12] = "ACTIVE_DRIVING_ASSISTANCE";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["BACKUP_CAMERA"] = 13] = "BACKUP_CAMERA";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["SURROUND_VIEW_CAMERA"] = 14] = "SURROUND_VIEW_CAMERA";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["ACTIVE_PARKING_ASSISTANCE"] = 15] = "ACTIVE_PARKING_ASSISTANCE";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["REMOTE_PARKING_ASSISTANCE"] = 16] = "REMOTE_PARKING_ASSISTANCE";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["TRAILER_ASSISTANCE"] = 17] = "TRAILER_ASSISTANCE";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["AUTOMATIC_HIGH_BEAMS"] = 18] = "AUTOMATIC_HIGH_BEAMS";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["DRIVER_MONITORING"] = 19] = "DRIVER_MONITORING";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["HEAD_UP_DISPLAY"] = 20] = "HEAD_UP_DISPLAY";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["NIGHT_VISION"] = 21] = "NIGHT_VISION";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["URBAN_DRIVING"] = 22] = "URBAN_DRIVING";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["HIGHWAY_AUTOPILOT"] = 23] = "HIGHWAY_AUTOPILOT";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["CRUISE_CONTROL"] = 24] = "CRUISE_CONTROL";
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name2[HostVehicleData_VehicleAutomatedDrivingFunction_Name2["SPEED_LIMIT_CONTROL"] = 25] = "SPEED_LIMIT_CONTROL";
+  return HostVehicleData_VehicleAutomatedDrivingFunction_Name2;
+})(HostVehicleData_VehicleAutomatedDrivingFunction_Name || {});
+var HostVehicleData_VehicleAutomatedDrivingFunction_State = /* @__PURE__ */ ((HostVehicleData_VehicleAutomatedDrivingFunction_State2) => {
+  HostVehicleData_VehicleAutomatedDrivingFunction_State2[HostVehicleData_VehicleAutomatedDrivingFunction_State2["UNKNOWN"] = 0] = "UNKNOWN";
+  HostVehicleData_VehicleAutomatedDrivingFunction_State2[HostVehicleData_VehicleAutomatedDrivingFunction_State2["OTHER"] = 1] = "OTHER";
+  HostVehicleData_VehicleAutomatedDrivingFunction_State2[HostVehicleData_VehicleAutomatedDrivingFunction_State2["ERRORED"] = 2] = "ERRORED";
+  HostVehicleData_VehicleAutomatedDrivingFunction_State2[HostVehicleData_VehicleAutomatedDrivingFunction_State2["UNAVAILABLE"] = 3] = "UNAVAILABLE";
+  HostVehicleData_VehicleAutomatedDrivingFunction_State2[HostVehicleData_VehicleAutomatedDrivingFunction_State2["AVAILABLE"] = 4] = "AVAILABLE";
+  HostVehicleData_VehicleAutomatedDrivingFunction_State2[HostVehicleData_VehicleAutomatedDrivingFunction_State2["STANDBY"] = 5] = "STANDBY";
+  HostVehicleData_VehicleAutomatedDrivingFunction_State2[HostVehicleData_VehicleAutomatedDrivingFunction_State2["ACTIVE"] = 6] = "ACTIVE";
+  return HostVehicleData_VehicleAutomatedDrivingFunction_State2;
+})(HostVehicleData_VehicleAutomatedDrivingFunction_State || {});
+var HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride_Reason = /* @__PURE__ */ ((HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride_Reason2) => {
+  HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride_Reason2[HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride_Reason2["BRAKE_PEDAL"] = 0] = "BRAKE_PEDAL";
+  HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride_Reason2[HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride_Reason2["STEERING_INPUT"] = 1] = "STEERING_INPUT";
+  return HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride_Reason2;
+})(HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride_Reason || {});
+
 // proto/osi_lane.ts
 var Lane_Classification_Type = /* @__PURE__ */ ((Lane_Classification_Type2) => {
   Lane_Classification_Type2[Lane_Classification_Type2["UNKNOWN"] = 0] = "UNKNOWN";
@@ -161,6 +254,33 @@ var Lane_Classification_Type = /* @__PURE__ */ ((Lane_Classification_Type2) => {
   Lane_Classification_Type2[Lane_Classification_Type2["INTERSECTION"] = 4] = "INTERSECTION";
   return Lane_Classification_Type2;
 })(Lane_Classification_Type || {});
+var Lane_Classification_Subtype = /* @__PURE__ */ ((Lane_Classification_Subtype2) => {
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["UNKNOWN"] = 0] = "UNKNOWN";
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["OTHER"] = 1] = "OTHER";
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["NORMAL"] = 2] = "NORMAL";
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["BIKING"] = 3] = "BIKING";
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["SIDEWALK"] = 4] = "SIDEWALK";
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["PARKING"] = 5] = "PARKING";
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["STOP"] = 6] = "STOP";
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["RESTRICTED"] = 7] = "RESTRICTED";
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["BORDER"] = 8] = "BORDER";
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["SHOULDER"] = 9] = "SHOULDER";
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["EXIT"] = 10] = "EXIT";
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["ENTRY"] = 11] = "ENTRY";
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["ONRAMP"] = 12] = "ONRAMP";
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["OFFRAMP"] = 13] = "OFFRAMP";
+  Lane_Classification_Subtype2[Lane_Classification_Subtype2["CONNECTINGRAMP"] = 14] = "CONNECTINGRAMP";
+  return Lane_Classification_Subtype2;
+})(Lane_Classification_Subtype || {});
+var LaneBoundary_BoundaryPoint_Dash = /* @__PURE__ */ ((LaneBoundary_BoundaryPoint_Dash2) => {
+  LaneBoundary_BoundaryPoint_Dash2[LaneBoundary_BoundaryPoint_Dash2["UNKNOWN"] = 0] = "UNKNOWN";
+  LaneBoundary_BoundaryPoint_Dash2[LaneBoundary_BoundaryPoint_Dash2["OTHER"] = 1] = "OTHER";
+  LaneBoundary_BoundaryPoint_Dash2[LaneBoundary_BoundaryPoint_Dash2["START"] = 2] = "START";
+  LaneBoundary_BoundaryPoint_Dash2[LaneBoundary_BoundaryPoint_Dash2["CONTINUE"] = 3] = "CONTINUE";
+  LaneBoundary_BoundaryPoint_Dash2[LaneBoundary_BoundaryPoint_Dash2["END"] = 4] = "END";
+  LaneBoundary_BoundaryPoint_Dash2[LaneBoundary_BoundaryPoint_Dash2["GAP"] = 5] = "GAP";
+  return LaneBoundary_BoundaryPoint_Dash2;
+})(LaneBoundary_BoundaryPoint_Dash || {});
 var LaneBoundary_Classification_Type = /* @__PURE__ */ ((LaneBoundary_Classification_Type2) => {
   LaneBoundary_Classification_Type2[LaneBoundary_Classification_Type2["UNKNOWN"] = 0] = "UNKNOWN";
   LaneBoundary_Classification_Type2[LaneBoundary_Classification_Type2["OTHER"] = 1] = "OTHER";
@@ -176,6 +296,8 @@ var LaneBoundary_Classification_Type = /* @__PURE__ */ ((LaneBoundary_Classifica
   LaneBoundary_Classification_Type2[LaneBoundary_Classification_Type2["GUARD_RAIL"] = 11] = "GUARD_RAIL";
   LaneBoundary_Classification_Type2[LaneBoundary_Classification_Type2["CURB"] = 12] = "CURB";
   LaneBoundary_Classification_Type2[LaneBoundary_Classification_Type2["STRUCTURE"] = 13] = "STRUCTURE";
+  LaneBoundary_Classification_Type2[LaneBoundary_Classification_Type2["BARRIER"] = 14] = "BARRIER";
+  LaneBoundary_Classification_Type2[LaneBoundary_Classification_Type2["SOUND_BARRIER"] = 15] = "SOUND_BARRIER";
   return LaneBoundary_Classification_Type2;
 })(LaneBoundary_Classification_Type || {});
 var LaneBoundary_Classification_Color = /* @__PURE__ */ ((LaneBoundary_Classification_Color2) => {
@@ -188,8 +310,83 @@ var LaneBoundary_Classification_Color = /* @__PURE__ */ ((LaneBoundary_Classific
   LaneBoundary_Classification_Color2[LaneBoundary_Classification_Color2["BLUE"] = 6] = "BLUE";
   LaneBoundary_Classification_Color2[LaneBoundary_Classification_Color2["GREEN"] = 7] = "GREEN";
   LaneBoundary_Classification_Color2[LaneBoundary_Classification_Color2["VIOLET"] = 8] = "VIOLET";
+  LaneBoundary_Classification_Color2[LaneBoundary_Classification_Color2["ORANGE"] = 9] = "ORANGE";
   return LaneBoundary_Classification_Color2;
 })(LaneBoundary_Classification_Color || {});
+
+// proto/osi_logicaldetectiondata.ts
+var LogicalDetectionClassification = /* @__PURE__ */ ((LogicalDetectionClassification2) => {
+  LogicalDetectionClassification2[LogicalDetectionClassification2["UNKNOWN"] = 0] = "UNKNOWN";
+  LogicalDetectionClassification2[LogicalDetectionClassification2["OTHER"] = 1] = "OTHER";
+  LogicalDetectionClassification2[LogicalDetectionClassification2["INVALID"] = 2] = "INVALID";
+  LogicalDetectionClassification2[LogicalDetectionClassification2["CLUTTER"] = 3] = "CLUTTER";
+  LogicalDetectionClassification2[LogicalDetectionClassification2["OVERDRIVABLE"] = 4] = "OVERDRIVABLE";
+  LogicalDetectionClassification2[LogicalDetectionClassification2["UNDERDRIVABLE"] = 5] = "UNDERDRIVABLE";
+  return LogicalDetectionClassification2;
+})(LogicalDetectionClassification || {});
+var LogicalDetectionDataHeader_DataQualifier = /* @__PURE__ */ ((LogicalDetectionDataHeader_DataQualifier2) => {
+  LogicalDetectionDataHeader_DataQualifier2[LogicalDetectionDataHeader_DataQualifier2["UNKNOWN"] = 0] = "UNKNOWN";
+  LogicalDetectionDataHeader_DataQualifier2[LogicalDetectionDataHeader_DataQualifier2["OTHER"] = 1] = "OTHER";
+  LogicalDetectionDataHeader_DataQualifier2[LogicalDetectionDataHeader_DataQualifier2["AVAILABLE"] = 2] = "AVAILABLE";
+  LogicalDetectionDataHeader_DataQualifier2[LogicalDetectionDataHeader_DataQualifier2["AVAILABLE_REDUCED"] = 3] = "AVAILABLE_REDUCED";
+  LogicalDetectionDataHeader_DataQualifier2[LogicalDetectionDataHeader_DataQualifier2["NOT_AVAILABLE"] = 4] = "NOT_AVAILABLE";
+  LogicalDetectionDataHeader_DataQualifier2[LogicalDetectionDataHeader_DataQualifier2["BLINDNESS"] = 5] = "BLINDNESS";
+  LogicalDetectionDataHeader_DataQualifier2[LogicalDetectionDataHeader_DataQualifier2["TEMPORARY_AVAILABLE"] = 6] = "TEMPORARY_AVAILABLE";
+  LogicalDetectionDataHeader_DataQualifier2[LogicalDetectionDataHeader_DataQualifier2["INVALID"] = 7] = "INVALID";
+  return LogicalDetectionDataHeader_DataQualifier2;
+})(LogicalDetectionDataHeader_DataQualifier || {});
+
+// proto/osi_logicallane.ts
+var LogicalLaneBoundary_PassingRule = /* @__PURE__ */ ((LogicalLaneBoundary_PassingRule2) => {
+  LogicalLaneBoundary_PassingRule2[LogicalLaneBoundary_PassingRule2["UNKNOWN"] = 0] = "UNKNOWN";
+  LogicalLaneBoundary_PassingRule2[LogicalLaneBoundary_PassingRule2["OTHER"] = 1] = "OTHER";
+  LogicalLaneBoundary_PassingRule2[LogicalLaneBoundary_PassingRule2["NONE_ALLOWED"] = 2] = "NONE_ALLOWED";
+  LogicalLaneBoundary_PassingRule2[LogicalLaneBoundary_PassingRule2["INCREASING_T"] = 3] = "INCREASING_T";
+  LogicalLaneBoundary_PassingRule2[LogicalLaneBoundary_PassingRule2["DECREASING_T"] = 4] = "DECREASING_T";
+  LogicalLaneBoundary_PassingRule2[LogicalLaneBoundary_PassingRule2["BOTH_ALLOWED"] = 5] = "BOTH_ALLOWED";
+  return LogicalLaneBoundary_PassingRule2;
+})(LogicalLaneBoundary_PassingRule || {});
+var LogicalLane_Type = /* @__PURE__ */ ((LogicalLane_Type2) => {
+  LogicalLane_Type2[LogicalLane_Type2["UNKNOWN"] = 0] = "UNKNOWN";
+  LogicalLane_Type2[LogicalLane_Type2["OTHER"] = 1] = "OTHER";
+  LogicalLane_Type2[LogicalLane_Type2["NORMAL"] = 2] = "NORMAL";
+  LogicalLane_Type2[LogicalLane_Type2["BIKING"] = 3] = "BIKING";
+  LogicalLane_Type2[LogicalLane_Type2["SIDEWALK"] = 4] = "SIDEWALK";
+  LogicalLane_Type2[LogicalLane_Type2["PARKING"] = 5] = "PARKING";
+  LogicalLane_Type2[LogicalLane_Type2["STOP"] = 6] = "STOP";
+  LogicalLane_Type2[LogicalLane_Type2["RESTRICTED"] = 7] = "RESTRICTED";
+  LogicalLane_Type2[LogicalLane_Type2["BORDER"] = 8] = "BORDER";
+  LogicalLane_Type2[LogicalLane_Type2["SHOULDER"] = 9] = "SHOULDER";
+  LogicalLane_Type2[LogicalLane_Type2["EXIT"] = 10] = "EXIT";
+  LogicalLane_Type2[LogicalLane_Type2["ENTRY"] = 11] = "ENTRY";
+  LogicalLane_Type2[LogicalLane_Type2["ONRAMP"] = 12] = "ONRAMP";
+  LogicalLane_Type2[LogicalLane_Type2["OFFRAMP"] = 13] = "OFFRAMP";
+  LogicalLane_Type2[LogicalLane_Type2["CONNECTINGRAMP"] = 14] = "CONNECTINGRAMP";
+  LogicalLane_Type2[LogicalLane_Type2["MEDIAN"] = 15] = "MEDIAN";
+  LogicalLane_Type2[LogicalLane_Type2["CURB"] = 16] = "CURB";
+  LogicalLane_Type2[LogicalLane_Type2["RAIL"] = 17] = "RAIL";
+  LogicalLane_Type2[LogicalLane_Type2["TRAM"] = 18] = "TRAM";
+  return LogicalLane_Type2;
+})(LogicalLane_Type || {});
+var LogicalLane_MoveDirection = /* @__PURE__ */ ((LogicalLane_MoveDirection2) => {
+  LogicalLane_MoveDirection2[LogicalLane_MoveDirection2["UNKNOWN"] = 0] = "UNKNOWN";
+  LogicalLane_MoveDirection2[LogicalLane_MoveDirection2["OTHER"] = 1] = "OTHER";
+  LogicalLane_MoveDirection2[LogicalLane_MoveDirection2["INCREASING_S"] = 2] = "INCREASING_S";
+  LogicalLane_MoveDirection2[LogicalLane_MoveDirection2["DECREASING_S"] = 3] = "DECREASING_S";
+  LogicalLane_MoveDirection2[LogicalLane_MoveDirection2["BOTH_ALLOWED"] = 4] = "BOTH_ALLOWED";
+  return LogicalLane_MoveDirection2;
+})(LogicalLane_MoveDirection || {});
+var LogicalLane_TrafficRule_TrafficRuleType = /* @__PURE__ */ ((LogicalLane_TrafficRule_TrafficRuleType2) => {
+  LogicalLane_TrafficRule_TrafficRuleType2[LogicalLane_TrafficRule_TrafficRuleType2["SPEED_LIMIT"] = 0] = "SPEED_LIMIT";
+  return LogicalLane_TrafficRule_TrafficRuleType2;
+})(LogicalLane_TrafficRule_TrafficRuleType || {});
+
+// proto/osi_motionrequest.ts
+var MotionRequest_MotionRequestType = /* @__PURE__ */ ((MotionRequest_MotionRequestType2) => {
+  MotionRequest_MotionRequestType2[MotionRequest_MotionRequestType2["DESIRED_STATE"] = 0] = "DESIRED_STATE";
+  MotionRequest_MotionRequestType2[MotionRequest_MotionRequestType2["TRAJECTORY"] = 1] = "TRAJECTORY";
+  return MotionRequest_MotionRequestType2;
+})(MotionRequest_MotionRequestType || {});
 
 // proto/osi_object.ts
 var StationaryObject_Classification_Type = /* @__PURE__ */ ((StationaryObject_Classification_Type2) => {
@@ -210,6 +407,8 @@ var StationaryObject_Classification_Type = /* @__PURE__ */ ((StationaryObject_Cl
   StationaryObject_Classification_Type2[StationaryObject_Classification_Type2["OVERHEAD_STRUCTURE"] = 14] = "OVERHEAD_STRUCTURE";
   StationaryObject_Classification_Type2[StationaryObject_Classification_Type2["REFLECTIVE_STRUCTURE"] = 15] = "REFLECTIVE_STRUCTURE";
   StationaryObject_Classification_Type2[StationaryObject_Classification_Type2["CONSTRUCTION_SITE_ELEMENT"] = 16] = "CONSTRUCTION_SITE_ELEMENT";
+  StationaryObject_Classification_Type2[StationaryObject_Classification_Type2["SPEED_BUMP"] = 17] = "SPEED_BUMP";
+  StationaryObject_Classification_Type2[StationaryObject_Classification_Type2["EMITTING_STRUCTURE"] = 18] = "EMITTING_STRUCTURE";
   return StationaryObject_Classification_Type2;
 })(StationaryObject_Classification_Type || {});
 var StationaryObject_Classification_Material = /* @__PURE__ */ ((StationaryObject_Classification_Material2) => {
@@ -220,6 +419,7 @@ var StationaryObject_Classification_Material = /* @__PURE__ */ ((StationaryObjec
   StationaryObject_Classification_Material2[StationaryObject_Classification_Material2["CONCRETE"] = 4] = "CONCRETE";
   StationaryObject_Classification_Material2[StationaryObject_Classification_Material2["METAL"] = 5] = "METAL";
   StationaryObject_Classification_Material2[StationaryObject_Classification_Material2["STONE"] = 6] = "STONE";
+  StationaryObject_Classification_Material2[StationaryObject_Classification_Material2["GLASS"] = 7] = "GLASS";
   StationaryObject_Classification_Material2[StationaryObject_Classification_Material2["GLAS"] = 7] = "GLAS";
   StationaryObject_Classification_Material2[StationaryObject_Classification_Material2["MUD"] = 8] = "MUD";
   return StationaryObject_Classification_Material2;
@@ -244,6 +444,7 @@ var StationaryObject_Classification_Color = /* @__PURE__ */ ((StationaryObject_C
   StationaryObject_Classification_Color2[StationaryObject_Classification_Color2["RED"] = 6] = "RED";
   StationaryObject_Classification_Color2[StationaryObject_Classification_Color2["ORANGE"] = 7] = "ORANGE";
   StationaryObject_Classification_Color2[StationaryObject_Classification_Color2["BLACK"] = 8] = "BLACK";
+  StationaryObject_Classification_Color2[StationaryObject_Classification_Color2["GRAY"] = 9] = "GRAY";
   StationaryObject_Classification_Color2[StationaryObject_Classification_Color2["GREY"] = 9] = "GREY";
   StationaryObject_Classification_Color2[StationaryObject_Classification_Color2["WHITE"] = 10] = "WHITE";
   return StationaryObject_Classification_Color2;
@@ -261,10 +462,12 @@ var MovingObject_VehicleClassification_Type = /* @__PURE__ */ ((MovingObject_Veh
   MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["OTHER"] = 1] = "OTHER";
   MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["SMALL_CAR"] = 2] = "SMALL_CAR";
   MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["COMPACT_CAR"] = 3] = "COMPACT_CAR";
+  MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["CAR"] = 4] = "CAR";
   MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["MEDIUM_CAR"] = 4] = "MEDIUM_CAR";
   MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["LUXURY_CAR"] = 5] = "LUXURY_CAR";
   MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["DELIVERY_VAN"] = 6] = "DELIVERY_VAN";
   MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["HEAVY_TRUCK"] = 7] = "HEAVY_TRUCK";
+  MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["SEMITRACTOR"] = 16] = "SEMITRACTOR";
   MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["SEMITRAILER"] = 8] = "SEMITRAILER";
   MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["TRAILER"] = 9] = "TRAILER";
   MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["MOTORBIKE"] = 10] = "MOTORBIKE";
@@ -273,8 +476,23 @@ var MovingObject_VehicleClassification_Type = /* @__PURE__ */ ((MovingObject_Veh
   MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["TRAM"] = 13] = "TRAM";
   MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["TRAIN"] = 14] = "TRAIN";
   MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["WHEELCHAIR"] = 15] = "WHEELCHAIR";
+  MovingObject_VehicleClassification_Type2[MovingObject_VehicleClassification_Type2["STANDUP_SCOOTER"] = 17] = "STANDUP_SCOOTER";
   return MovingObject_VehicleClassification_Type2;
 })(MovingObject_VehicleClassification_Type || {});
+var MovingObject_VehicleClassification_Role = /* @__PURE__ */ ((MovingObject_VehicleClassification_Role2) => {
+  MovingObject_VehicleClassification_Role2[MovingObject_VehicleClassification_Role2["UNKNOWN"] = 0] = "UNKNOWN";
+  MovingObject_VehicleClassification_Role2[MovingObject_VehicleClassification_Role2["OTHER"] = 1] = "OTHER";
+  MovingObject_VehicleClassification_Role2[MovingObject_VehicleClassification_Role2["CIVIL"] = 2] = "CIVIL";
+  MovingObject_VehicleClassification_Role2[MovingObject_VehicleClassification_Role2["AMBULANCE"] = 3] = "AMBULANCE";
+  MovingObject_VehicleClassification_Role2[MovingObject_VehicleClassification_Role2["FIRE"] = 4] = "FIRE";
+  MovingObject_VehicleClassification_Role2[MovingObject_VehicleClassification_Role2["POLICE"] = 5] = "POLICE";
+  MovingObject_VehicleClassification_Role2[MovingObject_VehicleClassification_Role2["PUBLIC_TRANSPORT"] = 6] = "PUBLIC_TRANSPORT";
+  MovingObject_VehicleClassification_Role2[MovingObject_VehicleClassification_Role2["ROAD_ASSISTANCE"] = 7] = "ROAD_ASSISTANCE";
+  MovingObject_VehicleClassification_Role2[MovingObject_VehicleClassification_Role2["GARBAGE_COLLECTION"] = 8] = "GARBAGE_COLLECTION";
+  MovingObject_VehicleClassification_Role2[MovingObject_VehicleClassification_Role2["ROAD_CONSTRUCTION"] = 9] = "ROAD_CONSTRUCTION";
+  MovingObject_VehicleClassification_Role2[MovingObject_VehicleClassification_Role2["MILITARY"] = 10] = "MILITARY";
+  return MovingObject_VehicleClassification_Role2;
+})(MovingObject_VehicleClassification_Role || {});
 var MovingObject_VehicleClassification_LightState_IndicatorState = /* @__PURE__ */ ((MovingObject_VehicleClassification_LightState_IndicatorState2) => {
   MovingObject_VehicleClassification_LightState_IndicatorState2[MovingObject_VehicleClassification_LightState_IndicatorState2["UNKNOWN"] = 0] = "UNKNOWN";
   MovingObject_VehicleClassification_LightState_IndicatorState2[MovingObject_VehicleClassification_LightState_IndicatorState2["OTHER"] = 1] = "OTHER";
@@ -302,6 +520,29 @@ var MovingObject_VehicleClassification_LightState_BrakeLightState = /* @__PURE__
   MovingObject_VehicleClassification_LightState_BrakeLightState2[MovingObject_VehicleClassification_LightState_BrakeLightState2["STRONG"] = 4] = "STRONG";
   return MovingObject_VehicleClassification_LightState_BrakeLightState2;
 })(MovingObject_VehicleClassification_LightState_BrakeLightState || {});
+var MovingObject_PedestrianAttributes_Bone_Type = /* @__PURE__ */ ((MovingObject_PedestrianAttributes_Bone_Type2) => {
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["ROOT"] = 0] = "ROOT";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["HIP"] = 1] = "HIP";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["LOWER_SPINE"] = 2] = "LOWER_SPINE";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["UPPER_SPINE"] = 3] = "UPPER_SPINE";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["NECK"] = 4] = "NECK";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["HEAD"] = 5] = "HEAD";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["SHOULDER_L"] = 6] = "SHOULDER_L";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["SHOULDER_R"] = 7] = "SHOULDER_R";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["UPPER_ARM_L"] = 8] = "UPPER_ARM_L";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["UPPER_ARM_R"] = 9] = "UPPER_ARM_R";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["LOWER_ARM_L"] = 10] = "LOWER_ARM_L";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["LOWER_ARM_R"] = 11] = "LOWER_ARM_R";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["FULL_HAND_L"] = 12] = "FULL_HAND_L";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["FULL_HAND_R"] = 13] = "FULL_HAND_R";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["UPPER_LEG_L"] = 14] = "UPPER_LEG_L";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["UPPER_LEG_R"] = 15] = "UPPER_LEG_R";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["LOWER_LEG_L"] = 16] = "LOWER_LEG_L";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["LOWER_LEG_R"] = 17] = "LOWER_LEG_R";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["FULL_FOOT_L"] = 18] = "FULL_FOOT_L";
+  MovingObject_PedestrianAttributes_Bone_Type2[MovingObject_PedestrianAttributes_Bone_Type2["FULL_FOOT_R"] = 19] = "FULL_FOOT_R";
+  return MovingObject_PedestrianAttributes_Bone_Type2;
+})(MovingObject_PedestrianAttributes_Bone_Type || {});
 
 // proto/osi_occupant.ts
 var Occupant_Classification_Seat = /* @__PURE__ */ ((Occupant_Classification_Seat2) => {
@@ -329,6 +570,13 @@ var Occupant_Classification_SteeringControl = /* @__PURE__ */ ((Occupant_Classif
   return Occupant_Classification_SteeringControl2;
 })(Occupant_Classification_SteeringControl || {});
 
+// proto/osi_referenceline.ts
+var ReferenceLine_Type = /* @__PURE__ */ ((ReferenceLine_Type2) => {
+  ReferenceLine_Type2[ReferenceLine_Type2["POLYLINE"] = 0] = "POLYLINE";
+  ReferenceLine_Type2[ReferenceLine_Type2["POLYLINE_WITH_T_AXIS"] = 1] = "POLYLINE_WITH_T_AXIS";
+  return ReferenceLine_Type2;
+})(ReferenceLine_Type || {});
+
 // proto/osi_roadmarking.ts
 var RoadMarking_Classification_Type = /* @__PURE__ */ ((RoadMarking_Classification_Type2) => {
   RoadMarking_Classification_Type2[RoadMarking_Classification_Type2["UNKNOWN"] = 0] = "UNKNOWN";
@@ -350,6 +598,7 @@ var RoadMarking_Classification_Color = /* @__PURE__ */ ((RoadMarking_Classificat
   RoadMarking_Classification_Color2[RoadMarking_Classification_Color2["RED"] = 6] = "RED";
   RoadMarking_Classification_Color2[RoadMarking_Classification_Color2["GREEN"] = 7] = "GREEN";
   RoadMarking_Classification_Color2[RoadMarking_Classification_Color2["VIOLET"] = 8] = "VIOLET";
+  RoadMarking_Classification_Color2[RoadMarking_Classification_Color2["ORANGE"] = 9] = "ORANGE";
   return RoadMarking_Classification_Color2;
 })(RoadMarking_Classification_Color || {});
 
@@ -384,6 +633,13 @@ var UltrasonicSpecificObjectData_Trend = /* @__PURE__ */ ((UltrasonicSpecificObj
 })(UltrasonicSpecificObjectData_Trend || {});
 
 // proto/osi_sensorviewconfiguration.ts
+var CameraSensorViewConfiguration_PixelOrder = /* @__PURE__ */ ((CameraSensorViewConfiguration_PixelOrder2) => {
+  CameraSensorViewConfiguration_PixelOrder2[CameraSensorViewConfiguration_PixelOrder2["DEFAULT"] = 0] = "DEFAULT";
+  CameraSensorViewConfiguration_PixelOrder2[CameraSensorViewConfiguration_PixelOrder2["OTHER"] = 1] = "OTHER";
+  CameraSensorViewConfiguration_PixelOrder2[CameraSensorViewConfiguration_PixelOrder2["RIGHT_LEFT_TOP_BOTTOM"] = 2] = "RIGHT_LEFT_TOP_BOTTOM";
+  CameraSensorViewConfiguration_PixelOrder2[CameraSensorViewConfiguration_PixelOrder2["LEFT_RIGHT_BOTTOM_TOP"] = 3] = "LEFT_RIGHT_BOTTOM_TOP";
+  return CameraSensorViewConfiguration_PixelOrder2;
+})(CameraSensorViewConfiguration_PixelOrder || {});
 var CameraSensorViewConfiguration_ChannelFormat = /* @__PURE__ */ ((CameraSensorViewConfiguration_ChannelFormat2) => {
   CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["UNKNOWN"] = 0] = "UNKNOWN";
   CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["OTHER"] = 1] = "OTHER";
@@ -399,8 +655,35 @@ var CameraSensorViewConfiguration_ChannelFormat = /* @__PURE__ */ ((CameraSensor
   CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["BAYER_BGGR_U16_LIN"] = 11] = "BAYER_BGGR_U16_LIN";
   CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["BAYER_BGGR_U32_LIN"] = 12] = "BAYER_BGGR_U32_LIN";
   CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["BAYER_BGGR_F32_LIN"] = 13] = "BAYER_BGGR_F32_LIN";
+  CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["BAYER_RGGB_U8_LIN"] = 14] = "BAYER_RGGB_U8_LIN";
+  CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["BAYER_RGGB_U16_LIN"] = 15] = "BAYER_RGGB_U16_LIN";
+  CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["BAYER_RGGB_U32_LIN"] = 16] = "BAYER_RGGB_U32_LIN";
+  CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["BAYER_RGGB_F32_LIN"] = 17] = "BAYER_RGGB_F32_LIN";
+  CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["RCCC_U8_LIN"] = 18] = "RCCC_U8_LIN";
+  CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["RCCC_U16_LIN"] = 19] = "RCCC_U16_LIN";
+  CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["RCCC_U32_LIN"] = 20] = "RCCC_U32_LIN";
+  CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["RCCC_F32_LIN"] = 21] = "RCCC_F32_LIN";
+  CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["RCCB_U8_LIN"] = 22] = "RCCB_U8_LIN";
+  CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["RCCB_U16_LIN"] = 23] = "RCCB_U16_LIN";
+  CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["RCCB_U32_LIN"] = 24] = "RCCB_U32_LIN";
+  CameraSensorViewConfiguration_ChannelFormat2[CameraSensorViewConfiguration_ChannelFormat2["RCCB_F32_LIN"] = 25] = "RCCB_F32_LIN";
   return CameraSensorViewConfiguration_ChannelFormat2;
 })(CameraSensorViewConfiguration_ChannelFormat || {});
+
+// proto/osi_trafficcommand.ts
+var TrafficAction_FollowingMode = /* @__PURE__ */ ((TrafficAction_FollowingMode2) => {
+  TrafficAction_FollowingMode2[TrafficAction_FollowingMode2["POSITION"] = 0] = "POSITION";
+  TrafficAction_FollowingMode2[TrafficAction_FollowingMode2["FOLLOW"] = 1] = "FOLLOW";
+  return TrafficAction_FollowingMode2;
+})(TrafficAction_FollowingMode || {});
+var TrafficAction_DynamicsShape = /* @__PURE__ */ ((TrafficAction_DynamicsShape2) => {
+  TrafficAction_DynamicsShape2[TrafficAction_DynamicsShape2["UNSPECIFIED"] = 0] = "UNSPECIFIED";
+  TrafficAction_DynamicsShape2[TrafficAction_DynamicsShape2["LINEAR"] = 1] = "LINEAR";
+  TrafficAction_DynamicsShape2[TrafficAction_DynamicsShape2["CUBIC"] = 2] = "CUBIC";
+  TrafficAction_DynamicsShape2[TrafficAction_DynamicsShape2["SINUSOIDAL"] = 3] = "SINUSOIDAL";
+  TrafficAction_DynamicsShape2[TrafficAction_DynamicsShape2["STEP"] = 4] = "STEP";
+  return TrafficAction_DynamicsShape2;
+})(TrafficAction_DynamicsShape || {});
 
 // proto/osi_trafficlight.ts
 var TrafficLight_Classification_Color = /* @__PURE__ */ ((TrafficLight_Classification_Color2) => {
@@ -465,9 +748,14 @@ var TrafficSignValue_Unit = /* @__PURE__ */ ((TrafficSignValue_Unit2) => {
   TrafficSignValue_Unit2[TrafficSignValue_Unit2["METRIC_TON"] = 9] = "METRIC_TON";
   TrafficSignValue_Unit2[TrafficSignValue_Unit2["LONG_TON"] = 10] = "LONG_TON";
   TrafficSignValue_Unit2[TrafficSignValue_Unit2["SHORT_TON"] = 11] = "SHORT_TON";
+  TrafficSignValue_Unit2[TrafficSignValue_Unit2["HOUR"] = 15] = "HOUR";
   TrafficSignValue_Unit2[TrafficSignValue_Unit2["MINUTES"] = 12] = "MINUTES";
+  TrafficSignValue_Unit2[TrafficSignValue_Unit2["DAY_OF_MONTH"] = 16] = "DAY_OF_MONTH";
   TrafficSignValue_Unit2[TrafficSignValue_Unit2["DAY"] = 13] = "DAY";
   TrafficSignValue_Unit2[TrafficSignValue_Unit2["PERCENTAGE"] = 14] = "PERCENTAGE";
+  TrafficSignValue_Unit2[TrafficSignValue_Unit2["DURATION_DAY"] = 17] = "DURATION_DAY";
+  TrafficSignValue_Unit2[TrafficSignValue_Unit2["DURATION_HOUR"] = 18] = "DURATION_HOUR";
+  TrafficSignValue_Unit2[TrafficSignValue_Unit2["DURATION_MINUTE"] = 19] = "DURATION_MINUTE";
   return TrafficSignValue_Unit2;
 })(TrafficSignValue_Unit || {});
 var TrafficSign_Variability = /* @__PURE__ */ ((TrafficSign_Variability2) => {
@@ -475,6 +763,9 @@ var TrafficSign_Variability = /* @__PURE__ */ ((TrafficSign_Variability2) => {
   TrafficSign_Variability2[TrafficSign_Variability2["OTHER"] = 1] = "OTHER";
   TrafficSign_Variability2[TrafficSign_Variability2["FIXED"] = 2] = "FIXED";
   TrafficSign_Variability2[TrafficSign_Variability2["VARIABLE"] = 3] = "VARIABLE";
+  TrafficSign_Variability2[TrafficSign_Variability2["MOVABLE"] = 4] = "MOVABLE";
+  TrafficSign_Variability2[TrafficSign_Variability2["MUTABLE"] = 5] = "MUTABLE";
+  TrafficSign_Variability2[TrafficSign_Variability2["MOVABLE_AND_MUTABLE"] = 6] = "MOVABLE_AND_MUTABLE";
   return TrafficSign_Variability2;
 })(TrafficSign_Variability || {});
 var TrafficSign_MainSign_Classification_Type = /* @__PURE__ */ ((TrafficSign_MainSign_Classification_Type2) => {
@@ -870,9 +1161,11 @@ var TrafficSign_SupplementarySign_Classification_Arrow_Direction = /* @__PURE__ 
   return TrafficSign_SupplementarySign_Classification_Arrow_Direction2;
 })(TrafficSign_SupplementarySign_Classification_Arrow_Direction || {});
 export {
+  BoundingBox_Type,
   CameraDetection_Color,
   CameraDetection_ImageShapeType,
   CameraSensorViewConfiguration_ChannelFormat,
+  CameraSensorViewConfiguration_PixelOrder,
   DetectedEntityHeader_DataQualifier,
   DetectedItemHeader_MeasurementState,
   DetectedMovingObject_MovementState,
@@ -880,18 +1173,36 @@ export {
   DetectedTrafficSign_DetectedMainSign_Geometry,
   DetectionClassification,
   EnvironmentalConditions_AmbientIllumination,
+  EnvironmentalConditions_CloudLayer_FractionalCloudCover,
   EnvironmentalConditions_Fog,
   EnvironmentalConditions_Precipitation,
+  HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride_Reason,
+  HostVehicleData_VehicleAutomatedDrivingFunction_Name,
+  HostVehicleData_VehicleAutomatedDrivingFunction_State,
+  HostVehicleData_VehicleBasics_OperatingState,
+  HostVehicleData_VehiclePowertrain_Motor_Type,
+  LaneBoundary_BoundaryPoint_Dash,
   LaneBoundary_Classification_Color,
   LaneBoundary_Classification_Type,
+  Lane_Classification_Subtype,
   Lane_Classification_Type,
+  LogicalDetectionClassification,
+  LogicalDetectionDataHeader_DataQualifier,
+  LogicalLaneBoundary_PassingRule,
+  LogicalLane_MoveDirection,
+  LogicalLane_TrafficRule_TrafficRuleType,
+  LogicalLane_Type,
+  MotionRequest_MotionRequestType,
+  MovingObject_PedestrianAttributes_Bone_Type,
   MovingObject_Type,
   MovingObject_VehicleClassification_LightState_BrakeLightState,
   MovingObject_VehicleClassification_LightState_GenericLightState,
   MovingObject_VehicleClassification_LightState_IndicatorState,
+  MovingObject_VehicleClassification_Role,
   MovingObject_VehicleClassification_Type,
   Occupant_Classification_Seat,
   Occupant_Classification_SteeringControl,
+  ReferenceLine_Type,
   RoadMarking_Classification_Color,
   RoadMarking_Classification_Type,
   SensorDetectionHeader_DataQualifier,
@@ -900,6 +1211,8 @@ export {
   StationaryObject_Classification_Density,
   StationaryObject_Classification_Material,
   StationaryObject_Classification_Type,
+  TrafficAction_DynamicsShape,
+  TrafficAction_FollowingMode,
   TrafficLight_Classification_Color,
   TrafficLight_Classification_Icon,
   TrafficLight_Classification_Mode,

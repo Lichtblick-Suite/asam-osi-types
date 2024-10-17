@@ -5,7 +5,7 @@
 // source: osi_sensordata.proto
 
 /* eslint-disable */
-import { type BaseMoving, type Identifier, type MountingPosition, type Timestamp } from "./osi_common";
+import { type BaseMoving, type Identifier, type MountingPosition, type Polygon3d, type Timestamp } from "./osi_common";
 import { type DetectedLane, type DetectedLaneBoundary } from "./osi_detectedlane";
 import { type DetectedMovingObject, type DetectedStationaryObject } from "./osi_detectedobject";
 import { type DetectedOccupant } from "./osi_detectedoccupant";
@@ -13,6 +13,7 @@ import { type DetectedRoadMarking } from "./osi_detectedroadmarking";
 import { type DetectedTrafficLight } from "./osi_detectedtrafficlight";
 import { type DetectedTrafficSign } from "./osi_detectedtrafficsign";
 import { type FeatureData } from "./osi_featuredata";
+import { type LogicalDetectionData } from "./osi_logicaldetectiondata";
 import { type SensorView } from "./osi_sensorview";
 import { type InterfaceVersion } from "./osi_version";
 
@@ -79,13 +80,19 @@ export enum DetectedEntityHeader_DataQualifier {
  *
  * Sensor fusion models can consolidate multiple \c SensorData interfaces into
  * one consolidated \c SensorData interface.  This can happen either in
- * seperate logical models, consuming and producing \c SensorData interfaces,
+ * separate logical models, consuming and producing \c SensorData interfaces,
  * or it can happen as part of a combined sensor/logical model, that consumes
  * \c SensorView interfaces and directly produces one consolidated \c SensorData
  * output.
  */
 export interface SensorData {
-  /** The interface version used by the sender. */
+  /**
+   * The interface version used by the sender.
+   *
+   * \rules
+   * is_set
+   * \endrules
+   */
   version?:
     | InterfaceVersion
     | undefined;
@@ -114,6 +121,10 @@ export interface SensorData {
    * For a sensor model that does not know its own internal latencies (e.g.
    * a dumb sensor with no internal time concept), the two timestamps might
    * also be identical, but delayed from the \c GroundTruth timestamp.
+   *
+   * \rules
+   * is_set
+   * \endrules
    */
   timestamp?:
     | Timestamp
@@ -147,6 +158,10 @@ export interface SensorData {
    * This is the ID of the virtual sensor, to be used in its detected
    * object output; it is distinct from the IDs of its physical detectors,
    * which are used in the detected features.
+   *
+   * \rules
+   * is_set
+   * \endrules
    */
   sensor_id?:
     | Identifier
@@ -167,8 +182,8 @@ export interface SensorData {
    * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
    * right hand system
    *
-   * \par References:
-   * - [1] DIN ISO 8855:2013-11
+   * \par Reference:
+   * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
    *
    * \note This field is usually static during the simulation.
    * \note The origin of vehicle's coordinate system in world frame is
@@ -179,6 +194,10 @@ export interface SensorData {
    * the vehicle's coordinate system is equal to the orientation of the
    * vehicle's bounding box \c MovingObject::base . \c
    * BaseMoving::orientation.
+   *
+   * \rules
+   * is_set
+   * \endrules
    */
   mounting_position?:
     | MountingPosition
@@ -193,8 +212,6 @@ export interface SensorData {
    * This provides a copy of the \c SensorView data received by the sensor
    * for reference purposes.  For complex sensors or logic models this
    * can be multiple copies.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
   sensor_view?:
     | SensorView[]
@@ -225,8 +242,6 @@ export interface SensorData {
   /**
    * The list of moving objects detected by the sensor as perceived by
    * the sensor.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
   moving_object?:
     | DetectedMovingObject[]
@@ -235,11 +250,7 @@ export interface SensorData {
   traffic_sign_header?:
     | DetectedEntityHeader
     | undefined;
-  /**
-   * The list of traffic signs detected by the sensor.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** The list of traffic signs detected by the sensor. */
   traffic_sign?:
     | DetectedTrafficSign[]
     | undefined;
@@ -247,11 +258,7 @@ export interface SensorData {
   traffic_light_header?:
     | DetectedEntityHeader
     | undefined;
-  /**
-   * The list of traffic lights detected by the sensor.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** The list of traffic lights detected by the sensor. */
   traffic_light?:
     | DetectedTrafficLight[]
     | undefined;
@@ -262,8 +269,6 @@ export interface SensorData {
   /**
    * The list of road markings detected by the sensor.
    * This excludes lane boundary markings.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
   road_marking?:
     | DetectedRoadMarking[]
@@ -272,11 +277,7 @@ export interface SensorData {
   lane_boundary_header?:
     | DetectedEntityHeader
     | undefined;
-  /**
-   * The list of lane boundary markings detected by the sensor.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** The list of lane boundary markings detected by the sensor. */
   lane_boundary?:
     | DetectedLaneBoundary[]
     | undefined;
@@ -284,11 +285,7 @@ export interface SensorData {
   lane_header?:
     | DetectedEntityHeader
     | undefined;
-  /**
-   * The list of lanes detected by the sensor
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** The list of lanes detected by the sensor */
   lane?:
     | DetectedLane[]
     | undefined;
@@ -296,11 +293,7 @@ export interface SensorData {
   occupant_header?:
     | DetectedEntityHeader
     | undefined;
-  /**
-   * The list of occupants of the host vehicle
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** The list of occupants of the host vehicle */
   occupant?:
     | DetectedOccupant[]
     | undefined;
@@ -311,5 +304,58 @@ export interface SensorData {
    * model sensors giving access to this low level data, i.e. data prior to
    * object hypothesis and tracking.
    */
-  feature_data?: FeatureData | undefined;
+  feature_data?:
+    | FeatureData
+    | undefined;
+  /**
+   * Logical detection data interface.
+   *
+   * Logical detection data are provided by a transformation
+   * (and optional sensor fusion)
+   * performed by a sensor model or a logical model
+   * that fuses multiple sensors and/or sensor types
+   * into a single reference frame
+   * of the so called logical/virtual sensor.
+   * Therefore, all information is given with respect to
+   * the reference frame of the logical/virtual sensor
+   * \c SensorView::mounting_position (e.g. center of rear axle of the ego car)
+   * in cartesian coordinates.
+   */
+  logical_detection_data?:
+    | LogicalDetectionData
+    | undefined;
+  /** Virtual detection area of the sensor */
+  virtual_detection_area?:
+    | SensorData_VirtualDetectionArea
+    | undefined;
+  /**
+   * The system time of the modeled source of the sensor data, given
+   * in UTC (Unix Epoch timestamp).
+   *
+   * The system time can be used to transmit the internal time of the
+   * simulated component that supplies the sensor data, which might
+   * not coincide with the simulation time as transmitted in the
+   * timestamp field. Example use cases include recorded data traces
+   * or the simulation of time synchronization mechanisms and errors.
+   */
+  system_time?: Timestamp | undefined;
+}
+
+/**
+ * \brief Virtual detection area of a sensor
+ *
+ * The virtual detection area describes the nominal area the sensor is capable of covering
+ * in its current operating mode, without taking occlusion or other statistical effects into account.
+ * This information can be used for visualization or other development purposes as a rough guide
+ * to nominal sensor performance.
+ *
+ * It is described by a set of polygons in cartesian coordinates as a pragmatic approximation for
+ * the rough shapes expected.
+ */
+export interface SensorData_VirtualDetectionArea {
+  /**
+   * List of polygons. Each polygon represents a surface of the virtual detection area
+   * and is given with respect to the virtual sensor coordinate system.
+   */
+  polygon?: Polygon3d[] | undefined;
 }

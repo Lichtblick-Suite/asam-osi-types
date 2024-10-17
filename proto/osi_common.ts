@@ -12,30 +12,30 @@
  *
  * The coordinate system is defined as right-handed.
  *
- * Units are [m] for positions, [m/s] for velocities and [m/s^2] for
+ * Units are m for positions, m/s for velocities, and m/s^2 for
  * accelerations.
  */
 export interface Vector3d {
   /**
-   * The x coordinate.
+   * The x-coordinate.
    *
-   * Unit: [m] [m/s] or [m/s^2]
+   * Unit: m, m/s, or m/s^2
    */
   x?:
     | number
     | undefined;
   /**
-   * The y coordinate.
+   * The y-coordinate.
    *
-   * Unit: [m] [m/s] or [m/s^2]
+   * Unit: m, m/s, or m/s^2
    */
   y?:
     | number
     | undefined;
   /**
-   * The z coordinate.
+   * The z-coordinate.
    *
-   * Unit: [m] [m/s] or [m/s^2]
+   * Unit: m, m/s, or m/s^2
    */
   z?: number | undefined;
 }
@@ -44,22 +44,22 @@ export interface Vector3d {
  * \brief A cartesian 2D vector for positions, velocities or accelerations or
  * its uncertainties.
  *
- * Units are [m] for positions, [m/s] for velocities and [m/s^2] for
+ * Units are m for positions, m/s for velocities, and m/s^2 for
  * accelerations.
  */
 export interface Vector2d {
   /**
-   * The x coordinate.
+   * The x-coordinate.
    *
-   * Unit: [m] [m/s] or [m/s^2]
+   * Unit: m, m/s, or m/s^2
    */
   x?:
     | number
     | undefined;
   /**
-   * The y coordinate.
+   * The y-coordinate.
    *
-   * Unit: [m] [m/s] or [m/s^2]
+   * Unit: m, m/s, or m/s^2
    */
   y?: number | undefined;
 }
@@ -78,7 +78,11 @@ export interface Timestamp {
    * The number of seconds since the start of e.g. the simulation / system /
    * vehicle.
    *
-   * Unit: [s]
+   * Unit: s
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   seconds?:
     | number
@@ -88,7 +92,12 @@ export interface Timestamp {
    *
    * Range: [0, 999.999.999]
    *
-   * Unit: [ns]
+   * Unit: ns
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * is_less_than_or_equal_to: 999999999
+   * \endrules
    */
   nanos?: number | undefined;
 }
@@ -108,7 +117,11 @@ export interface Dimension3d {
   /**
    * The length of the box.
    *
-   * Unit: [m]
+   * Unit: m
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   length?:
     | number
@@ -116,7 +129,11 @@ export interface Dimension3d {
   /**
    * The width of the box.
    *
-   * Unit: [m]
+   * Unit: m
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   width?:
     | number
@@ -124,7 +141,11 @@ export interface Dimension3d {
   /**
    * The height of the box.
    *
-   * Unit: [m]
+   * Unit: m
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   height?: number | undefined;
 }
@@ -133,40 +154,38 @@ export interface Dimension3d {
  * \brief A 3D orientation, orientation rate or orientation acceleration (i.e.
  * derivatives) or its uncertainties denoted in euler angles.
  *
- * Units are [rad] for orientation [rad/s] for rates and [rad/s^2] for
+ * Units are rad for orientation, rad/s for rates, and rad/s^2 for
  * accelerations
  *
- * The preferred angular range is (-pi, pi]. The coordinate system is defined as
- * right-handed.
+ * The coordinate system is defined as right-handed.
  * For the sense of each rotation, the right-hand rule applies.
  *
  * The rotations are to be performed \b yaw \b first (around the z-axis),
  * \b pitch \b second (around the new y-axis) and \b roll \b third (around the
  * new x-axis) to follow the definition according to [1] (Tait-Bryan / Euler
- * convention z-y'-x'').
+ * convention z-y'-x''). The preferred angular range is [-pi, pi] for roll
+ * and yaw and [-pi/2, pi/2] for pitch.
  *
  * Roll/Pitch are 0 if the objects xy-plane is parallel to its parent's
  * xy-plane. Yaw is 0 if the object's local x-axis is parallel to its parent's
  * x-axis.
  *
  * \f$ Rotation_{yaw,pitch,roll} =
- * Rotation_{roll}*Rotation_{pitch}*Rotation_{yaw} \f$
+ * Rotation_{yaw}*Rotation_{pitch}*Rotation_{roll} \f$
  *
- * \f$ vector_{\text{global coord system}} :=
- * Rotation_{yaw,pitch,roll}^{-1}( \f$ \c Orientation3d \f$
- * )*vector_{\text{local coord system}} + local_{origin}\text{::position} \f$
+ * \f$ vector_{global coord system} := Rotation_{yaw, pitch, roll} * vector_{local coord system} +local_{origin::position} \f$
  *
  * \attention This definition changed in OSI version 3.0.0. Previous OSI
  * versions  (V2.xx) had an other definition.
  *
- * \par References:
- * - [1] DIN ISO 8855:2013-11
+ * \par Reference:
+ * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
  */
 export interface Orientation3d {
   /**
    * The roll angle/rate/acceleration.
    *
-   * Unit: [rad] [rad/s] or [rad/s^2]
+   * Unit: rad, rad/s, or rad/s^2
    */
   roll?:
     | number
@@ -174,7 +193,7 @@ export interface Orientation3d {
   /**
    * The pitch angle/rate/acceleration.
    *
-   * Unit: [rad] [rad/s] or [rad/s^2]
+   * Unit: rad, rad/s, or rad/s^2
    */
   pitch?:
     | number
@@ -182,7 +201,7 @@ export interface Orientation3d {
   /**
    * The yaw angle/rate/acceleration.
    *
-   * Unit: [rad] [rad/s] or [rad/s^2]
+   * Unit: rad, rad/s, or rad/s^2
    */
   yaw?: number | undefined;
 }
@@ -194,16 +213,95 @@ export interface Orientation3d {
  * truth, the identifier of an item (object, lane, sign, etc.) must remain
  * stable over its lifetime. \c Identifier values may be only be reused if the
  * available address space is exhausted and the specific values have not been in
- * use for several timesteps. Sensor specific tracking IDs have no restrictions
+ * use for several time steps. Sensor specific tracking IDs have no restrictions
  * and should behave according to the sensor specifications.
+ * Purely simulation technical IDs, like sensor IDs, are not required to be
+ * unique among all simulated items, but rather unique within the context of the
+ * given message type.
  *
  * The value MAX(uint64) = 2^(64) -1 =
  * 0b1111111111111111111111111111111111111111111111111111111111111111 is
  * reserved and indicates an invalid ID or error.
  */
 export interface Identifier {
-  /** The identifier's value. */
+  /**
+   * The value of the identifier.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
+   */
   value?: number | undefined;
+}
+
+/**
+ * \brief References to external objects.
+ *
+ * The external reference is an optional recommendation to refer to objects defined outside of OSI.
+ * This could be other OpenX standards, 3rd-party standards or user-defined objects.
+ *
+ * \note ExternalReference is optional and can be left empty.
+ */
+export interface ExternalReference {
+  /**
+   * The source of the external references.
+   *
+   * Defines the original source of an object as uniquely identifiable reference.
+   * In case of using \c GroundTruth::map_reference or
+   * \c GroundTruth::model_reference, the reference can be left empty.
+   * If not otherwise required, an URI is suggested. The syntax should follow
+   * \link https://tools.ietf.org/html/rfc3986 RFC 3986\endlink.
+   */
+  reference?:
+    | string
+    | undefined;
+  /**
+   * The type of the external references.
+   *
+   * Mandatory value describing the type of the original source.
+   *
+   * For OpenX/ASAM standards it is specified as follows:
+   * - net.asam.opendrive
+   * - net.asam.openscenario
+   *
+   * For third-party standards and user-defined objects,
+   * reverse domain name notation with lower-case type field
+   * is recommended to guarantee unique and interoperable identification.
+   *
+   * \rules
+   * is_set
+   * \endrules
+   */
+  type?:
+    | string
+    | undefined;
+  /**
+   * The external identifier reference value.
+   *
+   * The repeated string is chosen as a common description of the external
+   * identifier, because a variety of identifier types could be
+   * involved .
+   *
+   * For example, referencing a unique lane in OpenDRIVE requires the
+   * following identifiers:
+   * * RoadId: String
+   * * S-Value of LaneSection: Double
+   * * LaneId: Int
+   *
+   * \note The detailed description of the identifiers and how they are
+   *       used for referencing external objects is given in the individual
+   *       messages where the external identifier is used.
+   *
+   * \see EnvironmentalConditions::source_reference
+   * \see Lane::source_reference
+   * \see LaneBoundary::source_reference
+   * \see StationaryObject::source_reference
+   * \see MovingObject::source_reference
+   * \see RoadMarking::source_reference
+   * \see TrafficLight::source_reference
+   * \see TrafficSign::source_reference
+   */
+  identifier?: string[] | undefined;
 }
 
 /**
@@ -248,7 +346,11 @@ export interface Spherical3d {
   /**
    * The radial distance.
    *
-   * Unit: [m]
+   * Unit: m
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   distance?:
     | number
@@ -256,7 +358,7 @@ export interface Spherical3d {
   /**
    * The azimuth (horizontal) angle.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   azimuth?:
     | number
@@ -264,9 +366,158 @@ export interface Spherical3d {
   /**
    * The elevation (vertical) angle.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   elevation?: number | undefined;
+}
+
+/**
+ * \brief Assignment of an object to a logical lane
+ *
+ * An object is assigned to a logical lane if it overlaps the logical lane.
+ * Assignment happens even if the reference point is outside the lane, and only
+ * a part of the object overlaps (any object overlapping the lane more than 5cm
+ * has to be assigned to the lane).
+ *
+ * As an exception to this, \c TrafficSign and \c TrafficLight are assigned to
+ * a logical lane if they control traffic on that lane. For \c TrafficSign and
+ * \c TrafficLight , #s_position refers to the position where the sign or light
+ * is valid (e.g. where vehicles should stop in case of a red traffic light),
+ * not the physical position (where the sign or light is in the world).
+ * Typically, t_position and angle_to_lane do not have any meaning in this
+ * case, and will be 0.
+ */
+export interface LogicalLaneAssignment {
+  /**
+   * ID of the LogicalLane the object is assigned to.
+   *
+   * \rules
+   * refers_to: LogicalLane
+   * \endrules
+   */
+  assigned_lane_id?:
+    | Identifier
+    | undefined;
+  /**
+   * S position of the object reference point on the lane, in the ST
+   * coordinate system of the lane.
+   *
+   * #s_position might be outside [s_start,s_end] of the lane (and even
+   * outside [startS,endS] of the reference line) if the reference point is
+   * outside the lane, but the object overlaps the lane or a TrafficSign or
+   * TrafficLight is assigned to a lane.
+   */
+  s_position?:
+    | number
+    | undefined;
+  /**
+   * T position of the object reference point on the lane, in the ST
+   * coordinate system of the lane.
+   */
+  t_position?:
+    | number
+    | undefined;
+  /**
+   * Angle of the object relative to the lane.
+   * See the ReferenceLine description how the angle is calculated.
+   *
+   * Unit: rad
+   */
+  angle_to_lane?: number | undefined;
+}
+
+/**
+ * \brief A bounding box description.
+ *
+ * A bounding box representing a sub-section of its parent's overall
+ * dimension, either that of a \c BaseMoving or \c BaseStationary .
+ *
+ * The parent frame of the \c BoundingBox is identical to the parent frame
+ * of the \c MovingObject or \c StationaryObject it is associated to. For
+ * example, if the parent object coordinates are given relative to the
+ * global coordinate system, then the \c BoundingBox coordinates are also
+ * given relative to the global coordinate system.
+ *
+ * \note The overall bounding box of the object is still defined using the
+ * dimension, position and orientation of the \c BaseMoving or
+ * \c BaseStationary .
+ */
+export interface BoundingBox {
+  /** The 3D dimensions of the bounding box. */
+  dimension?:
+    | Dimension3d
+    | undefined;
+  /**
+   * The 3D position of the bounding box. The position is the center
+   * of the bounding box and the pivot for the \c dimension and \c orientation.
+   *
+   * \note The position should be within the same coordinate frame as
+   * its parent, not relative to coordinate frame of the parent object.
+   * The position becomes global/absolute if the parent frame is inertial
+   * (all parent frames up to ground truth).
+   */
+  position?:
+    | Vector3d
+    | undefined;
+  /**
+   * The 3D orientation of the bounding box.
+   *
+   * \note The orientation should be within the same coordinate frame as
+   * its parent, not relative to the coordinate frame of the parent object.
+   * The orientation becomes global/absolute if the parent frame is inertial
+   * (all parent frames up to ground truth).
+   */
+  orientation?:
+    | Orientation3d
+    | undefined;
+  /** The type of object contained in the bounding box. */
+  contained_object_type?:
+    | BoundingBox_Type
+    | undefined;
+  /**
+   * Opaque reference of an associated 3D model of the bounding box.
+   *
+   * \note It is implementation-specific how model_references are resolved to
+   * 3d models. This means the coordinate system, model origin, and model
+   * orientation are also implementation-specific.
+   */
+  model_reference?: string | undefined;
+}
+
+/** Definition of different types of object contained within the bounding box */
+export enum BoundingBox_Type {
+  /** UNKNOWN - Object of unknown type (must not be used in ground truth). */
+  UNKNOWN = 0,
+  /** OTHER - Any other type of object. */
+  OTHER = 1,
+  /**
+   * BASE_STRUCTURE - The main structure of an object, e.g. a chassis of a vehicle,
+   * or the central structure of a building, a tree trunk, etc.
+   */
+  BASE_STRUCTURE = 2,
+  /**
+   * PROTRUDING_STRUCTURE - A protruding, integral part of an object, which is not
+   * temporarily attached, e.g. a tree crown, a light pole arm, or a
+   * parking house gate. The protruding structure is meant to be an
+   * additional part to a base structure.
+   */
+  PROTRUDING_STRUCTURE = 3,
+  /** CARGO - Additional, temporarily attached cargo to an object. */
+  CARGO = 4,
+  /**
+   * DOOR - The door of an object.
+   *
+   * For vehicles, this includes driver and passenger doors, trunk
+   * and front hoods, and fuel or charging port covers.
+   */
+  DOOR = 5,
+  /**
+   * SIDE_MIRROR - The side mirror of a vehicle.
+   *
+   * \note The side mirror is not included in the overall bounding box
+   * of the parent object.
+   */
+  SIDE_MIRROR = 6,
 }
 
 /**
@@ -286,6 +537,9 @@ export interface BaseStationary {
   /**
    * The 3D dimensions of the stationary object (bounding box), e.g. a
    * landmark.
+   *
+   * \note The \c #dimension must completely enclose the geometry of the
+   * \c BaseStationary .
    */
   dimension?:
     | Dimension3d
@@ -334,7 +588,26 @@ export interface BaseStationary {
    * As sensor data, however, the polygon is open.
    * The polygon is defined counter-clockwise.
    */
-  base_polygon?: Vector2d[] | undefined;
+  base_polygon?:
+    | Vector2d[]
+    | undefined;
+  /**
+   * Sub-divisions of the overall bounding box of the \c BaseStationary object.
+   *
+   * The bounding box sections can include separate parts on partially-opaque
+   * objects such as trees with a distinction between trunk and crown.
+   *
+   * \note The bounding box sub-divisions can extend beyond the overall
+   * bounding box, however no actual geometry must reside outside of the
+   * overall bounding box.
+   *
+   * \note If any sub-divisions are provided, then they must cover all
+   * occupied space of the overall bounding box. In other words, a consumer
+   * of this data is guaranteed that any part of the overall bounding box
+   * that is not covered by any sub-division is free of physical objects,
+   * and thus no collisions can occur there.
+   */
+  bounding_box_section?: BoundingBox[] | undefined;
 }
 
 /**
@@ -344,6 +617,8 @@ export interface BaseStationary {
  *
  * \image html OSI_BaseMoving.svg
  *
+ * \image html OSI_BaseMoving_Top.svg
+ *
  * E.g. a vehicle is a base moving object.
  *
  * All coordinates and orientations from ground truth objects are relative to
@@ -352,7 +627,14 @@ export interface BaseStationary {
  * (see: \c MovingObject vehicle reference point).
  */
 export interface BaseMoving {
-  /** The 3D dimension of the moving object (its bounding box). */
+  /**
+   * The 3D dimension of the moving object (its bounding box).
+   *
+   * \note The \c #dimension must completely enclose the geometry of the
+   * \c BaseMoving with the exception of the side mirrors for vehicles.
+   *
+   * \note The bounding box does NOT include side mirrors for vehicles.
+   */
   dimension?:
     | Dimension3d
     | undefined;
@@ -464,5 +746,453 @@ export interface BaseMoving {
    * polygon is open.
    * The polygon is defined counter-clockwise.
    */
-  base_polygon?: Vector2d[] | undefined;
+  base_polygon?:
+    | Vector2d[]
+    | undefined;
+  /**
+   * Sub-divisions of the overall bounding box of the \c BaseMoving object.
+   *
+   * The bounding box sections can include side mirrors, cargo, etc. for
+   * vehicles, as well as body-part sections for pedestrians. Note that for
+   * more precise pedestrian information \c PedestrianAttributes can be used.
+   *
+   * \note The bounding box sub-divisions can extend beyond the overall
+   * bounding box, however no actual geometry must reside outside of the
+   * overall bounding box, with the specific exception of the side mirrors.
+   *
+   * \note If any sub-divisions are provided, then they must cover all
+   * occupied space of the overall bounding box. In other words, a consumer
+   * of this data is guaranteed that any part of the overall bounding box
+   * that is not covered by any sub-division is free of physical objects,
+   * and thus no collisions can occur there.
+   */
+  bounding_box_section?: BoundingBox[] | undefined;
+}
+
+/**
+ * \brief The StatePoint definition
+ *
+ * A reference to a time and pose.  Typically used in a repeated field to define
+ * a trajectory.
+ *
+ * \note The StatePoint definition does not define mandatory fields.
+ * The context defines how and what fields are used.  For example, in some cases
+ * only the pose variables are relevant and the timestamp is ignored.
+ */
+export interface StatePoint {
+  /**
+   * The timestamp of a StatePoint.
+   *
+   * \note Zero time does not need to coincide with the UNIX epoch.
+   */
+  timestamp?:
+    | Timestamp
+    | undefined;
+  /**
+   * Position in the global coordinate system.
+   *
+   * \note Remark: The definition of the reference point follows the
+   * specification of the \c BaseMoving message, if not specified otherwise
+   * in the message the StatePoint is used in.
+   */
+  position?:
+    | Vector3d
+    | undefined;
+  /** Orientation in the global coordinate system. */
+  orientation?: Orientation3d | undefined;
+}
+
+/**
+ * \brief Detailed WavelengthRange message.
+ *
+ * Defines the start (minimum) and the end (maximum) values of the wavelength.
+ * Additionally, the number of samples within this range is defined in this message.
+ */
+export interface WavelengthData {
+  /**
+   * The start, or the minimum wavelength value.
+   *
+   * Unit: m
+   */
+  start?:
+    | number
+    | undefined;
+  /**
+   * The end, or the maximum wavelength value.
+   *
+   * Unit: m
+   */
+  end?:
+    | number
+    | undefined;
+  /**
+   * Number of samples to be considered within the defined wavelength range.
+   * The number of samples includes the start and the end values that are defined in this message, starting from the "start" value.
+   * \note This defines the number of wavelengths to be computed during simulation, not to be confused with samples_per_pixel.
+   */
+  samples_number?: number | undefined;
+}
+
+/**
+ * \brief Definition of a spatial signal strength distribution
+ * for an emitting / transmitting / receiving entity
+ * with a horizontal and a vertical angle
+ * and the corresponding signal strength in dBm (decibels per milliwatt).
+ */
+export interface SpatialSignalStrength {
+  /**
+   * Horizontal angle (azimuth) of emission / transmission / reception
+   * in the entity's coordinate system.
+   *
+   * Unit: rad
+   */
+  horizontal_angle?:
+    | number
+    | undefined;
+  /**
+   * Vertical angle (elevation) of emission / transmission / reception
+   * in the entity's coordinate system.
+   *
+   * Unit: rad
+   */
+  vertical_angle?:
+    | number
+    | undefined;
+  /**
+   * Emitted / transmitted /received signal strength
+   * of the emitting / transmitting / receiving entity
+   * at the previously defined horizontal and
+   * vertical angle for one specific wavelength.
+   * The value for the signal strength
+   * is given in dBm (decibels per milliwatt).
+   *
+   * Unit: dBm
+   */
+  signal_strength?: number | undefined;
+}
+
+/**
+ * \brief The description of a color within available color spaces.
+ *
+ * ColorDescription represents the visual, non-semantic appearance of an object, structure or feature within various available color spaces.
+ *
+ * Depending on the context, this may define the color of an object or structure a priori (e.g. GroundTruth objects)
+ * or describe a perceived color (e.g. CameraDetections).
+ */
+export interface ColorDescription {
+  /** Grayscale color model */
+  grey?:
+    | ColorGrey
+    | undefined;
+  /** RGB (Red, Green, Blue) color model */
+  rgb?:
+    | ColorRGB
+    | undefined;
+  /** RGBIR (Red, Green, Blue, Infrared) color model */
+  rgbir?:
+    | ColorRGBIR
+    | undefined;
+  /** HSV (Hue, Saturation, Value) color model */
+  hsv?:
+    | ColorHSV
+    | undefined;
+  /** LUV (Luminance, U-coordinate, V-coordinate) color model */
+  luv?:
+    | ColorLUV
+    | undefined;
+  /** CMYK (Cyan, Magenta, Yellow, Key) color model */
+  cmyk?: ColorCMYK | undefined;
+}
+
+/**
+ * \brief Grayscale color model
+ *
+ * ColorGrey defines a grayscale.
+ */
+export interface ColorGrey {
+  /**
+   * Definition of a grayscale
+   *
+   * Range: [0,1]
+   */
+  grey?: number | undefined;
+}
+
+/**
+ * \brief RGB color model
+ *
+ * ColorRGB provides values for red, green and blue.
+ */
+export interface ColorRGB {
+  /**
+   * Red ratio
+   *
+   * Range: [0,1]
+   */
+  red?:
+    | number
+    | undefined;
+  /**
+   * Green ratio
+   *
+   * Range: [0,1]
+   */
+  green?:
+    | number
+    | undefined;
+  /**
+   * Blue ratio
+   *
+   * Range: [0,1]
+   */
+  blue?: number | undefined;
+}
+
+/**
+ * \brief RGBIR color model
+ *
+ * ColorRGBIR provides values for red, green, blue and infrared.
+ */
+export interface ColorRGBIR {
+  /**
+   * Red ratio
+   *
+   * Range: [0,1]
+   */
+  red?:
+    | number
+    | undefined;
+  /**
+   * Green ratio
+   *
+   * Range: [0,1]
+   */
+  green?:
+    | number
+    | undefined;
+  /**
+   * Blue ratio
+   *
+   * Range: [0,1]
+   */
+  blue?:
+    | number
+    | undefined;
+  /**
+   * Infrared
+   *
+   * Range: [0,1]
+   */
+  infrared?: number | undefined;
+}
+
+/**
+ * \brief HSV color model
+ *
+ * ColorHSV provides values for hue, saturation and value/brightness.
+ */
+export interface ColorHSV {
+  /**
+   * Hue
+   *
+   * Unit: deg
+   * Range: [0,360[
+   */
+  hue?:
+    | number
+    | undefined;
+  /**
+   * Saturation
+   *
+   * Range: [0,1]
+   */
+  saturation?:
+    | number
+    | undefined;
+  /**
+   * Value
+   *
+   * Range: [0,1]
+   */
+  value?: number | undefined;
+}
+
+/**
+ * \brief LUV color model
+ *
+ * ColorLUV provides values for luminance, U- and V-coordinate.
+ */
+export interface ColorLUV {
+  /**
+   * Luminance
+   *
+   * Range: [0,1]
+   */
+  luminance?:
+    | number
+    | undefined;
+  /**
+   * U-coordinate
+   *
+   * Range: [0,1]
+   */
+  u?:
+    | number
+    | undefined;
+  /**
+   * V-Coordinate
+   *
+   * Range: [0,1]
+   */
+  v?: number | undefined;
+}
+
+/**
+ * \brief CMYK colors model
+ *
+ * ColorCMYK provides values for cyan, magenta, yellow and key/black.
+ */
+export interface ColorCMYK {
+  /**
+   * Cyan ratio
+   *
+   * Range: [0,1]
+   */
+  cyan?:
+    | number
+    | undefined;
+  /**
+   * Magenta ratio
+   *
+   * Range: [0,1]
+   */
+  magenta?:
+    | number
+    | undefined;
+  /**
+   * Yellow ratio
+   *
+   * Range: [0,1]
+   */
+  yellow?:
+    | number
+    | undefined;
+  /**
+   * Black ratio
+   *
+   * Range: [0,1]
+   */
+  key?: number | undefined;
+}
+
+/** \brief A description for the positions of the pedals. */
+export interface Pedalry {
+  /**
+   * Position of the acceleration pedal.
+   * Range: 0-1 (Unpressed - fully pressed)
+   */
+  pedal_position_acceleration?:
+    | number
+    | undefined;
+  /**
+   * Position of the brake pedal.
+   * Range: 0-1 (Unpressed - fully pressed)
+   */
+  pedal_position_brake?:
+    | number
+    | undefined;
+  /**
+   * Position of the clutch pedal.
+   * Range: 0-1 (Unpressed - fully pressed)
+   */
+  pedal_position_clutch?: number | undefined;
+}
+
+/** \brief A description of the steering wheel. */
+export interface VehicleSteeringWheel {
+  /**
+   * Angle of the steering wheel.
+   * Zero means the steering wheel is in its center position. A positive value
+   * means the steering wheel is turned to the left. A negative value
+   * means the steering wheel is turned to the right of the center position.
+   *
+   * Unit: rad
+   */
+  angle?:
+    | number
+    | undefined;
+  /**
+   * Angular speed of the steering wheel.
+   * Zero means the steering wheel stays in its position. A positive value
+   * means the steering wheel is turned to the left. A negative value
+   * means the steering wheel is turned to the right.
+   *
+   * Unit: rad/s
+   */
+  angular_speed?:
+    | number
+    | undefined;
+  /**
+   * Torque of the steering wheel to the hand.
+   * Zero means there is no force from the steering wheel to the hand of the driver.
+   * A positive value means that the steering wheel would turn to the left without driver intervention.
+   * A negative value means that the steering wheel would turn to the right without driver intervention.
+   *
+   * Unit: N*m
+   */
+  torque?: number | undefined;
+}
+
+/** \brief The geodetic position of an object, that is, the center of the 3D bounding box. */
+export interface GeodeticPosition {
+  /**
+   * Longitude in decimal degrees regarding WGS84.
+   *
+   * Unit: Degree
+   * Range: [-180; 180]
+   */
+  longitude?:
+    | number
+    | undefined;
+  /**
+   * Latitude in decimal degrees regarding WGS84.
+   *
+   * Unit: Degree
+   * Range: [-90; 90]
+   */
+  latitude?:
+    | number
+    | undefined;
+  /**
+   * Height above sea level regarding EGM96.
+   *
+   * Unit: m
+   * Range: [-300; 10000]
+   */
+  altitude?: number | undefined;
+}
+
+/**
+ * \brief Generic key-value pair structure
+ *
+ * A generic key-value pair structure which can be used to capture information
+ * which is opaque to the general OSI interface.
+ */
+export interface KeyValuePair {
+  /** A generic string key. */
+  key?:
+    | string
+    | undefined;
+  /** A generic string value. */
+  value?: string | undefined;
+}
+
+/**
+ * \brief Polygon in 3 dimensions
+ *
+ * A polygon in 3 dimensions which contains a list of vertices.
+ */
+export interface Polygon3d {
+  /** A list of vertices */
+  vertex?: Vector3d[] | undefined;
 }

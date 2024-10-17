@@ -5,11 +5,13 @@
 // source: osi_groundtruth.proto
 
 /* eslint-disable */
-import { type Identifier, type Timestamp } from "./osi_common";
+import { type Identifier, type Timestamp, type Vector3d } from "./osi_common";
 import { type EnvironmentalConditions } from "./osi_environment";
 import { type Lane, type LaneBoundary } from "./osi_lane";
+import { type LogicalLane, type LogicalLaneBoundary } from "./osi_logicallane";
 import { type MovingObject, type StationaryObject } from "./osi_object";
 import { type Occupant } from "./osi_occupant";
+import { type ReferenceLine } from "./osi_referenceline";
 import { type RoadMarking } from "./osi_roadmarking";
 import { type TrafficLight } from "./osi_trafficlight";
 import { type TrafficSign } from "./osi_trafficsign";
@@ -45,6 +47,10 @@ export interface GroundTruth {
   /**
    * The interface version used by the sender (i.e. the simulation
    * environment).
+   *
+   * \rules
+   * is_set
+   * \endrules
    */
   version?:
     | InterfaceVersion
@@ -60,6 +66,10 @@ export interface GroundTruth {
    * notional simulation time the data applies to and the time it was sent
    * (there is no inherent latency for ground truth data, as opposed to
    * sensor data).
+   *
+   * \rules
+   * is_set
+   * \endrules
    */
   timestamp?:
     | Timestamp
@@ -68,6 +78,11 @@ export interface GroundTruth {
    * The ID of the host vehicle object referencing to \c MovingObject .
    *
    * \note This ID has to be filled and is not optional!
+   *
+   * \rules
+   * refers_to: MovingObject
+   * is_set
+   * \endrules
    */
   host_vehicle_id?:
     | Identifier
@@ -75,66 +90,38 @@ export interface GroundTruth {
   /**
    * The list of stationary objects (excluding traffic signs and traffic
    * lights).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
   stationary_object?:
     | StationaryObject[]
     | undefined;
-  /**
-   * The list of all other moving objects including all (host) vehicles.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** The list of all other moving objects including all (host) vehicles. */
   moving_object?:
     | MovingObject[]
     | undefined;
-  /**
-   * The list of traffic signs.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** The list of traffic signs. */
   traffic_sign?:
     | TrafficSign[]
     | undefined;
-  /**
-   * The list of traffic lights.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** The list of traffic lights. */
   traffic_light?:
     | TrafficLight[]
     | undefined;
   /**
    * The list of road surface markings (lane markings are excluded and
    * defined as \c LaneBoundary).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
   road_marking?:
     | RoadMarking[]
     | undefined;
-  /**
-   * The list of lane boundaries.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** The list of lane boundaries. */
   lane_boundary?:
     | LaneBoundary[]
     | undefined;
-  /**
-   * The list of lanes forming a road network.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** The list of lanes forming a road network. */
   lane?:
     | Lane[]
     | undefined;
-  /**
-   * The list of passengers in the (host) vehicle(s).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** The list of passengers in the (host) vehicle(s). */
   occupant?:
     | Occupant[]
     | undefined;
@@ -144,28 +131,28 @@ export interface GroundTruth {
     | undefined;
   /**
    * The ISO country code in 3 digit numeric format according to:
-   * ISO Code 3166/1 [1,2].
+   * ISO Code 3166/1 [1].
    * E.g. Germany = 276, USA = 840.
    *
-   * Unit: []
+   * \par Reference:
+   * [1] ISO International Organization for Standardization. (2013). <em>ISO 3166-1 Codes for the representation of names of countries and their subdivisions - Part 1: Country codes</em>. (ISO 3166-1:2013). Geneva, Switzerland.
    *
-   * \par References:
-   * - [1] [International Standard ISO 3166-1: Codes for the representation of
-   * names of countries and their subdivisions - Part 1: Country codes, third
-   * ed., 2013] (https://www.iso.org/obp/ui/)
-   * - [2] [Wikipedia ISO 3166/1] (https://en.wikipedia.org/wiki/ISO_3166-1)
+   * \rules
+   * is_iso_country_code
+   * \endrules
    */
   country_code?:
     | number
     | undefined;
   /**
    * Projection string that allows to transform all coordinates in GroundTruth
-   * into a different cartographic projection.
+   * into a different cartographic projection after the \c proj_frame_offset
+   * has been applied.
    *
-   * The string follows the PROJ.4 project rules for projections [1].
+   * The string follows the PROJ rules for projections [1].
    *
-   * \par References:
-   * - [1] [Proj.4 Projections] (https://proj4.org/usage/projections.html)
+   * \par Reference:
+   * [1] PROJ contributors. (2019). <em>PROJ coordinate transformation software library</em>. Open Source Geospatial Foundation. Retrieved January 25, 2019, from https://proj.org/usage/projections.html
    */
   proj_string?:
     | string
@@ -178,5 +165,81 @@ export interface GroundTruth {
    *
    * \note It is implementation-specific how map_reference is resolved.
    */
-  map_reference?: string | undefined;
+  map_reference?:
+    | string
+    | undefined;
+  /**
+   * Opaque reference of an associated 3D model.
+   *
+   * The model covers the static parts of the environment that are not
+   * provided as individual models referenced from ground truth objects
+   * like moving or stationary objects.
+   *
+   * \note Origin and orientation of the model have to coincide with the
+   * inertial coordinate frame of the ground truth.
+   *
+   * \note It is implementation-specific how model_references are resolved to
+   * 3d models. The parts the world model contains are also implementation-specific.
+   * For example, the world model can either contain street geometries or
+   * derives street geometries automatically from a map reference.
+   */
+  model_reference?:
+    | string
+    | undefined;
+  /** Reference lines used by LogicalLane */
+  reference_line?:
+    | ReferenceLine[]
+    | undefined;
+  /** Logical lane boundaries used by LogicalLane */
+  logical_lane_boundary?:
+    | LogicalLaneBoundary[]
+    | undefined;
+  /** Logical lanes used e.g. by traffic agents */
+  logical_lane?:
+    | LogicalLane[]
+    | undefined;
+  /** Coordinate frame offset to be used for PROJ transformations. */
+  proj_frame_offset?: GroundTruth_ProjFrameOffset | undefined;
+}
+
+/**
+ * \brief Coordinate frame offset to transform from OSI's global coordinate
+ * system to a coordinate reference system to be used for given PROJ
+ * transformations.
+ *
+ * If an offset is defined, always apply the \c proj_frame_offset on
+ * global OSI coordinates before applying any transformations defined in
+ * \c proj_string.
+ *
+ * To apply the offset, global coordinates are first translated by the given
+ * positional offset (x,y,z). Then, the yaw angle is used to rotate around
+ * the new origin.
+ *
+ * The offset is applied on global OSI coordinates using an affine
+ * transformation with rotation around z-axis:
+ *
+ * xWorld = xOSI * cos(yaw) - yOSI * sin(yaw) + xOffset
+ *
+ * yWorld = xOSI * sin(yaw) + yOSI * cos(yaw) + yOffset
+ *
+ * zWorld = zOSI + zOffset
+ *
+ * If no yaw is provided (recommended), the formulas simplify to:
+ *
+ * xWorld = xOSI + xOffset
+ *
+ * yWorld = yOSI + yOffset
+ *
+ * zWorld = zOSI + zOffset
+ */
+export interface GroundTruth_ProjFrameOffset {
+  /** Positional offset for relocation of the coordinate frame. */
+  position?:
+    | Vector3d
+    | undefined;
+  /**
+   * Yaw/heading angle for re-orientation of the coordinate frame around
+   * the z-axis.
+   */
+  yaw?: number | undefined;
 }

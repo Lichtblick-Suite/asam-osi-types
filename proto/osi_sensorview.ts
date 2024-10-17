@@ -40,7 +40,13 @@ import { type InterfaceVersion } from "./osi_version";
  * depending on model architecture.
  */
 export interface SensorView {
-  /** The interface version used by the sender (simulation environment). */
+  /**
+   * The interface version used by the sender (simulation environment).
+   *
+   * \rules
+   * is_set
+   * \endrules
+   */
   version?:
     | InterfaceVersion
     | undefined;
@@ -54,6 +60,10 @@ export interface SensorView {
    * notional simulation time the data applies to and the time it was sent
    * (there is no inherent latency for sensor view data, as opposed to
    * sensor data).
+   *
+   * \rules
+   * is_set
+   * \endrules
    */
   timestamp?:
     | Timestamp
@@ -64,28 +74,34 @@ export interface SensorView {
    * This is the ID of the virtual sensor, to be used in its detected
    * object output; it is distinct from the IDs of its physical detectors,
    * which are used in the detected features.
+   *
+   * \rules
+   * is_set
+   * \endrules
    */
   sensor_id?:
     | Identifier
     | undefined;
   /**
-   * The virtual mounting position of the sensor (origin and orientation
-   * of the sensor coordinate system) given in vehicle coordinates [1].
-   * The virtual position pertains to the sensor as a whole, regardless
-   * of the actual position of individual physical detectors, and governs
-   * the sensor-relative coordinates in detected objects of the sensor
-   * as a whole. Individual features detected by individual physical
-   * detectors are governed by the actual physical mounting positions
-   * of the detectors, as indicated in the technology-specific sub-views
-   * and sub-view configurations.
+   * The virtual mounting position of the sensor (origin and orientation of
+   * the sensor frame). Both origin and orientation are given in and with
+   * respect to the host vehicle coordinate system [1].
+   *
+   * The virtual position pertains to the sensor as a whole, regardless of the
+   * actual position of individual physical detectors, and governs the
+   * sensor-relative coordinates in detected objects of the sensor as a whole.
+   * Individual features detected by individual physical detectors are
+   * governed by the actual physical mounting positions of the detectors, as
+   * indicated in the technology-specific sub-views and sub-view
+   * configurations.
    *
    * \arg \b x-direction of sensor coordinate system: sensor viewing direction
    * \arg \b z-direction of sensor coordinate system: sensor (up)
    * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
    * right hand system
    *
-   * \par References:
-   * - [1] DIN ISO 8855:2013-11
+   * \par Reference:
+   * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
    *
    * \note This field is usually static during the simulation.
    * \note The origin of vehicle's coordinate system in world frame is
@@ -96,6 +112,10 @@ export interface SensorView {
    * the vehicle's coordinate system is equal to the orientation of the
    * vehicle's bounding box \c MovingObject::base . \c
    * BaseMoving::orientation.
+   *
+   * \rules
+   * is_set
+   * \endrules
    */
   mounting_position?:
     | MountingPosition
@@ -118,57 +138,49 @@ export interface SensorView {
    * Ground truth w.r.t. global coordinate system.
    *
    * This is the ground truth that is provided to the sensor model by the
-   * simulation environment. It is filtered as per the requirements of the
-   * sensor model as expressed by the \c SensorViewConfiguration message(s)
-   * that where exchanged during the simulation initialization phase.
+   * simulation environment. It may be filtered as per the requirements of
+   * the sensor model as expressed by the \c SensorViewConfiguration
+   * message(s) that where exchanged during the simulation initialization
+   * phase.
    *
    * \note The host vehicle is always contained in the ground truth provided,
-   * regardless of any filtering.
+   * regardless of any filtering. The ground truth MUST contain at least as
+   * much of the ground truth data, as is requested by the sensor model, but
+   * MAY always contain more data, since the filtering is intended only as
+   * an optimization mechanism, not as a replacement of a proper sensor
+   * field of view modeling.
    */
   global_ground_truth?:
     | GroundTruth
     | undefined;
-  /** The ID of the host vehicle in the \c #global_ground_truth data. */
+  /**
+   * The ID of the host vehicle in the \c #global_ground_truth data.
+   *
+   * \rules
+   * refers_to: 'MovingObject'
+   * is_set
+   * \endrules
+   */
   host_vehicle_id?:
     | Identifier
     | undefined;
-  /**
-   * Generic SensorView(s).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** Generic SensorView(s). */
   generic_sensor_view?:
     | GenericSensorView[]
     | undefined;
-  /**
-   * Radar-specific SensorView(s).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** Radar-specific SensorView(s). */
   radar_sensor_view?:
     | RadarSensorView[]
     | undefined;
-  /**
-   * Lidar-specific SensorView(s).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** Lidar-specific SensorView(s). */
   lidar_sensor_view?:
     | LidarSensorView[]
     | undefined;
-  /**
-   * Camera-specific SensorView(s).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** Camera-specific SensorView(s). */
   camera_sensor_view?:
     | CameraSensorView[]
     | undefined;
-  /**
-   * Ultrasonic-specific SensorView(s).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** Ultrasonic-specific SensorView(s). */
   ultrasonic_sensor_view?: UltrasonicSensorView[] | undefined;
 }
 
@@ -197,8 +209,6 @@ export interface RadarSensorView {
    *
    * This field includes one entry for each ray, in left-to-right,
    * top-to-bottom order (think of scan lines in a TV).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
   reflection?: RadarSensorView_Reflection[] | undefined;
 }
@@ -213,7 +223,7 @@ export interface RadarSensorView_Reflection {
    * into account, and will, when multiplied by TX power yield the
    * actual RX power.
    *
-   * Unit: [dB]
+   * Unit: dB
    */
   signal_strength?:
     | number
@@ -224,7 +234,7 @@ export interface RadarSensorView_Reflection {
    * This is the time of flight of the reflection, which is directly
    * proportional to the distance traveled.
    *
-   * Unit: [s]
+   * Unit: s
    */
   time_of_flight?:
     | number
@@ -234,7 +244,7 @@ export interface RadarSensorView_Reflection {
    *
    * Shift in frequency based on the specified TX frequency.
    *
-   * Unit: [Hz]
+   * Unit: Hz
    */
   doppler_shift?:
     | number
@@ -245,7 +255,7 @@ export interface RadarSensorView_Reflection {
    * Horizontal angle of incidence of the source of the reflection
    * at the TX antenna.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   source_horizontal_angle?:
     | number
@@ -256,7 +266,7 @@ export interface RadarSensorView_Reflection {
    * Vertical angle of incidence of the source of the reflection
    * at the TX antenna.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   source_vertical_angle?: number | undefined;
 }
@@ -276,8 +286,6 @@ export interface LidarSensorView {
    *
    * This field includes one entry for each ray, in left-to-right,
    * top-to-bottom order (think of scan lines in a TV).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
    */
   reflection?: LidarSensorView_Reflection[] | undefined;
 }
@@ -291,7 +299,7 @@ export interface LidarSensorView_Reflection {
    * into account, and will, when multiplied by TX power yield the
    * potential RX power (disregarding any other RX/TX losses).
    *
-   * Unit: [dB]
+   * Unit: dB
    */
   signal_strength?:
     | number
@@ -302,7 +310,7 @@ export interface LidarSensorView_Reflection {
    * This is the time of flight of the reflection, which is directly
    * proportional to the distance traveled.
    *
-   * Unit: [s]
+   * Unit: s
    */
   time_of_flight?:
     | number
@@ -312,7 +320,7 @@ export interface LidarSensorView_Reflection {
    *
    * Shift in frequency based on the specified TX frequency.
    *
-   * Unit: [Hz]
+   * Unit: Hz
    */
   doppler_shift?:
     | number
@@ -320,17 +328,17 @@ export interface LidarSensorView_Reflection {
   /**
    * normal to surface angle.
    *
-   * The normal of the transmitted beam to the object, roadmarking etc
+   * The normal of the transmitted beam to the object, road marking, etc.
    * encounter. \note data is in Lidar coordinate system
    *
-   * Unit: [unit vector]
+   * Unit: unit vector
    */
   normal_to_surface?:
     | Vector3d
     | undefined;
   /**
    * ID of the detected object this reflection is associated to.
-   * can be used for raytracing debug
+   * can be used for ray tracing debug
    *
    * \note ID = MAX(uint64) indicates no reference to an object.
    */
@@ -350,8 +358,10 @@ export interface CameraSensorView {
   /**
    * Raw image data.
    *
-   * The raw image data in the memory layout and order specified by the
-   * camera sensor input configuration.
+   * The raw image data in the memory layout specified by the camera
+   * sensor input configuration. The pixel order is specified in
+   * CameraSensorViewConfiguration.pixel_order with the
+   * default value PIXEL_ORDER_DEFAULT (i.e. left-to-right, top-to-bottom).
    */
   image_data?: Uint8Array | undefined;
 }
