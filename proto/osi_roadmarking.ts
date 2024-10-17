@@ -5,12 +5,24 @@
 // source: osi_roadmarking.proto
 
 /* eslint-disable */
-import { type BaseStationary, type Identifier } from "./osi_common";
+import {
+  type BaseStationary,
+  type ColorDescription,
+  type ExternalReference,
+  type Identifier,
+  type LogicalLaneAssignment,
+} from "./osi_common";
 import { type TrafficSign_MainSign_Classification_Type, type TrafficSignValue } from "./osi_trafficsign";
 
 /**  */
 export interface RoadMarking {
-  /** The ID of the road marking. */
+  /**
+   * The ID of the road marking.
+   *
+   * \rules
+   * is_set
+   * \endrules
+   */
   id?:
     | Identifier
     | undefined;
@@ -37,7 +49,46 @@ export interface RoadMarking {
     | BaseStationary
     | undefined;
   /** The classification data for the road marking. */
-  classification?: RoadMarking_Classification | undefined;
+  classification?:
+    | RoadMarking_Classification
+    | undefined;
+  /**
+   * Optional external reference to the road-marking source.
+   *
+   * The external reference points to the source of the surface marking, if it
+   * is derived from one or more objects or external references. An example
+   * here is the reference to the signal defined in a OpenDRIVE map.
+   *
+   * For example, to reference a signal defined in an OpenDRIVE map
+   * the items should be set as follows:
+   * * reference = URI to map, can remain empty if identical with definition
+   *               in \c GroundTruth::map_reference
+   * * type = "net.asam.opendrive"
+   * * identifier[0] = id of t_road_signals_signal
+   *
+   * \note With OpenDRIVE, surface markings can also be defined as objects.
+   *       In this case, the associated object is usually referenced within
+   *       OpenDRIVE using the reference t_road_signals_signal_reference.
+   *       An additional reference to the object is therefore not necessary.
+   *
+   * \note For non-ASAM Standards, it is implementation-specific how
+   *       source_reference is resolved.
+   *
+   * \note The value has to be repeated, because one lane segment may be
+   *       derived from more than one origin segment. Multiple sources
+   *       may be added as reference as well, for example, a map and sensors.
+   */
+  source_reference?:
+    | ExternalReference[]
+    | undefined;
+  /**
+   * The visual color of the material of the road marking.
+   *
+   * \note This does not represent the semantic classification but the visual
+   * appearance. For semantic classification of the road marking use the color
+   * field in \c Classification.
+   */
+  color_description?: ColorDescription | undefined;
 }
 
 /** \brief \c Classification data for a road surface marking. */
@@ -55,15 +106,30 @@ export interface RoadMarking_Classification {
    *
    * \note Field need not be set (or set to \c #TYPE_OTHER)
    * if road marking type (\c #type) does not require it.
+   *
+   * \attention Deprecated: A revision is planned for version 4.0.0 to
+   * replace the type enum with a more semantically defined enumeration,
+   * with the exact sign specification being relegated to the newly
+   * introduced 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   *
+   * \rules
+   * check_if this.type is_greater_than_or_equal_to 2 else do_check is_set
+   * check_if this.type is_less_than_or_equal_to 4 else do_check is_set
+   * \endrules
    */
   traffic_main_sign_type?:
     | TrafficSign_MainSign_Classification_Type
     | undefined;
   /**
-   * The monochrome color of the road marking.
    * \note Field need not be set (or set to \c #COLOR_OTHER)
    * if road marking type does not require it (e.g. for \c #type ==
    * \c #TYPE_PAINTED_TRAFFIC_SIGN).
+   *
+   * \rules
+   * check_if this.type is_equal_to 2 else do_check is_set
+   * check_if this.monochrome_color is_equal_to 1 else do_check is_set
+   * \endrules
    */
   monochrome_color?:
     | RoadMarking_Classification_Color
@@ -93,8 +159,122 @@ export interface RoadMarking_Classification {
    * May be multiple if the road marking goes across multiple lanes.
    *
    * \note OSI uses singular instead of plural for repeated field names.
+   *
+   * \rules
+   * refers_to: Lane
+   * \endrules
    */
-  assigned_lane_id?: Identifier[] | undefined;
+  assigned_lane_id?:
+    | Identifier[]
+    | undefined;
+  /**
+   * Boolean flag to indicate that the road marking is taken out of service.
+   * This can be achieved by visibly crossing the road marking with stripes,
+   * or completely covering a road marking making it not visible.
+   *
+   * \image html OSI_RoadMaking_is_out_of_service.jpg width=800px
+   */
+  is_out_of_service?:
+    | boolean
+    | undefined;
+  /**
+   * Country specification of the traffic sign catalog specification
+   * that identifies the actual traffic sign. This is part of the
+   * 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   *
+   * Country is specified using the ISO 3166-1, alpha-2 code
+   * https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2, or the
+   * special OpenDRIVE country for generic signs.<br>
+   *
+   * \rules
+   * check_if this.type is_greater_than_or_equal_to 2 else do_check is_set
+   * check_if this.type is_less_than_or_equal_to 4 else do_check is_set
+   * \endrules
+   */
+  country?:
+    | string
+    | undefined;
+  /**
+   * Revision specification of the traffic sign catalog specification
+   * that identifies the actual traffic sign. This is part of the
+   * 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   *
+   * The year the traffic rules came into force. <br>
+   * e.g. "2017"
+   *
+   * \note Field is set if ( \c #type == \c #TYPE_PAINTED_TRAFFIC_SIGN or
+   * \c #TYPE_SYMBOLIC_TRAFFIC_SIGN or \c #TYPE_TEXTUAL_TRAFFIC_SIGN ).
+   *
+   * \note Field need not be set (or set to \c #TYPE_OTHER)
+   * if road marking type (\c #type) does not require it.
+   *
+   * \rules
+   * check_if this.type is_greater_than_or_equal_to 2 else do_check is_set
+   * check_if this.type is_less_than_or_equal_to 4 else do_check is_set
+   * \endrules
+   */
+  country_revision?:
+    | string
+    | undefined;
+  /**
+   * Code specification of the traffic sign catalog specification
+   * that identifies the actual traffic sign. This is part of the
+   * 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   *
+   * Code identifier according to country and country revision,
+   * corresponds to the type field of OpenDRIVE. <br>
+   * code is only unique in combination with #country and #country_revision.  <br>
+   * e.g. http://www.vzkat.de/2017/VzKat.htm
+   *
+   * \note Field is set if ( \c #type == \c #TYPE_PAINTED_TRAFFIC_SIGN or
+   * \c #TYPE_SYMBOLIC_TRAFFIC_SIGN or \c #TYPE_TEXTUAL_TRAFFIC_SIGN ).
+   *
+   * \note Field need not be set (or set to \c #TYPE_OTHER)
+   * if road marking type (\c #type) does not require it.
+   *
+   * \rules
+   * check_if this.type is_greater_than_or_equal_to 2 else do_check is_set
+   * check_if this.type is_less_than_or_equal_to 4 else do_check is_set
+   * \endrules
+   */
+  code?:
+    | string
+    | undefined;
+  /**
+   * Sub-code specification of the traffic sign catalog specification
+   * that identifies the actual traffic sign. This is part of the
+   * 4-tupel traffic sign catalog specification as used in
+   * <a href="https://releases.asam.net/OpenDRIVE/1.6.0/ASAM_OpenDRIVE_BS_V1-6-0.html#_signals">OpenDRIVE</a>.
+   *
+   * Sub-code identifier according to country, country revision and code,
+   * corresponds to the subtype field of OpenDRIVE. <br>
+   * sub_code is only unique in combination with #country, #country_revision,
+   * and #code.  <br>
+   * e.g. http://www.vzkat.de/2017/VzKat.htm
+   *
+   * \note Field is set if ( \c #type == \c #TYPE_PAINTED_TRAFFIC_SIGN or
+   * \c #TYPE_SYMBOLIC_TRAFFIC_SIGN or \c #TYPE_TEXTUAL_TRAFFIC_SIGN ).
+   *
+   * \note Field need not be set (or set to \c #TYPE_OTHER)
+   * if road marking type (\c #type) does not require it.
+   *
+   * \rules
+   * check_if this.type is_greater_than_or_equal_to 2 else do_check is_set
+   * check_if this.type is_less_than_or_equal_to 4 else do_check is_set
+   * \endrules
+   */
+  sub_code?:
+    | string
+    | undefined;
+  /**
+   * Assignment of this object to logical lanes.
+   *
+   * \note OSI uses singular instead of plural for repeated field names.
+   */
+  logical_lane_assignment?: LogicalLaneAssignment[] | undefined;
 }
 
 /** Definition of road marking types. */
@@ -130,7 +310,12 @@ export enum RoadMarking_Classification_Type {
   GENERIC_TEXT = 7,
 }
 
-/** Definition of road marking colors */
+/**
+ * Definition of semantic road marking colors
+ *
+ * \note The color types represent the semantic classification of
+ * road markings only. They do not represent an actual visual appearance.
+ */
 export enum RoadMarking_Classification_Color {
   /**
    * UNKNOWN - Color of road marking is unknown (must not be used in ground
@@ -151,4 +336,6 @@ export enum RoadMarking_Classification_Color {
   GREEN = 7,
   /** VIOLET - Marking with violet color. */
   VIOLET = 8,
+  /** ORANGE - Marking with orange color. */
+  ORANGE = 9,
 }

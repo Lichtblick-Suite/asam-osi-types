@@ -5,7 +5,19 @@
 // source: osi_object.proto
 
 /* eslint-disable */
-import { type BaseMoving, type BaseStationary, type Identifier, type Vector3d } from "./osi_common";
+import {
+  type BaseMoving,
+  type BaseStationary,
+  type ColorDescription,
+  type ExternalReference,
+  type Identifier,
+  type LogicalLaneAssignment,
+  type Orientation3d,
+  type SpatialSignalStrength,
+  type StatePoint,
+  type Vector3d,
+  type WavelengthData,
+} from "./osi_common";
 
 /**
  * \brief A simulated object that is neither a moving object (vehicle or
@@ -17,7 +29,14 @@ import { type BaseMoving, type BaseStationary, type Identifier, type Vector3d } 
  * \c StationaryObject excludes traffic lights, traffic signs and road marking
  */
 export interface StationaryObject {
-  /** The ID of the object. */
+  /**
+   * The ID of the object.
+   *
+   * \rules
+   * is_globally_unique
+   * is_set
+   * \endrules
+   */
   id?:
     | Identifier
     | undefined;
@@ -35,7 +54,48 @@ export interface StationaryObject {
    * \note It is implementation-specific how model_references are resolved to
    * 3d models.
    */
-  model_reference?: string | undefined;
+  model_reference?:
+    | string
+    | undefined;
+  /**
+   * External reference to the stationary-object source.
+   *
+   * The external reference points to the source of a stationary object, if it
+   * is derived from an external sources like OpenDRIVE or OpenSCENARIO.
+   *
+   * For example, to reference an object defined in an OpenDRIVE map
+   * the items should be set as follows:
+   * * reference = URI to map, can remain empty if identical with definition
+   *               in \c GroundTruth::map_reference
+   * * type = "net.asam.opendrive"
+   * * identifier[0] = "object" for t_road_objects_object and
+   *                   "bridge" for t_road_objects_bridge
+   * * identifier[1] = id of t_road_objects_object or t_road_objects_bridge
+   *
+   * For example, to reference OpenSCENARIO entities of the type MiscObject,
+   * which describe partly stationary objects, the items should be set as
+   * follows:
+   * * reference = URI to the OpenSCENARIO File
+   * * type = "net.asam.openscenario"
+   * * identifier[0] = Entity-Type ("MiscObject")
+   * * identifier[1] = name of MiscObject in Entity
+   *
+   * \note The following rule, described in OpenDRIVE, also applies:
+   * * Objects derived from OpenSCENARIO shall not be mixed with objects
+   *   described in OpenDRIVE.
+   *
+   * \note For non-ASAM Standards, it is implementation-specific how
+   *       source_reference is resolved.
+   *
+   * \note The value has to be repeated because one object may be derived
+   *       from more than one origin source, for example, from a scenario file
+   *       and from sensors.
+   */
+  source_reference?:
+    | ExternalReference[]
+    | undefined;
+  /** The dominating color of the material of the structure. */
+  color_description?: ColorDescription | undefined;
 }
 
 /** \brief Classification data for a stationary object. */
@@ -52,8 +112,46 @@ export interface StationaryObject_Classification {
   density?:
     | StationaryObject_Classification_Density
     | undefined;
-  /** The dominating color of the material of the structure. */
-  color?: StationaryObject_Classification_Color | undefined;
+  /**
+   * The dominating color of the material of the structure.
+   *
+   * \attention DEPRECATED: This color enum will be removed in version
+   * 4.0.0. Use the field \c #color_description (\c ColorDescription) of
+   * \c StationaryObject instead.
+   */
+  color?:
+    | StationaryObject_Classification_Color
+    | undefined;
+  /** The attributes of the emitting structure if stationary object is classified as such. */
+  emitting_structure_attribute?:
+    | StationaryObject_Classification_EmittingStructureAttribute
+    | undefined;
+  /**
+   * The IDs of the lanes that the object is assigned to.
+   *
+   * \note Might be multiple IDs if the object stretches over multiple lanes.
+   *
+   * \note OSI uses singular instead of plural for repeated field names.
+   */
+  assigned_lane_id?:
+    | Identifier[]
+    | undefined;
+  /**
+   * Percentage values of the object width in the corresponding lane.
+   *
+   * \note Might be multiple percentages if the object stretches over multiple lanes.
+   *
+   * \note OSI uses singular instead of plural for repeated field names.
+   */
+  assigned_lane_percentage?:
+    | number[]
+    | undefined;
+  /**
+   * Assignment of this object to logical lanes.
+   *
+   * \note OSI uses singular instead of plural for repeated field names.
+   */
+  logical_lane_assignment?: LogicalLaneAssignment[] | undefined;
 }
 
 /** Definition of object types. */
@@ -98,16 +196,23 @@ export enum StationaryObject_Classification_Type {
    */
   OVERHEAD_STRUCTURE = 14,
   /**
-   * REFLECTIVE_STRUCTURE - Landmarks corresponding to light sources or reflective structures
-   * in the environment, like street lights or reflective poles on the
+   * REFLECTIVE_STRUCTURE - Landmarks corresponding to reflective structures
+   * in the environment, like reflective poles on the
    * road boarder.
    */
   REFLECTIVE_STRUCTURE = 15,
   /**
    * CONSTRUCTION_SITE_ELEMENT - Landmarks corresponding to construction site elements in the
-   * environment, like cones or beacons.
+   * environment, like beacons.
    */
   CONSTRUCTION_SITE_ELEMENT = 16,
+  /** SPEED_BUMP - Object is a speed bump. */
+  SPEED_BUMP = 17,
+  /**
+   * EMITTING_STRUCTURE - Landmarks corresponding to sources of electromagnetic waves
+   * in the environment, like street lights.
+   */
+  EMITTING_STRUCTURE = 18,
 }
 
 /** Definition of material types. */
@@ -129,7 +234,13 @@ export enum StationaryObject_Classification_Material {
   METAL = 5,
   /** STONE - Natural stone structure. */
   STONE = 6,
-  /** GLAS - Glas structure. */
+  /** GLASS - Glass structure. */
+  GLASS = 7,
+  /**
+   * GLAS - Glass structure.
+   *
+   * \note Deprecated variant spelling of MATERIAL_GLASS
+   */
   GLAS = 7,
   /** MUD - Mud structure. */
   MUD = 8,
@@ -146,17 +257,22 @@ export enum StationaryObject_Classification_Density {
   OTHER = 1,
   /** SOLID - No perforation - solid; */
   SOLID = 2,
-  /** SMALL_MESH - Perforation max. ]0; 100] [mm] */
+  /** SMALL_MESH - Perforation max. ]0; 100] mm */
   SMALL_MESH = 3,
-  /** MEDIAN_MESH - Perforation max. ]100; 500] [mm] */
+  /** MEDIAN_MESH - Perforation max. ]100; 500] mm */
   MEDIAN_MESH = 4,
-  /** LARGE_MESH - Perforation max. ]500; 5000] [mm] */
+  /** LARGE_MESH - Perforation max. ]500; 5000] mm */
   LARGE_MESH = 5,
-  /** OPEN - Perforation max. ]5000; infinity] [mm] */
+  /** OPEN - Perforation max. ]5000; infinity[ mm */
   OPEN = 6,
 }
 
-/** Definition of colors for structures. */
+/**
+ * Definition of colors for structures.
+ *
+ * \attention DEPRECATED: This color enum will be removed in version
+ * 4.0.0. Use \c ColorDescription instead.
+ */
 export enum StationaryObject_Classification_Color {
   /** UNKNOWN - Color is unknown (must not be used in ground truth). */
   UNKNOWN = 0,
@@ -176,10 +292,38 @@ export enum StationaryObject_Classification_Color {
   ORANGE = 7,
   /** BLACK - Black. */
   BLACK = 8,
-  /** GREY - GREY. */
+  /** GRAY - GRAY. */
+  GRAY = 9,
+  /**
+   * GREY - GRAY.
+   *
+   * \note Deprecated variant spelling of COLOR_GRAY
+   */
   GREY = 9,
   /** WHITE - White. */
   WHITE = 10,
+}
+
+/**
+ * \brief Attributes of type emitting structure. The horizontal_angle and the vertical_angle in
+ * emitted_spatial_intensity are symmetrical across the normal, which is defined by the mounting position
+ * of the emitting structure.
+ */
+export interface StationaryObject_Classification_EmittingStructureAttribute {
+  /**
+   * This message determines the range of the emitted wavelength and its
+   * desired number of samples.
+   */
+  wavelength_data?:
+    | WavelengthData[]
+    | undefined;
+  /**
+   * Spatial signal strength distribution of the emitted electromagnetic wave.
+   * For every sample in wavelength_data an emitted_spatial_signal_strength has to be defined.
+   *
+   * \note emitted_spatial_signal_strength.size() = WavelengthData.samples_number.size()
+   */
+  emitted_spatial_signal_strength?: SpatialSignalStrength[] | undefined;
 }
 
 /**
@@ -191,18 +335,28 @@ export enum StationaryObject_Classification_Color {
  *
  * \image html OSI_HostVehicle.svg
  *
- * \note The field \c MovingObject::vehicle_extension has to be
- * filled if the \c MovingObject::Type is a vehicle.
+ * \note The fields \c MovingObject::vehicle_attributes and \c
+ * MovingObject::vehicle_classification have to be filled if the \c
+ * MovingObject::Type is set to #TYPE_VEHICLE.
  */
 export interface MovingObject {
-  /** The ID of the object. */
+  /**
+   * The ID of the object.
+   *
+   * \rules
+   * is_globally_unique
+   * is_set
+   * \endrules
+   */
   id?:
     | Identifier
     | undefined;
   /**
    * The base parameters of the vehicle.
    *
-   * \note The bounding box does NOT includes mirrors for vehicles.
+   * \note The bounding box does NOT include side mirrors for vehicles.
+   * \note The height includes the ground_clearance. It always goes from the
+   * top to the ground.
    */
   base?:
     | BaseMoving
@@ -217,7 +371,8 @@ export interface MovingObject {
    * \note Might be multiple if the object is switching lanes or moving from
    * one lane into another following lane.
    *
-   * \note OSI uses singular instead of plural for repeated field names.
+   * \note DEPRECATED: Use assigned_lane_id in MovingObjectClassification
+   * instead.
    */
   assigned_lane_id?:
     | Identifier[]
@@ -227,6 +382,10 @@ export interface MovingObject {
    *
    * \note This field is mandatory if the \c #type is
    * #TYPE_VEHICLE .
+   *
+   * \rules
+   * check_if this.type is_equal_to 2 else do_check is_set
+   * \endrules
    */
   vehicle_attributes?:
     | MovingObject_VehicleAttributes
@@ -236,6 +395,10 @@ export interface MovingObject {
    *
    * \note This field is mandatory if the \c #type is
    * #TYPE_VEHICLE .
+   *
+   * \rules
+   * check_if this.type is_equal_to 2 else do_check is_set
+   * \endrules
    */
   vehicle_classification?:
     | MovingObject_VehicleClassification
@@ -246,7 +409,66 @@ export interface MovingObject {
    * \note It is implementation-specific how model_references are resolved to
    * 3d models.
    */
-  model_reference?: string | undefined;
+  model_reference?:
+    | string
+    | undefined;
+  /**
+   * The trajectory that this moving object expects to follow in the future.
+   *
+   * This is not externally perceivable information, rather this is to aid
+   * realistic simulation of traffic participants that are not under test.
+   * This information should not be made available to the stack under test.
+   *
+   * \note Moving objects are not required to stick to this trajectory. It is
+   * indicative and equivalent to the output of a perception and prediction
+   * system.
+   */
+  future_trajectory?:
+    | StatePoint[]
+    | undefined;
+  /** Specific information about the classification of the vehicle. */
+  moving_object_classification?:
+    | MovingObject_MovingObjectClassification
+    | undefined;
+  /**
+   * Optional external reference to the moving-object source
+   *
+   * The external reference points to the source of an moving object, if it
+   * is derived from an external sources like OpenSCENARIO.
+   *
+   * For example, to reference OpenSCENARIO entities of the type Vehicle or
+   * Pedestrian, which describe moving objects, the items should be set as
+   * follows:
+   * * reference = URI to the OpenSCENARIO File
+   * * type = "net.asam.openscenario"
+   * * identifier[0] = Entity-Type ("Vehicle" or "Pedestrian")
+   * * identifier[1] = name of Vehicle/Pedestrian in Entity
+   *
+   * \note For non-ASAM Standards, it is implementation-specific how
+   *       source_reference is resolved.
+   *
+   * \note The value has to be repeated because one object may be derived
+   *       from more than one origin source, for example, from a scenario file
+   *       and from sensors.
+   */
+  source_reference?:
+    | ExternalReference[]
+    | undefined;
+  /** The dominating color of the material of the moving object. */
+  color_description?:
+    | ColorDescription
+    | undefined;
+  /**
+   * Specific information about the pedestrian.
+   *
+   * \note This field is mandatory if the \c #type is
+   * #TYPE_PEDESTRIAN.
+   *
+   * \rules
+   * check_if this.type is_equal_to 3 else do_check is_set
+   * \endrules
+   */
+  pedestrian_attributes?: MovingObject_PedestrianAttributes | undefined;
 }
 
 /** Definition of object types. */
@@ -268,7 +490,7 @@ export enum MovingObject_Type {
  *
  * This is an extension to the \c MovingObject with additional attributes,
  * such as type and lights. The origin of the rear (front) axis coordinate
- * system in world coordinates is calculated as:
+ * system in global coordinates is calculated as:
  * \c MovingObject::base . \c BaseMoving::position + R * \c
  * MovingObject::VehicleAttributes::bbcenter_to_rear (front) for the host
  * vehicle (R rotates from vehicle to world frame, i.e. inverse orientation
@@ -284,8 +506,8 @@ export enum MovingObject_Type {
  * right-handed. Therefore the positive y-axis points to the left of the
  * vehicle.
  *
- * \par References:
- * - [1] DIN ISO 8855:2013-11
+ * \par Reference:
+ * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
  */
 export interface MovingObject_VehicleAttributes {
   /**
@@ -298,10 +520,15 @@ export interface MovingObject_VehicleAttributes {
     | Identifier
     | undefined;
   /**
+   * Deprecated: Will be removed in next major release. Moved to WheelData.
    * Median radius of the wheels measured from a center of the wheel
    * including tire.
    *
-   * Unit: [m]
+   * Unit: m
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   radius_wheel?:
     | number
@@ -309,7 +536,9 @@ export interface MovingObject_VehicleAttributes {
   /**
    * Number of independent wheels.
    *
-   * Unit: []
+   * \rules
+   * is_greater_than_or_equal_to: 1
+   * \endrules
    */
   number_wheels?:
     | number
@@ -333,13 +562,172 @@ export interface MovingObject_VehicleAttributes {
     | Vector3d
     | undefined;
   /**
-   * Static minimal distance in [m] of under-body plane to ground
-   * surface plane (i.e. disregarding driving dynamic effects or road
-   * surface effects) under neutral load conditions. Can be useful to
-   * approximate the clear area under a vehicle that a sensor can see
-   * through.
+   * Static minimal distance or space from the lowest point of the vehicle's
+   * body to the surface plane below it under neutral load conditions. This
+   * distance disregards, for example, driving-dynamic effects or
+   * road-surface effects. Can be useful to approximate the clearance area
+   * under a vehicle that a sensor can see through.
+   * \note \c ground_clearance is included in the bounding box height.
    */
-  ground_clearance?: number | undefined;
+  ground_clearance?:
+    | number
+    | undefined;
+  /**
+   * Description of each wheel.
+   *
+   * \note OSI uses singular instead of plural for repeated field names.
+   */
+  wheel_data?:
+    | MovingObject_VehicleAttributes_WheelData[]
+    | undefined;
+  /**
+   * Angle of the steering wheel.
+   * Zero means the steering wheel is in its center position, a positive value
+   * means the steering wheel is turned to the left and a negative value
+   * means the steering wheel is turned to the right of the center position.
+   *
+   * Unit: rad
+   */
+  steering_wheel_angle?: number | undefined;
+}
+
+/**
+ * \brief Detailed wheel data.
+ * The focus is on the description of a wheel regarding the perceivable
+ * information from the outside.
+ * It is not intended to be used for dynamic calculations, for example.
+ */
+export interface MovingObject_VehicleAttributes_WheelData {
+  /**
+   * The axle which contains this wheel. A value of 0 represents the
+   * front-most axle of the vehicle with higher numbers incrementing
+   * towards the rear-most axle.
+   */
+  axle?:
+    | number
+    | undefined;
+  /**
+   * The index of the wheel on the axle, counting in the direction
+   * of positive-y, that is, right-to-left.
+   *
+   * For example, on a standard 2-axle, 4-wheel car, the rear-right
+   * wheel would be (axle=1, index=0).
+   * This concept works also for twin tires.
+   */
+  index?:
+    | number
+    | undefined;
+  /**
+   * A vector pointing from the vehicle's reference system (center of bounding
+   * box) to the geometric center of the wheel.
+   */
+  position?:
+    | Vector3d
+    | undefined;
+  /**
+   * Median radius of the wheel measured from the center of the wheel to
+   * the outer part of the tire.
+   *
+   * Unit: m
+   */
+  wheel_radius?:
+    | number
+    | undefined;
+  /**
+   * Median radius of the rim measured from the center to the outer, visible part of the rim.
+   *
+   * Unit: m
+   */
+  rim_radius?:
+    | number
+    | undefined;
+  /**
+   * Median width of the tire.
+   *
+   * Unit: m
+   */
+  width?:
+    | number
+    | undefined;
+  /**
+   * Orientation of the wheel.
+   *
+   * The reference system is the vehicle frame (center of bounding box).
+   */
+  orientation?:
+    | Orientation3d
+    | undefined;
+  /**
+   * Rotation rate of the wheel.
+   * The rotation rate around the y-axis with respect to the wheel's coordinate system.
+   *
+   * Unit: rad/s.
+   *
+   * The sign convention is defined using the right-hand rule.
+   * It is applied on the y-axis of the vehicle's reference system (center of bounding box).
+   * Counterclockwise is positive and clockwise is negative.
+   *
+   * \image html OSI_RotationRate.svg
+   * \note The vehicle's reference coordinate system is only used to determine the sign convention of the rotation rate.
+   */
+  rotation_rate?:
+    | number
+    | undefined;
+  /**
+   * Opaque reference of an associated 3D model of the wheel.
+   *
+   * \note It is implementation-specific how model_references are resolved to
+   * 3d models.
+   */
+  model_reference?:
+    | string
+    | undefined;
+  /**
+   * The value describes the kinetic friction of the tire's contact point.
+   * If different friction coefficients due to more than one contact points are available,
+   * this value contains the average.
+   *
+   * Unit: Dimensionless
+   *
+   * \par References:
+   * [1] Britannica, T. Editors of Encyclopaedia. (2020, June 24). <em>coefficient of friction</em>. Retrieved May 18, 2022, from https://www.britannica.com/science/coefficient-of-friction
+   */
+  friction_coefficient?: number | undefined;
+}
+
+/**
+ * \brief Information for the classification of moving objects regarding
+ * \c MovingObject (host or other).
+ */
+export interface MovingObject_MovingObjectClassification {
+  /**
+   * The IDs of the lanes that this object is assigned to.
+   *
+   * \note Might be multiple if the object is switching lanes or moving from
+   * one lane into another following lane.
+   *
+   * \note OSI uses singular instead of plural for repeated field names.
+   */
+  assigned_lane_id?:
+    | Identifier[]
+    | undefined;
+  /**
+   * Percentage value of the object width in the corresponding lane.
+   *
+   * \note Might be multiple if the object is switching lanes or moving from
+   * one lane into another following lane.
+   *
+   * \note OSI uses singular instead of plural for repeated field names.
+   */
+  assigned_lane_percentage?:
+    | number[]
+    | undefined;
+  /**
+   * Assignment of this object to logical lanes.
+   *
+   * \note OSI uses singular instead of plural for repeated field names.
+   */
+  logical_lane_assignment?: LogicalLaneAssignment[] | undefined;
 }
 
 /**
@@ -364,11 +752,39 @@ export interface MovingObject_VehicleClassification {
    *
    * \note Field need not be set if has_Trailer is set to false or use
    * value for non valid id.
+   *
+   * \rules
+   * check_if this.has_trailer is_equal_to true else do_check is_set
+   * \endrules
    */
-  trailer_id?: Identifier | undefined;
+  trailer_id?:
+    | Identifier
+    | undefined;
+  /** The role of the vehicle. */
+  role?: MovingObject_VehicleClassification_Role | undefined;
 }
 
-/** Definition of vehicle types. */
+/**
+ * Definition of vehicle types.
+ *
+ * \note OSI provides a richer set of vehicle types than is supported by some
+ * other OpenX standards (in particular, OpenScenario 1.x and 2.x, and OpenLabel).
+ * This is primarily for historical reasons.  Where a single type from a
+ * different standard can map to multiple OSI types it is left up to the
+ * discretion of the OSI implementer how that mapping is achieved. In previous
+ * versions, for example, a simulator might have used the dimensions of a provided
+ * 3d model of a vehicle with type "car" in OpenScenario, to determine whether it
+ * should be a TYPE_SMALL_CAR or TYPE_MEDIUM_CAR in OSI. As part of the harmonization
+ * effort, it should now map to TYPE_CAR, which is an alias of the old TYPE_MEDIUM_CAR,
+ * and all other car type enums have been deprecated in favor of TYPE_CAR.
+ *
+ * \note Vehicle type classification is a complex area and there are no
+ * universally recognized standards.  As such, the boundaries between some of the
+ * OSI vehicle types are not well-defined.  It is left to the implementer to
+ * decide how to distinguish between them and agree that with any applications which
+ * make use of that specific interface instance.  For example, how to distinguish
+ * between a HEAVY_TRUCK and a DELIVERY_VAN, or a TRAILER and a SEMITRAILER.
+ */
 export enum MovingObject_VehicleClassification_Type {
   /** UNKNOWN - Type of vehicle is unknown (must not be used in ground truth). */
   UNKNOWN = 0,
@@ -378,37 +794,77 @@ export enum MovingObject_VehicleClassification_Type {
    * SMALL_CAR - Vehicle is a small car.
    *
    * Definition: Hatchback car with maximum length 4 m.
+   *
+   * \note Deprecated differentiation, use TYPE_CAR instead
    */
   SMALL_CAR = 2,
   /**
    * COMPACT_CAR - Vehicle is a compact car.
    *
    * Definition: Hatchback car with length between 4 and 4.5 m.
+   *
+   * \note Deprecated differentiation, use TYPE_CAR instead
    */
   COMPACT_CAR = 3,
   /**
+   * CAR - Vehicle is a car.
+   *
+   * This is to be used for all car-like vehicles, without any
+   * further differentiated type available.
+   */
+  CAR = 4,
+  /**
    * MEDIUM_CAR - Vehicle is a medium car.
    *
-   * Definition: Hatchback or sedan with lenght between 4.5 and 5 m.
+   * Definition: Hatchback or sedan with length between 4.5 and 5 m.
+   *
+   * \note Deprecated differentiation, use the alias TYPE_CAR instead
    */
   MEDIUM_CAR = 4,
   /**
    * LUXURY_CAR - Vehicle is a luxury  car.
    *
    * Definition: Sedan or coupe that is longer then 5 m.
+   *
+   * \note Deprecated differentiation, use TYPE_CAR instead
    */
   LUXURY_CAR = 5,
   /**
    * DELIVERY_VAN - Vehicle is a delivery van.
    *
-   * Definition: A delivery van.
+   * \image html OSI_TYPE_DELIVERY_VAN.svg
    */
   DELIVERY_VAN = 6,
-  /** HEAVY_TRUCK - Vehicle is a heavy truck. */
+  /**
+   * HEAVY_TRUCK - Vehicle is a (heavy) truck.
+   *
+   * \image html OSI_TYPE_HEAVY_TRUCK.svg
+   */
   HEAVY_TRUCK = 7,
-  /** SEMITRAILER - Vehicle is a truck with semitrailer. */
+  /**
+   * SEMITRACTOR - Vehicle is a tractor capable of pulling a semi-trailer.
+   *
+   * \image html OSI_TYPE_SEMITRACTOR.svg
+   */
+  SEMITRACTOR = 16,
+  /**
+   * SEMITRAILER - This vehicle is a semi-trailer that can be pulled by a
+   * semi-tractor.
+   *
+   * \note The vehicle can be, but doesn't need to be,
+   * attached to another vehicle.
+   *
+   * \image html OSI_TYPE_SEMITRAILER.svg
+   */
   SEMITRAILER = 8,
-  /** TRAILER - Vehicle is a trailer (possibly attached to another vehicle). */
+  /**
+   * TRAILER - Vehicle is a trailer.
+   *
+   * \note The vehicle can be, but doesn't need to be,
+   * attached to another vehicle.
+   *
+   * \image html OSI_TYPE_TRAILER.svg
+   */
   TRAILER = 9,
   /** MOTORBIKE - Vehicle is a motorbike or moped. */
   MOTORBIKE = 10,
@@ -422,6 +878,49 @@ export enum MovingObject_VehicleClassification_Type {
   TRAIN = 14,
   /** WHEELCHAIR - Vehicle is a wheelchair. */
   WHEELCHAIR = 15,
+  /**
+   * STANDUP_SCOOTER - Vehicle is a stand-up scooter, including
+   * motorized versions.
+   */
+  STANDUP_SCOOTER = 17,
+}
+
+/**
+ * Definition of vehicle roles.
+ *
+ * The role specifies the perceived role of a vehicle. Therefore, a
+ * civil police car is set to ROLE_CIVIL as long as it cannot be
+ * perceived as a ROLE_POLICE.
+ * The normal use case will consist of 99% ROLE_CIVIL, as this role is
+ * used for normal vehicles.
+ * These roles may influence the behavior in traffic of the surrounding vehicles.
+ * To check whether a role is "active" (e.g. blue flashing light of an
+ * ambulance or an amber flashing light of a sweeper) can be looked up
+ * in message LightState.
+ */
+export enum MovingObject_VehicleClassification_Role {
+  /** UNKNOWN - Role of vehicle is unknown (must not be used in ground truth). */
+  UNKNOWN = 0,
+  /** OTHER - Other (unspecified but known) role of vehicle. */
+  OTHER = 1,
+  /** CIVIL - The vehicle role is civil, e.g. a "normal" car. */
+  CIVIL = 2,
+  /** AMBULANCE - The vehicle role is ambulance. */
+  AMBULANCE = 3,
+  /** FIRE - The vehicle role is fire fighting, e.g. fire engine. */
+  FIRE = 4,
+  /** POLICE - The vehicle role is police. */
+  POLICE = 5,
+  /** PUBLIC_TRANSPORT - The vehicle role is public transport, e.g. a school bus. */
+  PUBLIC_TRANSPORT = 6,
+  /** ROAD_ASSISTANCE - The vehicle role is roadside assistance, e.g. tow truck. */
+  ROAD_ASSISTANCE = 7,
+  /** GARBAGE_COLLECTION - The vehicle role is garbage collection, e.g. a garbage truck or sweeper. */
+  GARBAGE_COLLECTION = 8,
+  /** ROAD_CONSTRUCTION - The vehicle role is road construction, e.g. a excavator or tipper truck. */
+  ROAD_CONSTRUCTION = 9,
+  /** MILITARY - The vehicle role is military, e.g. camouflaged truck. */
+  MILITARY = 10,
 }
 
 /** \brief The state of the lights of a vehicle. */
@@ -541,4 +1040,169 @@ export enum MovingObject_VehicleClassification_LightState_BrakeLightState {
    * stronger braking).
    */
   STRONG = 4,
+}
+
+/**
+ * \brief Additional pedestrian data in case the moving object is a human.
+ *
+ * This is an extension to the \c MovingObject with additional information
+ * describing a pedestrian in more detail.
+ */
+export interface MovingObject_PedestrianAttributes {
+  /**
+   * Position offset from the center of the bounding box to the current position
+   * of the root point of the pedestrian skeleton model.
+   */
+  bbcenter_to_root?:
+    | Vector3d
+    | undefined;
+  /**
+   * List of all bones of the pedestrian.
+   *
+   * The number of bones may vary, based on the detail level of
+   * the pedestrian model used. For example, some simulators will not include
+   * detailed data about the hands of a pedestrian.
+   *
+   * \note A bone of each type can be provided, or left out, depending
+   * on the desired level of detail, or available data. However, if a
+   * bone is defined, all bones in the chain from that bone back to
+   * the root point must be provided to create a complete chain.
+   */
+  skeleton_bone?: MovingObject_PedestrianAttributes_Bone[] | undefined;
+}
+
+/**
+ * \brief Bones in the skeleton of the pedestrian.
+ *
+ * Each point represents a joint, or otherwise important point in the skeleton
+ * of a pedestrian. For example pelvis, knee or shoulder. The naming convention
+ * should be followed for identifying bones.
+ */
+export interface MovingObject_PedestrianAttributes_Bone {
+  /**
+   * Bones are identified by their type, combined with which body side
+   * they are on.
+   *
+   * To properly identify the bones the pre-defined naming convention
+   * must be used.
+   *
+   * \image html OSI_SkeletonNamingConvention.svg
+   *
+   * A bone's name, position, and orientation is defined by the end-point closer
+   * to the root. For example: the "LOWER_ARM_L" will define the point in the left
+   * elbow of the model.
+   *
+   * If a bone which is more than one layer detached from the
+   * root point is used, all bones between that bone and the root also
+   * need to be defined in order to create a complete chain!
+   *
+   * If information about bones are missing, they may be left empty.
+   */
+  type?:
+    | MovingObject_PedestrianAttributes_Bone_Type
+    | undefined;
+  /**
+   * Position of the bone.
+   *
+   * Reference System is the root, defined by bbcenter_to_root
+   * (\c PedestrianAttributes::bbcenter_to_root).
+   */
+  position?:
+    | Vector3d
+    | undefined;
+  /**
+   * Orientation of the bone.
+   *
+   * Reference System is the root, defined by bbcenter_to_root
+   * (\c PedestrianAttributes::bbcenter_to_root).
+   */
+  orientation?:
+    | Orientation3d
+    | undefined;
+  /**
+   * Length of the bone.
+   *
+   * Measured along its major axis.
+   *
+   * Unit: m
+   */
+  length?:
+    | number
+    | undefined;
+  /**
+   * Determines whether a bone is explicitly missing from the pedestrian model.
+   *
+   * In case a pedestrian has missing limbs this can be explicitly communicated
+   * by setting this boolean to TRUE.
+   */
+  missing?:
+    | boolean
+    | undefined;
+  /**
+   * The velocity of the bone.
+   *
+   * Reference System is the root, defined by bbcenter_to_root
+   * (\c PedestrianAttributes::bbcenter_to_root).
+   */
+  velocity?:
+    | Vector3d
+    | undefined;
+  /**
+   * The orientation rate of the bone.
+   *
+   * Reference System is the root, defined by bbcenter_to_root
+   * (\c PedestrianAttributes::bbcenter_to_root).
+   */
+  orientation_rate?: Orientation3d | undefined;
+}
+
+/**
+ * The type of the bone.
+ *
+ * \image html OSI_PedestrianModelHierarchy.jpg
+ */
+export enum MovingObject_PedestrianAttributes_Bone_Type {
+  /**
+   * ROOT - Root point of the pedestrian. Defined by bbcenter_to_root
+   * (\c PedestrianAttributes::bbcenter_to_root).
+   */
+  ROOT = 0,
+  /** HIP - Bone defining the hip. */
+  HIP = 1,
+  /** LOWER_SPINE - Bone defining the lower part of the spine. */
+  LOWER_SPINE = 2,
+  /** UPPER_SPINE - Bone defining the upper part of the spine. */
+  UPPER_SPINE = 3,
+  /** NECK - Bone defining the neck. */
+  NECK = 4,
+  /** HEAD - Bone defining the head. */
+  HEAD = 5,
+  /** SHOULDER_L - Bone defining the left shoulder. */
+  SHOULDER_L = 6,
+  /** SHOULDER_R - Bone defining the right shoulder. */
+  SHOULDER_R = 7,
+  /** UPPER_ARM_L - Bone defining the left upper arm. */
+  UPPER_ARM_L = 8,
+  /** UPPER_ARM_R - Bone defining the right upper arm. */
+  UPPER_ARM_R = 9,
+  /** LOWER_ARM_L - Bone defining the left forearm. */
+  LOWER_ARM_L = 10,
+  /** LOWER_ARM_R - Bone defining the right forearm. */
+  LOWER_ARM_R = 11,
+  /** FULL_HAND_L - Bone defining the left hand. */
+  FULL_HAND_L = 12,
+  /** FULL_HAND_R - Bone defining the right hand. */
+  FULL_HAND_R = 13,
+  /** UPPER_LEG_L - Bone defining the left thigh. */
+  UPPER_LEG_L = 14,
+  /** UPPER_LEG_R - Bone defining the right thigh. */
+  UPPER_LEG_R = 15,
+  /** LOWER_LEG_L - Bone defining the left shin. */
+  LOWER_LEG_L = 16,
+  /** LOWER_LEG_R - Bone defining the right shin. */
+  LOWER_LEG_R = 17,
+  /** FULL_FOOT_L - Bone defining the left foot. */
+  FULL_FOOT_L = 18,
+  /** FULL_FOOT_R - Bone defining the right foot. */
+  FULL_FOOT_R = 19,
 }

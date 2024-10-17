@@ -15,7 +15,7 @@ export interface RadarSpecificObjectData {
   /**
    * The radar cross section (RCS) of the detected object.
    *
-   * Unit: [dB m^2]
+   * Unit: dB m^2
    */
   rcs?: number | undefined;
 }
@@ -43,16 +43,25 @@ export interface UltrasonicSpecificObjectData {
    * Maximum measured distance from one sensor which leads to the calculation
    * of this object.
    *
-   * Unit: [m]
+   * Unit: m
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   maximum_measurement_distance_sensor?:
     | number
     | undefined;
   /**
-   * This value indicates the propability height for the classification in the
+   * This value indicates the probability height for the classification in the
    * calculated object.
    *
-   * Unit: [%]
+   * Unit: %
+   *
+   * \rules
+   * is_less_than_or_equal_to: 1
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   probability?:
     | number

@@ -5,7 +5,13 @@
 // source: osi_trafficlight.proto
 
 /* eslint-disable */
-import { type BaseStationary, type Identifier } from "./osi_common";
+import {
+  type BaseStationary,
+  type ColorDescription,
+  type ExternalReference,
+  type Identifier,
+  type LogicalLaneAssignment,
+} from "./osi_common";
 
 /**
  * \brief A traffic light.
@@ -16,7 +22,14 @@ import { type BaseStationary, type Identifier } from "./osi_common";
  * bulbs, e.g. red, yellow, green are three separate traffic lights.
  */
 export interface TrafficLight {
-  /** The ID of the traffic light. */
+  /**
+   * The ID of the traffic light.
+   *
+   * \rules
+   * is_globally_unique
+   * is_set
+   * \endrules
+   */
   id?:
     | Identifier
     | undefined;
@@ -30,13 +43,58 @@ export interface TrafficLight {
     | BaseStationary
     | undefined;
   /** The classification data for the traffic light. */
-  classification?: TrafficLight_Classification | undefined;
+  classification?:
+    | TrafficLight_Classification
+    | undefined;
+  /**
+   * Opaque reference of an associated 3D model of the traffic light.
+   *
+   * \note It is implementation-specific how model_references are resolved to
+   * 3d models.
+   */
+  model_reference?:
+    | string
+    | undefined;
+  /**
+   * Optional external reference to the traffic light source.
+   *
+   * The external reference points to the source of the traffic light, if it
+   * is derived from one or more objects or external references.
+   *
+   * For example, to reference a signal defined in an OpenDRIVE map
+   * the items should be set as follows:
+   * * reference = URI to map, can remain empty if identical with definition
+   *               in \c GroundTruth::map_reference
+   * * type = "net.asam.opendrive"
+   * * identifier[0] = id of t_road_signals_signal
+   *
+   * \note For non-ASAM Standards, it is implementation-specific how
+   *       source_reference is resolved.
+   *
+   * \note The value has to be repeated, because one lane segment may be
+   *       derived from more than one origin segment. Multiple sources
+   *       may be added as reference as well, for example, a map and sensors.
+   */
+  source_reference?:
+    | ExternalReference[]
+    | undefined;
+  /**
+   * The visual color of the traffic light.
+   *
+   * \note This does not represent the semantic classification but the visual
+   * appearance.  For semantic classification of the traffic light use the color
+   * field in \c Classification.
+   */
+  color_description?: ColorDescription | undefined;
 }
 
 /** \brief \c Classification data for a traffic light. */
 export interface TrafficLight_Classification {
   /**
-   * The color of the traffic light.
+   * The semantic color of the traffic light.
+   *
+   * \note The color types represent the semantic color classification of a
+   * traffic light only. They do not represent an actual visual appearance.
    *
    * \note If the color of the traffic light is known (from history or
    * geometrical arrangement) and the state \c #mode is
@@ -58,9 +116,13 @@ export interface TrafficLight_Classification {
     | undefined;
   /**
    * The value of the countdown counter.
-   * Unit: [%] or [s]
+   * Unit: % or s
    *
    * \note Set value only if traffic light bulb is a countdown counter.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   counter?:
     | number
@@ -71,11 +133,36 @@ export interface TrafficLight_Classification {
    * lanes.
    *
    * \note OSI uses singular instead of plural for repeated field names.
+   *
+   * \rules
+   * refers_to: Lane
+   * \endrules
    */
-  assigned_lane_id?: Identifier[] | undefined;
+  assigned_lane_id?:
+    | Identifier[]
+    | undefined;
+  /**
+   * Boolean flag to indicate that the traffic light is taken out of service.
+   * This can be achieved by visibly crossing the light, covering it completely
+   * or switching the traffic light off.
+   */
+  is_out_of_service?:
+    | boolean
+    | undefined;
+  /**
+   * Assignment of this object to logical lanes.
+   *
+   * \note OSI uses singular instead of plural for repeated field names.
+   */
+  logical_lane_assignment?: LogicalLaneAssignment[] | undefined;
 }
 
-/** Definition of colors for traffic lights. */
+/**
+ * Definition of semantic colors for traffic lights.
+ *
+ * \note The color types represent the semantic classification of a traffic light
+ * only. They do not represent an actual visual appearance.
+ */
 export enum TrafficLight_Classification_Color {
   /** UNKNOWN - Color is unknown (must not be used in ground truth). */
   UNKNOWN = 0,

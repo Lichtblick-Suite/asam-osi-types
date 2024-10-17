@@ -12,11 +12,7 @@ import { type SensorData } from "./osi_sensordata";
  * recording or internal buffering by some sensor models.
  */
 export interface SensorDataSeries {
-  /**
-   * List of sensor data messages for subsequent timesteps.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** List of sensor data messages for subsequent time steps. */
   sensor_data?: SensorData[] | undefined;
 }
 
@@ -25,10 +21,6 @@ export interface SensorDataSeries {
  * \c SensorData messages.
  */
 export interface SensorDataSeriesList {
-  /**
-   * List of sensor data for multiple sensors at subsequent timesteps.
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** List of sensor data for multiple sensors at subsequent time steps. */
   sensor?: SensorDataSeries[] | undefined;
 }

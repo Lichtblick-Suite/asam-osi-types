@@ -25,10 +25,10 @@
  * properly set the version components prior to sending.
  *
  * Increments will happen as part of changes to the whole interface.
- * The meaning of different InterfaceVersions is defined [1].
+ * The meaning of different InterfaceVersions is defined in [1].
  *
- * \par References:
- * [1] Open Simulation Interface: README.md
+ * \par Reference:
+ * [1] Open Simulation Interface. (2020, January 25). <em>README</em>. Retrieved January 25, 2020, from https://opensimulationinterface.github.io/osi-documentation/open-simulation-interface/README.html
  */
 export interface InterfaceVersion {
   /** Major version number. */

@@ -5,16 +5,37 @@
 // source: osi_occupant.proto
 
 /* eslint-disable */
-import { type Identifier } from "./osi_common";
+import { type ExternalReference, type Identifier } from "./osi_common";
 
 /** \brief An occupant of a host vehicle, especially the driver of the vehicle. */
 export interface Occupant {
-  /** The ID of the driver. */
+  /**
+   * The ID of the driver.
+   *
+   * \rules
+   * is_globally_unique
+   * \endrules
+   */
   id?:
     | Identifier
     | undefined;
   /** Specific information about the classification of the occupant. */
-  classification?: Occupant_Classification | undefined;
+  classification?:
+    | Occupant_Classification
+    | undefined;
+  /**
+   * External reference to the occupant source.
+   *
+   * \note For OpenDRIVE and OpenSCENARIO there is no direct counterpart.
+   *
+   * \note For non-ASAM Standards, it is implementation-specific how
+   *       source_reference is resolved.
+   *
+   * \note The value has to be repeated because one object may be derived
+   *       from more than one origin source, for example, from a scenario file
+   *       and from sensors.
+   */
+  source_reference?: ExternalReference[] | undefined;
 }
 
 /** \brief Information regarding the classification of the occupant. */

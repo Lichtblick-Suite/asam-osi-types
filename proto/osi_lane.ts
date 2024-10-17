@@ -5,7 +5,7 @@
 // source: osi_lane.proto
 
 /* eslint-disable */
-import { type Identifier, type Vector3d } from "./osi_common";
+import { type ColorDescription, type ExternalReference, type Identifier, type Vector3d } from "./osi_common";
 
 /**
  * \brief A lane in the road network.
@@ -40,12 +40,43 @@ export interface Lane {
    * Example: l4 (see reference picture HighwayExit).
    *
    * \note Note ID is global unique.
+   *
+   * \rules
+   * is_globally_unique
+   * is_set
+   * \endrules
    */
   id?:
     | Identifier
     | undefined;
   /** The classification of the lane. */
-  classification?: Lane_Classification | undefined;
+  classification?:
+    | Lane_Classification
+    | undefined;
+  /**
+   * Optional external reference to the lane source.
+   *
+   * The external reference points to the source of the lane, if it is derived
+   * from one or more objects or external references.
+   *
+   * For example, to reference a lane defined in an OpenDRIVE map
+   * the items should be set as follows:
+   * * reference = URI to map, can remain empty if identical with definition
+   *               in \c GroundTruth::map_reference
+   * * type = "net.asam.opendrive"
+   * * identifier[0] = id of t_road
+   * * identifier[1] = s of t_road_lanes_laneSection
+   * * identifier[2] = id of t_road_lanes_laneSection_left_lane,
+   *                         t_road_lanes_laneSection_right_lane
+   *
+   * \note For non-ASAM Standards, it is implementation-specific how
+   *       source_reference is resolved.
+   *
+   * \note The value has to be repeated, because one lane segment may be
+   *       derived from more than one origin segment. Multiple sources
+   *       may be added as reference as well, for example, a map and sensors.
+   */
+  source_reference?: ExternalReference[] | undefined;
 }
 
 /**
@@ -164,7 +195,7 @@ export interface Lane_Classification {
   /**
    * Indicates that the host vehicle travels on this particular lane.
    * The host vehicle may travel on more than one lane at once. This does
-   * also apply for the \c CanditateLane in the \c DetectedLane .
+   * also apply for the \c CandidateLane in the \c DetectedLane .
    */
   is_host_vehicle_lane?:
     | boolean
@@ -179,6 +210,18 @@ export interface Lane_Classification {
    * Example: In image \ref HighwayExit,
    * the centerline of lane l4 (black line) is given by
    * (cl4_1, cl4_2, cl4_3, cl4_4, cl4_5).
+   *
+   * \image html OSI_LaneBoundaries_And_CenterLine.svg "Centerline" width=500px
+   *
+   * \note
+   * cl: center line
+   * lb: lane boundary
+   *
+   * \attention The points describing the center line must be set in the
+   * same ordering (ascending or descending) as the points describing the
+   * lane boundaries. Example: If the points are deducted from a map format,
+   * the order of points is recommended to be in line with the road coordinate
+   * (e.g. s-coordinate in OpenDRIVE).
    *
    * \attention The points describing the center line might be set at
    * arbitrary distances. When the points are pairwise linearly connected,
@@ -227,10 +270,10 @@ export interface Lane_Classification {
     | undefined;
   /**
    * List of IDs of all lane segments that are directly adjacent to the
-   * lane on the left side (w.r.t. intended driving direction). Note that
-   * lengths of lane segments are not synchronized and therefore there are
-   * multiple adjacent segments if there is a split/merge point in the
-   * adjacent lane.
+   * lane on the left side (w.r.t. ascending order of centerline points
+   * and lane boundary points). Note that lengths of lane segments are
+   * not synchronized and therefore there are multiple adjacent segments
+   * if there is a split/merge point in the adjacent lane.
    *
    * Example: The lane l3 is the only left adjacent lane for lane l4
    * in image \ref HighwayExit.
@@ -239,16 +282,20 @@ export interface Lane_Classification {
    * \c #TYPE_INTERSECTION .
    *
    * \note OSI uses singular instead of plural for repeated field names.
+   *
+   * \rules
+   * check_if this.type is_different_to 4 else do_check is_set
+   * \endrules
    */
   left_adjacent_lane_id?:
     | Identifier[]
     | undefined;
   /**
    * List of IDs of all lane segments that are directly adjacent to the
-   * lane on the right side (w.r.t. intended driving direction). Note that
-   * lengths of lane segments are not synchronized and therefore there are
-   * multiple adjacent segments if there is a split/merge point in the
-   * adjacent lane.
+   * lane on the right side (w.r.t. ascending order of centerline points
+   * and lane boundary points). Note that lengths of lane segments are
+   * not synchronized and therefore there are multiple adjacent segments
+   * if there is a split/merge point in the adjacent lane.
    *
    * Example: \c #right_adjacent_lane_id = (l5, l6)
    * for lane l4 in image \ref HighwayExit.
@@ -257,6 +304,10 @@ export interface Lane_Classification {
    * \c #TYPE_INTERSECTION .
    *
    * \note OSI uses singular instead of plural for repeated field names.
+   *
+   * \rules
+   * check_if this.type is_different_to 4 else do_check is_set
+   * \endrules
    */
   right_adjacent_lane_id?:
     | Identifier[]
@@ -290,6 +341,16 @@ export interface Lane_Classification {
    * \c #TYPE_INTERSECTION .
    *
    * \note OSI uses singular instead of plural for repeated field names.
+   *
+   * \note The boundary between adjacent lanes at different heights
+   *       (e.g. a curb between a driving lane and a sidewalk)
+   *       should not be shared, but modeled as two separate lane
+   *       boundaries with individual ids. One for the upper, the
+   *       other one for the lower lane.
+   *
+   * \rules
+   * check_if this.type is_different_to 4 else do_check is_set
+   * \endrules
    */
   right_lane_boundary_id?:
     | Identifier[]
@@ -309,6 +370,16 @@ export interface Lane_Classification {
    * \c #TYPE_INTERSECTION .
    *
    * \note OSI uses singular instead of plural for repeated field names.
+   *
+   * \note The boundary between adjacent lanes at different heights
+   *       (e.g. a curb between a driving lane and a sidewalk)
+   *       should not be shared, but modeled as two separate lane
+   *       boundaries with individual ids. One for the upper, the
+   *       other one for the lower lane.
+   *
+   * \rules
+   * check_if this.type is_different_to 4 else do_check is_set
+   * \endrules
    */
   left_lane_boundary_id?:
     | Identifier[]
@@ -323,12 +394,24 @@ export interface Lane_Classification {
    * lane boundaries.
    *
    * \note OSI uses singular instead of plural for repeated field names.
+   *
+   * \rules
+   * check_if this.type is_different_to 4 else do_check is_set
+   * \endrules
    */
   free_lane_boundary_id?:
     | Identifier[]
     | undefined;
   /** The condition of the lane, e.g. influenced by weather. */
-  road_condition?: Lane_Classification_RoadCondition | undefined;
+  road_condition?:
+    | Lane_Classification_RoadCondition
+    | undefined;
+  /**
+   * The subtype of the lane.
+   *
+   * This subtype specifies a lane more concretely.
+   */
+  subtype?: Lane_Classification_Subtype | undefined;
 }
 
 /** Definition of available lane types. */
@@ -357,12 +440,121 @@ export enum Lane_Classification_Type {
   INTERSECTION = 4,
 }
 
+/** Definition of available lane subtypes, aligned with OpenDRIVE. */
+export enum Lane_Classification_Subtype {
+  /** UNKNOWN - Lane of unknown subtype. Do not use in ground truth. */
+  UNKNOWN = 0,
+  /** OTHER - Any other subtype of lane. */
+  OTHER = 1,
+  /**
+   * NORMAL - A normal driving lane.
+   * Example: Lanes with IDs l1, l2, l3 and l4 in image \ref
+   * HighwayExit.
+   *
+   * Since it is intended to be used for normal automotive
+   * driving, it should be used in combination with TYPE_DRIVING.
+   */
+  NORMAL = 2,
+  /**
+   * BIKING - A lane that is designated for bicycles.
+   *
+   * Since it is not intended to be used for normal automotive
+   * driving, it should be used in combination with TYPE_NONDRIVING.
+   */
+  BIKING = 3,
+  /**
+   * SIDEWALK - A lane that is designated for pedestrians (sidewalk).
+   *
+   * Since it is not intended to be used for normal automotive
+   * driving, it should be used in combination with TYPE_NONDRIVING.
+   */
+  SIDEWALK = 4,
+  /**
+   * PARKING - A lane with parking spaces.
+   *
+   * Since it is not intended to be used for normal automotive
+   * driving, it should be used in combination with TYPE_NONDRIVING.
+   */
+  PARKING = 5,
+  /**
+   * STOP - A hard shoulder on motorways for emergency stops.
+   * Example: Lane l5 in image \ref
+   * HighwayExit.
+   *
+   * Since it is not intended to be used for normal automotive
+   * driving, it should be used in combination with TYPE_NONDRIVING.
+   */
+  STOP = 6,
+  /**
+   * RESTRICTED - A lane on which cars should not drive.
+   *
+   * Since it is not intended to be used for normal automotive
+   * driving, it should be used in combination with TYPE_NONDRIVING.
+   */
+  RESTRICTED = 7,
+  /**
+   * BORDER - A hard border on the edge of a road.
+   *
+   * Since it is not intended to be used for normal automotive
+   * driving, it should be used in combination with TYPE_NONDRIVING.
+   */
+  BORDER = 8,
+  /**
+   * SHOULDER - A soft border on the edge of a road.
+   *
+   * Since it is not intended to be used for normal automotive
+   * driving, it should be used in combination with TYPE_NONDRIVING.
+   */
+  SHOULDER = 9,
+  /**
+   * EXIT - A deceleration lane in parallel to the main road.
+   * Example: Lane l6 in image \ref
+   * HighwayExit.
+   *
+   * Since it is intended to be used for normal automotive
+   * driving, it should be used in combination with TYPE_DRIVING.
+   */
+  EXIT = 10,
+  /**
+   * ENTRY - An acceleration lane in parallel to the main road.
+   *
+   * Since it is intended to be used for normal automotive
+   * driving, it should be used in combination with TYPE_DRIVING.
+   */
+  ENTRY = 11,
+  /**
+   * ONRAMP - A ramp from rural or urban roads joining a motorway.
+   *
+   * Since it is intended to be used for normal automotive
+   * driving, it should be used in combination with TYPE_DRIVING.
+   */
+  ONRAMP = 12,
+  /**
+   * OFFRAMP - A ramp leading off a motorway onto rural or urban roads.
+   *
+   * Since it is intended to be used for normal automotive
+   * driving, it should be used in combination with TYPE_DRIVING.
+   */
+  OFFRAMP = 13,
+  /**
+   * CONNECTINGRAMP - A ramp that connect two motorways.
+   *
+   * Since it is intended to be used for normal automotive
+   * driving, it should be used in combination with TYPE_DRIVING.
+   */
+  CONNECTINGRAMP = 14,
+}
+
 /** \brief The condition of the road surface. */
 export interface Lane_Classification_RoadCondition {
   /**
    * The temperature of the roads surface in Kelvin.
    *
-   * Unit: [K]
+   * Unit: K
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   surface_temperature?:
     | number
@@ -370,7 +562,11 @@ export interface Lane_Classification_RoadCondition {
   /**
    * The height of the water film on top of the surface in mm.
    *
-   * Unit: [mm]
+   * Unit: mm
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   surface_water_film?:
     | number
@@ -379,7 +575,11 @@ export interface Lane_Classification_RoadCondition {
    * The temperature where the water on top of the surface would start
    * to freeze or dew in Kelvin.
    *
-   * Unit: [K]
+   * Unit: K
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   surface_freezing_point?:
     | number
@@ -387,7 +587,11 @@ export interface Lane_Classification_RoadCondition {
   /**
    * The percentage of ice covering the road.
    *
-   * Unit: [%]
+   * Unit: %
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   surface_ice?:
     | number
@@ -400,33 +604,36 @@ export interface Lane_Classification_RoadCondition {
    * 20 mm/m (a very rough road).
    *
    * Estimated value ranges (IRI):
-   * 0.0 [mm/m] absolutely perfect evenness
-   * 0.3 -  1.8 [mm/m] airport runways and superhighways
-   * 1.4 -  3.4 [mm/m] new pavements
-   * 2.2 -  5.7 [mm/m] older pavements
-   * 3.2 -  9.8 [mm/m] maintained unpaved roads
-   * 4.0 - 11.0 [mm/m] damaged pavements
+   * 0.0 mm/m absolutely perfect evenness
+   * 0.3 -  1.8 mm/m airport runways and superhighways
+   * 1.4 -  3.4 mm/m new pavements
+   * 2.2 -  5.7 mm/m older pavements
+   * 3.2 -  9.8 mm/m maintained unpaved roads
+   * 4.0 - 11.0 mm/m damaged pavements
    * 8.0 - >
-   * 20 [mm/m] rough unpaved roads
+   * 20 mm/m rough unpaved roads
    *
    * Speed of normal use (IRI):
-   * 30 [km/h] - 20   [mm/m]
-   * 50 [km/h] - 14.5 [mm/m]
-   * 60 [km/h] - 10.0 [mm/m]
-   * 80 [km/h] -  8.5 [mm/m]
-   * 100 [km/h] -  3.4 [mm/m]
+   * 30 km/h - 20   mm/m
+   * 50 km/h - 14.5 mm/m
+   * 60 km/h - 10.0 mm/m
+   * 80 km/h -  8.5 mm/m
+   * 100 km/h -  3.4 mm/m
    *
    * Road conditions (IRI);
-   * 15 [mm/m] erosion gulleys and deep depressions
-   * 11 [mm/m] frequent shallow depressions, some deep
-   * 9 [mm/m] frequent minor depressions
-   * 5 [mm/m] surface imperfections
+   * 15 mm/m erosion gulleys and deep depressions
+   * 11 mm/m frequent shallow depressions, some deep
+   * 9 mm/m frequent minor depressions
+   * 5 mm/m surface imperfections
    *
-   * Unit: [mm/m]
+   * Unit: mm/m
    *
-   * \par References:
-   * - [1] SAYERS, M.W.; KARAMIHAS, S.M. Little Book of Profiling,
-   * University of Michigan Transportation Research Institute, 1998.
+   * \par Reference:
+   * [1] Sayers, M. W. & Karamihas, S. M. (1998). <em>Little Book of Profiling</em>. University of Michigan Transportation Research Institute. Retrieved January 25, 2020, from http://www.umtri.umich.edu/content/LittleBook98R.pdf pp. 45 ff.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   surface_roughness?:
     | number
@@ -435,19 +642,15 @@ export interface Lane_Classification_RoadCondition {
    * The surface texture or fine roughness
    *
    * Whereas the IRI-based roughness or unevenness measure only takes
-   * into account road wavelengths around 0.5m - 100m, the surface
-   * texture or fine roughness [2] measures only wavelengths below
-   * 0.5m. It is given as the standard height deviation of fine
+   * into account road wavelengths around 0.5 m - 100 m, the surface
+   * texture or fine roughness [1] measures only wavelengths below
+   * 0.5 m. It is given as the standard height deviation of fine
    * roughness
    *
-   * Unit: [m]
+   * Unit: m
    *
-   * \par References:
-   * - [1] SAYERS, M.W.; KARAMIHAS, S.M. Little Book of Profiling,
-   * University of Michigan Transportation Research Institute, 1998.
-   * - [2] SCHNEIDER, R.: Modellierung der Wellenausbreitung fuer
-   * ein bildgebendes Kfz-Radar, Dissertation, Universitaet Karlsruhe,
-   * Mai 1998.
+   * \par Reference:
+   * [1] Schneider, R. (1998). <em>Modellierung der Wellenausbreitung fuer ein bildgebendes Kfz-Radar</em>. PhD thesis. Karlsruhe, Germany. Universitaet Karlsruhe, Fak. f. Elektrotechnik.
    */
   surface_texture?: number | undefined;
 }
@@ -495,11 +698,23 @@ export interface Lane_Classification_RoadCondition {
  * elements of the lanes with the respective ids.
  */
 export interface Lane_Classification_LanePairing {
-  /** The antecessor lane ID. */
+  /**
+   * The antecessor lane ID.
+   *
+   * \rules
+   * refers_to: Lane
+   * \endrules
+   */
   antecessor_lane_id?:
     | Identifier
     | undefined;
-  /** The successor lane ID. */
+  /**
+   * The successor lane ID.
+   *
+   * \rules
+   * refers_to: Lane
+   * \endrules
+   */
   successor_lane_id?: Identifier | undefined;
 }
 
@@ -518,45 +733,76 @@ export interface Lane_Classification_LanePairing {
  * for \c #osi3::LaneBoundary::BoundaryPoint elements.
  */
 export interface LaneBoundary {
-  /** The ID of the lane boundary. */
+  /**
+   * The ID of the lane boundary.
+   *
+   * \rules
+   * is_globally_unique
+   * \endrules
+   */
   id?:
     | Identifier
     | undefined;
   /**
-   * The list of individual points defining the location of the lane boundary
-   * (as a list of segments).
-   *
-   * Since a \c BoundaryPoint is part of a sequence, only the position
-   * attribute has to be set for each instance. All other values will be
-   * reused from the previous \c BoundaryPoint in the sequence or set to
-   * default values if there is none or it was never set.
-   *
-   * \image html OSI_LaneBoundary.svg "" width=800px
-   *
-   * Example: The boundary_line of the \c LaneBoundary with id lb2 is given by
-   * (bp2_1, ..., bp2_{i-1}, bp2_{i}, bp2_{i+1}, ...).
-   *
    * \note For dashed lines, one \c BoundaryPoint has to be at the start and
    * another at the end of each dashed line segment. The first
    * \c BoundaryPoint defines the beginning of the first dashed lane marking.
    * The last \c BoundaryPoint defines the end of the last dashed lane
-   * marking. For example, the area between the second and third
-   * \c BoundaryPoint has no lane marking, and so on.
+   * marking.
    * \note For Botts' dots lines, one \c BoundaryPoint position has to define
    * each Botts' dot.
    *
    * \attention For \c BoundaryPoint the same rule for the approximation
    * error applies as for \c Lane::Classification::centerline.
+   *
+   * \rules
+   * first_element width is_equal_to 0.13
+   * first_element height is_equal_to 0.14
+   * last_element width is_equal_to 0.13
+   * last_element height is_equal_to 0.13
+   * \endrules
    */
   boundary_line?:
     | LaneBoundary_BoundaryPoint[]
     | undefined;
   /** The classification of the lane boundary. */
-  classification?: LaneBoundary_Classification | undefined;
+  classification?:
+    | LaneBoundary_Classification
+    | undefined;
+  /**
+   * Optional external reference to the lane boundary source.
+   *
+   * \note For OpenDRIVE, there is no direct possibility to reference the
+   *       RoadMark, as there is no unique identifier in this sub-object.
+   *
+   * \note For non-ASAM Standards, it is implementation-specific how
+   *       source_reference is resolved.
+   *
+   * \note The value has to be repeated because one object may be derived
+   *       from more than one origin source, for example, from a scenario file
+   *       and from sensors.
+   */
+  source_reference?:
+    | ExternalReference[]
+    | undefined;
+  /**
+   * The visual color of the material of the lane boundary.
+   *
+   * \note This does not represent the semantic classification but the visual
+   * appearance. For semantic classification of the lane boundary use the color
+   * field in \c Classification.
+   */
+  color_description?: ColorDescription | undefined;
 }
 
 /**
  * \brief A single point of a lane boundary.
+ *
+ * \image html OSI_LaneBoundaries_And_CenterLine.svg "" width=800px
+ *
+ * \note
+ * cl: center line
+ * lb: lane boundary
  *
  * \image html OSI_LaneBoundary.svg "" width=800px
  *
@@ -594,9 +840,59 @@ export interface LaneBoundary_BoundaryPoint {
    * \image html OSI_LaneBoundaryHeight.svg "" width=600px
    *
    * \note Field need not be set if it is previously defined.
+   *
+   * \note The boundary point height should not be used to model the boundary
+   *       between two adjacent lanes at different heights as a single, shared
+   *       boundary.
+   *       Boundaries between adjacent lanes at different heights should be
+   *       modeled as two separate lane boundaries.
+   *
    * See \c LaneBoundary .
    */
-  height?: number | undefined;
+  height?:
+    | number
+    | undefined;
+  /**
+   * Alternation of dashes in case of a dashed lane boundary. In
+   * context, this field gives information about the location of
+   * dashes on the boundary line.
+   */
+  dash?: LaneBoundary_BoundaryPoint_Dash | undefined;
+}
+
+/**
+ * This enum describes the alternation of dashes in case of a
+ * dashed lane boundary.
+ *
+ * \note The enum descriptions adhere to the definition direction
+ * of the lane boundary points. This means that start or end of a
+ * dash are understood with respect to the direction in which the
+ * points of the boundary line are defined.
+ */
+export enum LaneBoundary_BoundaryPoint_Dash {
+  /**
+   * UNKNOWN - The current state of the dash alternation is not known (must
+   * not be used in ground truth).
+   */
+  UNKNOWN = 0,
+  /** OTHER - Other (unspecified but known) type of dash alternation state. */
+  OTHER = 1,
+  /** START - The current \c BoundaryPoint indicates the start of a dash. */
+  START = 2,
+  /**
+   * CONTINUE - The current \c BoundaryPoint is located on a dash of a dashed
+   * line. This enables a dash to continue across multiple points.
+   */
+  CONTINUE = 3,
+  /** END - The current \c BoundaryPoint indicates the end of a dash. */
+  END = 4,
+  /**
+   * GAP - The current \c BoundaryPoint is located in the gap between
+   * two dashes. When used to describe a first/last point of a lane
+   * boundary, it indicates that the lane boundary starts/ends in
+   * a gap.
+   */
+  GAP = 5,
 }
 
 /**
@@ -692,7 +988,12 @@ export interface LaneBoundary_Classification {
   type?:
     | LaneBoundary_Classification_Type
     | undefined;
-  /** The color of the lane boundary in case of lane markings. */
+  /**
+   * The semantic color of the lane boundary in case of lane markings.
+   *
+   * \note The color types represent the semantic classification of
+   * lane markings only. They do not represent an actual visual appearance.
+   */
   color?:
     | LaneBoundary_Classification_Color
     | undefined;
@@ -700,6 +1001,10 @@ export interface LaneBoundary_Classification {
    * The ids of \c StationaryObject which limit the corresponding lane.
    * This field must be set if the \c #type is set to
    * \c #TYPE_STRUCTURE
+   *
+   * \rules
+   * refers_to: StationaryObject
+   * \endrules
    */
   limiting_structure_id?: Identifier[] | undefined;
 }
@@ -721,7 +1026,7 @@ export enum LaneBoundary_Classification_Type {
    * Consider proposing an additional type if using TYPE_OTHER.
    */
   OTHER = 1,
-  /** NO_LINE - An invisible lane boundary (e.g. unmarked part of a dashed line). */
+  /** NO_LINE - An invisible lane boundary. */
   NO_LINE = 2,
   /** SOLID_LINE - A solid line at the lane boundary. */
   SOLID_LINE = 3,
@@ -751,12 +1056,19 @@ export enum LaneBoundary_Classification_Type {
   CURB = 12,
   /** STRUCTURE - A structure (e.g. building or tunnel wall). */
   STRUCTURE = 13,
+  /** BARRIER - A barrier to guide vehicles and to prevent them from entering other lanes (e.g. a concrete barrier on a highway). */
+  BARRIER = 14,
+  /** SOUND_BARRIER - A sound barrier. */
+  SOUND_BARRIER = 15,
 }
 
 /**
- * The color of the lane boundary in case of a lane markings.
+ * The semantic color of the lane boundary in case of a lane markings.
  * Lane markings that alternate in color must be represented by
  * individual \c LaneBoundary segments.
+ *
+ * \note The color types represent the semantic color classification of
+ * lane markings only. They do not represent an actual visual appearance.
  */
 export enum LaneBoundary_Classification_Color {
   /**
@@ -784,4 +1096,6 @@ export enum LaneBoundary_Classification_Color {
   GREEN = 7,
   /** VIOLET - Marking with violet color. */
   VIOLET = 8,
+  /** ORANGE - Marking with orange color. */
+  ORANGE = 9,
 }

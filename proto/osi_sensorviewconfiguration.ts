@@ -5,7 +5,13 @@
 // source: osi_sensorviewconfiguration.proto
 
 /* eslint-disable */
-import { type Identifier, type MountingPosition, type Timestamp, type Vector3d } from "./osi_common";
+import {
+  type Identifier,
+  type MountingPosition,
+  type Timestamp,
+  type Vector3d,
+  type WavelengthData,
+} from "./osi_common";
 import { type InterfaceVersion } from "./osi_version";
 
 /**
@@ -64,7 +70,13 @@ import { type InterfaceVersion } from "./osi_version";
  * not always be the preferred approach for reasons of IP protection.
  */
 export interface SensorViewConfiguration {
-  /** The interface version used by the sender (simulation environment). */
+  /**
+   * The interface version used by the sender (simulation environment).
+   *
+   * \rules
+   * is_set
+   * \endrules
+   */
   version?:
     | InterfaceVersion
     | undefined;
@@ -77,6 +89,10 @@ export interface SensorViewConfiguration {
    *
    * The ID is to be provided by the environment simulation, the sensor
    * model is not in a position to provide a useful default value.
+   *
+   * \rules
+   * is_set
+   * \endrules
    */
   sensor_id?:
     | Identifier
@@ -97,8 +113,8 @@ export interface SensorViewConfiguration {
    * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
    * right hand system
    *
-   * \par References:
-   * - [1] DIN ISO 8855:2013-11
+   * \par Reference:
+   * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
    *
    * \note The origin of vehicle's coordinate system in world frame is
    * ( \c MovingObject::base . \c BaseMoving::position +
@@ -127,7 +143,9 @@ export interface SensorViewConfiguration {
    * that the simulation environment has to provide.
    * Viewing range: [- \c #field_of_view_horizontal/2,  \c
    * #field_of_view_horizontal/2] azimuth in the sensor frame as defined in \c
-   * Spherical3d. Unit: [rad]
+   * Spherical3d.
+   *
+   * Unit: rad
    */
   field_of_view_horizontal?:
     | number
@@ -141,7 +159,7 @@ export interface SensorViewConfiguration {
    * #field_of_view_vertical/2] elevation in the sensor frame at zero azimuth
    * as defined in \c Spherical3d.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   field_of_view_vertical?:
     | number
@@ -152,7 +170,11 @@ export interface SensorViewConfiguration {
    * This determines the limit of the cone of interest of ground truth
    * that the simulation environment has to provide.
    *
-   * Unit: [m]
+   * Unit: m
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   range?:
     | number
@@ -163,7 +185,7 @@ export interface SensorViewConfiguration {
    * This specifies the rate at which the sensor model is provided with
    * new input data.
    *
-   * Unit: [s]
+   * Unit: s
    * \note In the case of FMU packaging this will correspond to the
    * communication step size.
    */
@@ -186,9 +208,9 @@ export interface SensorViewConfiguration {
    * update to the sensor input should happen at 0.048s, or 0.018s
    * after simulation start. This convention is needed to ensure
    * stable phase position of the offset in the case of changing
-   * simulation start times, e.g. for partial resimulation.
+   * simulation start times, e.g. for partial re-simulation.
    *
-   * Unit: [s]
+   * Unit: s
    */
   update_cycle_offset?:
     | Timestamp
@@ -200,48 +222,44 @@ export interface SensorViewConfiguration {
    * has chosen. This field has no defined meaning if provided by
    * the sensor model.
    *
-   * Unit: [s]
+   * Unit: s
    */
   simulation_start_time?:
     | Timestamp
     | undefined;
   /**
-   * Generic Sensor View Configuration(s).
+   * Omit Static Information
    *
-   * \note OSI uses singular instead of plural for repeated field names.
+   * This flag specifies whether \c GroundTruth information that
+   * was already provided using a GroundTruthInit parameter (e.g. <a href="https://opensimulationinterface.github.io/osi-antora-generator/asamosi/latest/sensor-model/spec/ground_truth_init_parameters.html">OSMP GroundTruthInit</a>)
+   * at initialization time shall be omitted from the \c SensorView
+   * ground truth information.
+   *
+   * Setting the \c #omit_static_information field allows a clear split
+   * between the dynamic simulation data, which is contained in ground truth
+   * messages with the \c #omit_static_information flag, and the static
+   * simulation data, which is contained in the (OSMP) GroundTruthInit.
    */
+  omit_static_information?:
+    | boolean
+    | undefined;
+  /** Generic Sensor View Configuration(s). */
   generic_sensor_view_configuration?:
     | GenericSensorViewConfiguration[]
     | undefined;
-  /**
-   * Radar-specific Sensor View Configuration(s).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** Radar-specific Sensor View Configuration(s). */
   radar_sensor_view_configuration?:
     | RadarSensorViewConfiguration[]
     | undefined;
-  /**
-   * Lidar-specific Sensor View Configuration(s).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** Lidar-specific Sensor View Configuration(s). */
   lidar_sensor_view_configuration?:
     | LidarSensorViewConfiguration[]
     | undefined;
-  /**
-   * Camera-specific Sensor View Configuration(s).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** Camera-specific Sensor View Configuration(s). */
   camera_sensor_view_configuration?:
     | CameraSensorViewConfiguration[]
     | undefined;
-  /**
-   * Ultrasonic-specific Sensor View Configuration(s).
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** Ultrasonic-specific Sensor View Configuration(s). */
   ultrasonic_sensor_view_configuration?: UltrasonicSensorViewConfiguration[] | undefined;
 }
 
@@ -274,8 +292,8 @@ export interface GenericSensorViewConfiguration {
    * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
    * right hand system
    *
-   * \par References:
-   * - [1] DIN ISO 8855:2013-11
+   * \par Reference:
+   * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
    *
    * \note The origin of vehicle's coordinate system in world frame is
    * ( \c MovingObject::base . \c BaseMoving::position +
@@ -304,7 +322,7 @@ export interface GenericSensorViewConfiguration {
    * #field_of_view_horizontal/2] azimuth in the sensor frame as defined in \c
    * Spherical3d.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   field_of_view_horizontal?:
     | number
@@ -316,7 +334,7 @@ export interface GenericSensorViewConfiguration {
    * #field_of_view_vertical/2] elevation in the sensor frame at zero azimuth
    * as defined in \c Spherical3d.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   field_of_view_vertical?: number | undefined;
 }
@@ -350,8 +368,8 @@ export interface RadarSensorViewConfiguration {
    * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
    * right hand system
    *
-   * \par References:
-   * - [1] DIN ISO 8855:2013-11
+   * \par Reference:
+   * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
    *
    * \note The origin of vehicle's coordinate system in world frame is
    * ( \c MovingObject::base . \c BaseMoving::position +
@@ -380,7 +398,7 @@ export interface RadarSensorViewConfiguration {
    * #field_of_view_horizontal/2] azimuth in the sensor frame as defined in \c
    * Spherical3d.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   field_of_view_horizontal?:
     | number
@@ -392,7 +410,7 @@ export interface RadarSensorViewConfiguration {
    * #field_of_view_vertical/2] elevation in the sensor frame at zero azimuth
    * as defined in \c Spherical3d.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   field_of_view_vertical?:
     | number
@@ -402,6 +420,10 @@ export interface RadarSensorViewConfiguration {
    *
    * \note This is a characteristic of the ray tracing engine of the
    * environment simulation, not a direct characteristic of the sensor.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 1
+   * \endrules
    */
   number_of_rays_horizontal?:
     | number
@@ -411,6 +433,10 @@ export interface RadarSensorViewConfiguration {
    *
    * \note This is a characteristic of the ray tracing engine of the
    * environment simulation, not a direct characteristic of the sensor.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 1
+   * \endrules
    */
   number_of_rays_vertical?:
     | number
@@ -420,6 +446,10 @@ export interface RadarSensorViewConfiguration {
    *
    * \note This is a characteristic of the ray tracing engine of the
    * environment simulation, not a direct characteristic of the sensor.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 1
+   * \endrules
    */
   max_number_of_interactions?:
     | number
@@ -435,24 +465,20 @@ export interface RadarSensorViewConfiguration {
    * through frequency adjustments. For material and geometry interaction
    * purposes the frequency is also relevant.
    *
-   * Unit: [Hz]
+   * Unit: Hz
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   emitter_frequency?:
     | number
     | undefined;
-  /**
-   * This represents the TX antenna diagram
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** This represents the TX antenna diagram */
   tx_antenna_diagram?:
     | RadarSensorViewConfiguration_AntennaDiagramEntry[]
     | undefined;
-  /**
-   * This represents the RX antenna diagram
-   *
-   * \note OSI uses singular instead of plural for repeated field names.
-   */
+  /** This represents the RX antenna diagram */
   rx_antenna_diagram?: RadarSensorViewConfiguration_AntennaDiagramEntry[] | undefined;
 }
 
@@ -466,7 +492,7 @@ export interface RadarSensorViewConfiguration_AntennaDiagramEntry {
    * Horizontal deflection (azimuth) of entry in sensor/antenna
    * coordinates.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   horizontal_angle?:
     | number
@@ -475,7 +501,7 @@ export interface RadarSensorViewConfiguration_AntennaDiagramEntry {
    * Vertical deflection (elevation) of entry in sensor/antenna
    * coordinates.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   vertical_angle?:
     | number
@@ -484,7 +510,7 @@ export interface RadarSensorViewConfiguration_AntennaDiagramEntry {
    * Response of antenna at this point (positive dB is gain,
    * negative dB is attenuation).
    *
-   * Unit: [dB]
+   * Unit: dB
    */
   response?: number | undefined;
 }
@@ -518,8 +544,8 @@ export interface LidarSensorViewConfiguration {
    * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
    * right hand system
    *
-   * \par References:
-   * - [1] DIN ISO 8855:2013-11
+   * \par Reference:
+   * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
    *
    * \note The origin of vehicle's coordinate system in world frame is
    * ( \c MovingObject::base . \c BaseMoving::position +
@@ -548,7 +574,7 @@ export interface LidarSensorViewConfiguration {
    * #field_of_view_horizontal/2] azimuth in the sensor frame as defined in \c
    * Spherical3d.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   field_of_view_horizontal?:
     | number
@@ -560,7 +586,7 @@ export interface LidarSensorViewConfiguration {
    * #field_of_view_vertical/2] elevation in the sensor frame at zero azimuth
    * as defined in \c Spherical3d.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   field_of_view_vertical?:
     | number
@@ -570,6 +596,10 @@ export interface LidarSensorViewConfiguration {
    *
    * \note This is a characteristic of the ray tracing engine of the
    * environment simulation, not a direct characteristic of the sensor.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 1
+   * \endrules
    */
   number_of_rays_horizontal?:
     | number
@@ -579,6 +609,10 @@ export interface LidarSensorViewConfiguration {
    *
    * \note This is a characteristic of the ray tracing engine of the
    * environment simulation, not a direct characteristic of the sensor.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 1
+   * \endrules
    */
   number_of_rays_vertical?:
     | number
@@ -588,6 +622,10 @@ export interface LidarSensorViewConfiguration {
    *
    * \note This is a characteristic of the ray tracing engine of the
    * environment simulation, not a direct characteristic of the sensor.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 1
+   * \endrules
    */
   max_number_of_interactions?:
     | number
@@ -603,7 +641,11 @@ export interface LidarSensorViewConfiguration {
    * through frequency adjustments. For material and geometry interaction
    * purposes the frequency is also relevant.
    *
-   * Unit: [Hz]
+   * Unit: Hz
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 0
+   * \endrules
    */
   emitter_frequency?:
     | number
@@ -612,6 +654,10 @@ export interface LidarSensorViewConfiguration {
    * Number of pixels in frame.
    *
    * This field includes the number of pixels in each frame
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 1
+   * \endrules
    */
   num_of_pixels?:
     | number
@@ -664,8 +710,8 @@ export interface CameraSensorViewConfiguration {
    * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
    * right hand system
    *
-   * \par References:
-   * - [1] DIN ISO 8855:2013-11
+   * \par Reference:
+   * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
    *
    * \note The origin of vehicle's coordinate system in world frame is
    * ( \c MovingObject::base . \c BaseMoving::position +
@@ -694,7 +740,7 @@ export interface CameraSensorViewConfiguration {
    * #field_of_view_horizontal/2] azimuth in the sensor frame as defined in \c
    * Spherical3d.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   field_of_view_horizontal?:
     | number
@@ -706,7 +752,7 @@ export interface CameraSensorViewConfiguration {
    * #field_of_view_vertical/2] elevation in the sensor frame at zero azimuth
    * as defined in \c Spherical3d.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   field_of_view_vertical?:
     | number
@@ -716,6 +762,10 @@ export interface CameraSensorViewConfiguration {
    *
    * \note This is a characteristic of the rendering engine of the
    * environment simulation, not a direct characteristic of the sensor.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 1
+   * \endrules
    */
   number_of_pixels_horizontal?:
     | number
@@ -725,6 +775,10 @@ export interface CameraSensorViewConfiguration {
    *
    * \note This is a characteristic of the rendering engine of the
    * environment simulation, not a direct characteristic of the sensor.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 1
+   * \endrules
    */
   number_of_pixels_vertical?:
     | number
@@ -743,8 +797,95 @@ export interface CameraSensorViewConfiguration {
    * be one of the values the sensor model requested - or there
    * must be no value, indicating that the simulation environment
    * cannot provide image data in one of the requested formats.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 1
+   * \endrules
    */
-  channel_format?: CameraSensorViewConfiguration_ChannelFormat[] | undefined;
+  channel_format?:
+    | CameraSensorViewConfiguration_ChannelFormat[]
+    | undefined;
+  /**
+   * Number of samples per pixel.
+   *
+   * \note This is a characteristic of the ray tracing engine of the
+   * environment simulation, not a direct characteristic of the sensor.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 1
+   * \endrules
+   */
+  samples_per_pixel?:
+    | number
+    | undefined;
+  /**
+   * Maximum number of interactions to take into account.
+   *
+   * \note This is a characteristic of the ray tracing engine of the
+   * environment simulation, not a direct characteristic of the sensor.
+   *
+   * \rules
+   * is_greater_than_or_equal_to: 1
+   * \endrules
+   */
+  max_number_of_interactions?:
+    | number
+    | undefined;
+  /**
+   * In use-cases where a spectral ray-tracer is used, this message
+   * determines the range of the wavelength and its desired number
+   * of samples.
+   */
+  wavelength_data?:
+    | WavelengthData[]
+    | undefined;
+  /**
+   * Indicates if and how the the pixel data is ordered
+   *
+   * The default value (PIXEL_ORDER_DEFAULT) indicates standard image
+   * pixel order (left-to-right, top-to-bottom). The other values can
+   * be used to indicate/request mirroring (right to left or bottom to top).
+   *
+   * \note For rotations of the pixel data, use the camera coordinate system.
+   */
+  pixel_order?: CameraSensorViewConfiguration_PixelOrder | undefined;
+}
+
+/**
+ * Pixel layout
+ *
+ * Pixel layout documents the order of pixels in the \c image_data
+ * in CameraSensorView.
+ *
+ * \note this enum does not contain an entry to do mirroring upside down
+ * and left-to-right at the same time, because this is equivalent to a
+ * 180-degree rotation, which should be indicated in the sensor coordinate
+ * system.
+ */
+export enum CameraSensorViewConfiguration_PixelOrder {
+  /**
+   * DEFAULT - Pixel data is not mirrored (Default).
+   * Pixels are ordered left-to-right, top-to-bottom.
+   */
+  DEFAULT = 0,
+  /**
+   * OTHER - Known pixel order that is not supported by OSI.
+   * Consider proposing an additional format if using
+   * \c #PIXEL_ORDER_OTHER.
+   */
+  OTHER = 1,
+  /**
+   * RIGHT_LEFT_TOP_BOTTOM - Pixels are ordered right-to-left, top-to-bottom.
+   * Pixel data is mirrored along the vertical axis.
+   * The image is mirrored left-to-right.
+   */
+  RIGHT_LEFT_TOP_BOTTOM = 2,
+  /**
+   * LEFT_RIGHT_BOTTOM_TOP - Pixels are ordered left-to-right, bottom-to-top.
+   * Pixel data is mirrored along the horizontal axis.
+   * The image is mirrored top-to-bottom.
+   */
+  LEFT_RIGHT_BOTTOM_TOP = 3,
 }
 
 /** Channel format. */
@@ -773,14 +914,38 @@ export enum CameraSensorViewConfiguration_ChannelFormat {
   RGB_U32_LIN = 8,
   /** RGB_F32_LIN - Packed RGB Channels (no padding) Single Precision FP Linear. */
   RGB_F32_LIN = 9,
-  /** BAYER_BGGR_U8_LIN - Bayer RGGB Channels UINT8 FP Linear. */
+  /** BAYER_BGGR_U8_LIN - Bayer BGGR Channels UINT8 FP Linear. */
   BAYER_BGGR_U8_LIN = 10,
-  /** BAYER_BGGR_U16_LIN - Bayer RGGB Channels UINT16 FP Linear. */
+  /** BAYER_BGGR_U16_LIN - Bayer BGGR Channels UINT16 FP Linear. */
   BAYER_BGGR_U16_LIN = 11,
-  /** BAYER_BGGR_U32_LIN - Bayer RGGB Channels UINT32 FP Linear. */
+  /** BAYER_BGGR_U32_LIN - Bayer BGGR Channels UINT32 FP Linear. */
   BAYER_BGGR_U32_LIN = 12,
-  /** BAYER_BGGR_F32_LIN - Bayer RGGB Channels Single Precision FP Linear. */
+  /** BAYER_BGGR_F32_LIN - Bayer BGGR Channels Single Precision FP Linear. */
   BAYER_BGGR_F32_LIN = 13,
+  /** BAYER_RGGB_U8_LIN - Bayer RGGB Channels UINT8 FP Linear. */
+  BAYER_RGGB_U8_LIN = 14,
+  /** BAYER_RGGB_U16_LIN - Bayer RGGB Channels UINT16 FP Linear. */
+  BAYER_RGGB_U16_LIN = 15,
+  /** BAYER_RGGB_U32_LIN - Bayer RGGB Channels UINT32 FP Linear. */
+  BAYER_RGGB_U32_LIN = 16,
+  /** BAYER_RGGB_F32_LIN - Bayer RGGB Channels Single Precision FP Linear. */
+  BAYER_RGGB_F32_LIN = 17,
+  /** RCCC_U8_LIN - Red Clear Clear Clear Channels UINT8 FP Linear. */
+  RCCC_U8_LIN = 18,
+  /** RCCC_U16_LIN - Red Clear Clear Clear Channels UINT16 FP Linear. */
+  RCCC_U16_LIN = 19,
+  /** RCCC_U32_LIN - Red Clear Clear Clear Channels UINT32 FP Linear. */
+  RCCC_U32_LIN = 20,
+  /** RCCC_F32_LIN - Red Clear Clear Clear Channels Single Precision FP Linear. */
+  RCCC_F32_LIN = 21,
+  /** RCCB_U8_LIN - Red Clear Clear Blue Channels UINT8 FP Linear. */
+  RCCB_U8_LIN = 22,
+  /** RCCB_U16_LIN - Red Clear Clear Blue Channels UINT16 FP Linear. */
+  RCCB_U16_LIN = 23,
+  /** RCCB_U32_LIN - Red Clear Clear Blue Channels UINT32 FP Linear. */
+  RCCB_U32_LIN = 24,
+  /** RCCB_F32_LIN - Red Clear Clear Blue Channels Single Precision FP Linear. */
+  RCCB_F32_LIN = 25,
 }
 
 /**
@@ -812,8 +977,8 @@ export interface UltrasonicSensorViewConfiguration {
    * \arg \b y-direction of sensor coordinate system: perpendicular to x and z
    * right hand system
    *
-   * \par References:
-   * - [1] DIN ISO 8855:2013-11
+   * \par Reference:
+   * [1] DIN Deutsches Institut fuer Normung e. V. (2013). <em>DIN ISO 8855 Strassenfahrzeuge - Fahrzeugdynamik und Fahrverhalten - Begriffe</em>. (DIN ISO 8855:2013-11). Berlin, Germany.
    *
    * \note The origin of vehicle's coordinate system in world frame is
    * ( \c MovingObject::base . \c BaseMoving::position +
@@ -842,7 +1007,7 @@ export interface UltrasonicSensorViewConfiguration {
    * #field_of_view_horizontal/2] azimuth in the sensor frame as defined in \c
    * Spherical3d.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   field_of_view_horizontal?:
     | number
@@ -854,7 +1019,7 @@ export interface UltrasonicSensorViewConfiguration {
    * #field_of_view_vertical/2] elevation in the sensor frame at zero azimuth
    * as defined in \c Spherical3d.
    *
-   * Unit: [rad]
+   * Unit: rad
    */
   field_of_view_vertical?: number | undefined;
 }

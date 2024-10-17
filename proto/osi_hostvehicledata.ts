@@ -5,19 +5,52 @@
 // source: osi_hostvehicledata.proto
 
 /* eslint-disable */
-import { type BaseMoving } from "./osi_common";
+import {
+  type BaseMoving,
+  type GeodeticPosition,
+  type Identifier,
+  type KeyValuePair,
+  type Orientation3d,
+  type Timestamp,
+  type Vector3d,
+  type VehicleSteeringWheel,
+} from "./osi_common";
+import { type Route } from "./osi_route";
+import { type InterfaceVersion } from "./osi_version";
 
 /**
- * \brief Interface for host vehicle data that is available to sensors and
- * other functions due to host vehicle's internal communication.
+ * \brief Host vehicle data is about the perception of the vehicle about its own internal states.
+ * It captures the knowledge the vehicle has internally, which can differ from the actual or global truth for various reasons.
+ * This message can also be understood as an interface container for the signals of a rest bus simulation.
+ *
+ * It consists of different messages categorizing the vehicle in:
+ * Basics, powertrain, brake system, steering, wheels and localization.
  *
  * \image html OSI_HostVehicle.svg
- *
- * All coordinates and orientations are relative to the global ground truth
- * coordinate system.
  */
 export interface HostVehicleData {
+  /** The interface version used by the sender. */
+  version?:
+    | InterfaceVersion
+    | undefined;
   /**
+   * The timestamp of the host vehicle data. Zero time is arbitrary but must be
+   * identical for all messages. Zero time does not need to coincide with
+   * the unix epoch. Recommended is the starting time point of the
+   * simulation or measurement.
+   *
+   * \note This is the point in time that the host vehicle data message becomes
+   * available as snapshot from the board net information.
+   */
+  timestamp?:
+    | Timestamp
+    | undefined;
+  /** The ID of the host vehicle in any associated GroundTruth data. */
+  host_vehicle_id?:
+    | Identifier
+    | undefined;
+  /**
+   * Deprecated: Will be removed in next major release. Moved to vehicle_localization.
    * Current estimated location based on GPS- and related navigation sensors.
    *
    * \note Note that dimension and base_polygon need not be set.
@@ -26,10 +59,521 @@ export interface HostVehicleData {
     | BaseMoving
     | undefined;
   /**
-   * Current estimated location error based on GPS- and related navigation
+   * Deprecated: Will be removed in next major release. Moved to vehicle_localization.
+   * Current estimated location error based on GPS and related navigation
    * sensors.
    *
    * \note Note that dimension and base_polygon need not be set.
    */
-  location_rmse?: BaseMoving | undefined;
+  location_rmse?:
+    | BaseMoving
+    | undefined;
+  /** The basic parameters and overall states of the vehicle. */
+  vehicle_basics?:
+    | HostVehicleData_VehicleBasics
+    | undefined;
+  /** Interface regarding the powertrain. */
+  vehicle_powertrain?:
+    | HostVehicleData_VehiclePowertrain
+    | undefined;
+  /** Interface regarding the brake system. */
+  vehicle_brake_system?:
+    | HostVehicleData_VehicleBrakeSystem
+    | undefined;
+  /** Interface regarding the steering. */
+  vehicle_steering?:
+    | HostVehicleData_VehicleSteering
+    | undefined;
+  /** Interface regarding the internal wheel states. */
+  vehicle_wheels?:
+    | HostVehicleData_VehicleWheels
+    | undefined;
+  /** Interface regarding the localization. */
+  vehicle_localization?:
+    | HostVehicleData_VehicleLocalization
+    | undefined;
+  /**
+   * State of any automated driving functions.
+   *
+   * This can include:
+   *  - information presented to the driver, for example, parking sensors
+   *  - warnings raised by the vehicle, for example, forward collision warning
+   *  - corrective action taken by the vehicle, for example, auto emergency braking
+   *  - full level 4 self driving systems
+   *
+   * \note OSI uses singular instead of plural for repeated field names.
+   */
+  vehicle_automated_driving_function?:
+    | HostVehicleData_VehicleAutomatedDrivingFunction[]
+    | undefined;
+  /** Interface regarding the vehicle motion. */
+  vehicle_motion?:
+    | HostVehicleData_VehicleMotion
+    | undefined;
+  /** Currently planned route of the vehicle */
+  route?: Route | undefined;
+}
+
+/** \brief Base parameters and overall states of the vehicle. */
+export interface HostVehicleData_VehicleBasics {
+  /**
+   * The total mass of the vehicle (curb weight).
+   *
+   * Unit: kg
+   *
+   * \par Reference:
+   * Paragraph 42 of the German Road Traffic Admission Regulations (StVZO).
+   */
+  curb_weight?:
+    | number
+    | undefined;
+  /** The operating state of the vehicle. */
+  operating_state?: HostVehicleData_VehicleBasics_OperatingState | undefined;
+}
+
+/**
+ * Possible operating states of the vehicle.
+ * It is user specific which states are used and how their transitions work.
+ */
+export enum HostVehicleData_VehicleBasics_OperatingState {
+  /** UNKNOWN - The operating state is unknown. */
+  UNKNOWN = 0,
+  /** OTHER - The operating state is another one. */
+  OTHER = 1,
+  /**
+   * SLEEP - The minimum electrical state of the vehicle (and its ECUs).
+   * Usually the driver has left the vehicle a while ago.
+   */
+  SLEEP = 2,
+  /**
+   * STANDBY - Cabin lights and entertainment are off. The vehicle can not be driven.
+   * Some ECUs are still operating and not in their minimum electrical sate.
+   * Usually the driver has left (and closed) the vehicle recently.
+   */
+  STANDBY = 3,
+  /**
+   * BOARDING - Some features of the vehicle are available e.g. cabin lights.
+   * Entertainment is off and the vehicle can not be driven.
+   * Usually the driver wants to enter or leave the vehicle.
+   */
+  BOARDING = 4,
+  /**
+   * ENTERTAINMENT - Entertainment, navigation or similar systems can be used by the driver.
+   * The vehicle can not be driven.
+   * Usually the driver sits in the vehicle before or after a drive.
+   */
+  ENTERTAINMENT = 5,
+  /** DRIVING - The electrical state that is necessary to drive the vehicle. */
+  DRIVING = 6,
+  /** DIAGNOSTIC - The electrical state that is necessary for analysis and diagnostics. */
+  DIAGNOSTIC = 7,
+}
+
+/** \brief State description of the powertrain. */
+export interface HostVehicleData_VehiclePowertrain {
+  /**
+   * Position of the acceleration pedal.
+   * Range: 0-1 (Unpressed - fully pressed)
+   */
+  pedal_position_acceleration?:
+    | number
+    | undefined;
+  /**
+   * Position of the clutch pedal.
+   * Range: 0-1 (Unpressed - fully pressed)
+   */
+  pedal_position_clutch?:
+    | number
+    | undefined;
+  /**
+   * The actual gear of the transmission.
+   * For example, a gear lever can be on "D" and the transmission on "4", but not the
+   * other way around.
+   *
+   * The sign of this field is linked to the gear's mode as following:
+   * - zero: neutral position
+   * - positive: driving forward mode
+   * - negative: reverse mode (generally -1, but few vehicles have more than 1
+   *   reverse mode gears)
+   */
+  gear_transmission?:
+    | number
+    | undefined;
+  /** Information about the motor(s). */
+  motor?: HostVehicleData_VehiclePowertrain_Motor[] | undefined;
+}
+
+/** \brief A description of the motor states. */
+export interface HostVehicleData_VehiclePowertrain_Motor {
+  /** The type of the motor. */
+  type?:
+    | HostVehicleData_VehiclePowertrain_Motor_Type
+    | undefined;
+  /**
+   * Revolutions per minute of the motor.
+   *
+   * Unit: 1/min
+   */
+  rpm?:
+    | number
+    | undefined;
+  /**
+   * Torque of the motor.
+   *
+   * Unit: N*m
+   */
+  torque?: number | undefined;
+}
+
+/** Definition which type of motor is used. */
+export enum HostVehicleData_VehiclePowertrain_Motor_Type {
+  /** UNKNOWN - The motor type is unknown. */
+  UNKNOWN = 0,
+  /** OTHER - It is another motor type. */
+  OTHER = 1,
+  /** OTTO - A motor working after the principle of Nicolaus Otto. */
+  OTTO = 2,
+  /** DIESEL - A motor working after the principle of Rudolf Diesel. */
+  DIESEL = 3,
+  /** ELECTRIC - A motor working electric. */
+  ELECTRIC = 4,
+}
+
+/** \brief The focus here is on the description of the brake system. */
+export interface HostVehicleData_VehicleBrakeSystem {
+  /**
+   * Position of the brake pedal.
+   * Range: 0-1 (Unpressed - fully pressed)
+   */
+  pedal_position_brake?: number | undefined;
+}
+
+/** \brief The focus here is on the description of the steering train. */
+export interface HostVehicleData_VehicleSteering {
+  /** Description of the steering wheel. */
+  vehicle_steering_wheel?: VehicleSteeringWheel | undefined;
+}
+
+/** \brief The focus here is on the description of internal wheel states. */
+export interface HostVehicleData_VehicleWheels {
+  /**
+   * Description of each wheel.
+   *
+   * \note OSI uses singular instead of plural for repeated field names.
+   */
+  wheel_data?: HostVehicleData_VehicleWheels_WheelData[] | undefined;
+}
+
+/** \brief The focus here is on the description of internal wheel states. */
+export interface HostVehicleData_VehicleWheels_WheelData {
+  /**
+   * The axle which contains this wheel. A value of 0 represents the
+   * foremost axle of the vehicle, with higher numbers ascending
+   * towards the rearmost axle.
+   */
+  axle?:
+    | number
+    | undefined;
+  /**
+   * The index of the wheel on the axle, counted in positive y- direction,
+   * that is, right-to-left.
+   *
+   * For example, on a standard 2-axle, 4-wheel car, the rear-right
+   * wheel would be (axle=1, index=0).
+   * This concept also works for twin tires.
+   */
+  index?:
+    | number
+    | undefined;
+  /**
+   * Rotation rate of the wheel based on the processed output of the hall sensor measurements at the wheel.
+   * The rotation rate around the y-axis with respect to the wheel's coordinate system.
+   *
+   * Unit: rad/s.
+   *
+   * The sign convention is defined using the right-hand rule.
+   * It is applied on the y-axis of the vehicle's reference system, that is, the center of bounding box.
+   * Counterclockwise is positive and clockwise is negative.
+   *
+   * \image html OSI_RotationRate.svg
+   * \note The vehicle's reference coordinate system is only used to determine the sign convention of the rotation rate.
+   */
+  rotation_rate?:
+    | number
+    | undefined;
+  /**
+   * Contains the longitudinal, measured slip of the tire.
+   * \par References:
+   * [1] kfz-tech.de, Schlupf, Retrieved June 30, 2021, from https://www.kfz-tech.de/Biblio/Formelsammlung/Schlupf.htm
+   *
+   * Unit: %
+   *
+   * The sign convention is defined using the right-hand rule.
+   * It is applied on the y-axis of the vehicle's reference system, that is, the center of bounding box.
+   * Counterclockwise is positive and clockwise is negative.
+   */
+  slip?: number | undefined;
+}
+
+/**
+ * \brief Current calculated and estimated location that can be based on GNSS and related navigation sensors.
+ * This message does not contain the individual sensor values of the sensor technology.
+ *
+ * This message contains the most accurate information the vehicle knows about its position
+ * available in the on-board network.
+ * Because of this the values can differ from the "true" values calculated out of
+ * GroundTruth::proj_string, GroundTruth::MovingObject::BaseMoving::position, GroundTruth::host_vehicle_id.
+ *
+ * This data uses the reference point coincident with the center (x,y,z) of the bounding box.
+ */
+export interface HostVehicleData_VehicleLocalization {
+  /**
+   * Most accurate position information of the vehicle available in the on-board network
+   * measured in context to the global coordinate system.
+   */
+  position?:
+    | Vector3d
+    | undefined;
+  /**
+   * Most accurate orientation information of the vehicle available in the on-board network
+   * measured in context to the global coordinate system.
+   */
+  orientation?:
+    | Orientation3d
+    | undefined;
+  /** Most accurate geodetic information of the vehicle available in the on-board network. */
+  geodetic_position?: GeodeticPosition | undefined;
+}
+
+/**
+ * \brief Current calculated and estimated motion related information.
+ *
+ * This message contains the most accurate information the vehicle knows about its motion
+ * including vehicle dynamics and control related information available in the on-board network,
+ * which can differ from the "true" values calculated out of the ground truth.
+ *
+ * This data uses the reference point coincident with the middle (in x, y and z) of rear axle
+ * under neutral load conditions as defined in \c MovingObject::VehicleAttributes::bbcenter_to_rear.
+ */
+export interface HostVehicleData_VehicleMotion {
+  /**
+   * Most accurate position of the vehicle available in the on-board network
+   * measured in the cartesian global coordinate system.
+   */
+  position?:
+    | Vector3d
+    | undefined;
+  /**
+   * Most accurate orientation information of the vehicle available in the on-board network
+   * measured on the vehicle coordinate system in context of the global inertial system.
+   */
+  orientation?:
+    | Orientation3d
+    | undefined;
+  /**
+   * Most accurate velocity information of the vehicle, available in the on-board network
+   * measured on the vehicle coordinate system in context of the global inertial system.
+   */
+  velocity?:
+    | Vector3d
+    | undefined;
+  /**
+   * Most accurate orientation rate of the vehicle, available in the on-board network
+   * measured on the vehicle coordinate system in context of the global inertial system.
+   */
+  orientation_rate?:
+    | Orientation3d
+    | undefined;
+  /**
+   * Most accurate acceleration information of the vehicle, available in the on-board network
+   * measured on the vehicle coordinate system in context of the global inertial system.
+   */
+  acceleration?:
+    | Vector3d
+    | undefined;
+  /**
+   * Most accurate curvature currently followed by vehicle and available in the on-board network
+   *
+   * Unit: m^-1
+   */
+  current_curvature?: number | undefined;
+}
+
+/** \brief State of one automated driving function on the host vehicle. */
+export interface HostVehicleData_VehicleAutomatedDrivingFunction {
+  /** The particular driving function being reported about. */
+  name?:
+    | HostVehicleData_VehicleAutomatedDrivingFunction_Name
+    | undefined;
+  /**
+   * Custom driving function name.
+   *
+   * Only used if name is set to NAME_OTHER.
+   */
+  custom_name?:
+    | string
+    | undefined;
+  /**
+   * The state of the function.
+   *
+   * This is whether the function has actually been triggered, for
+   * example, a warning has been raised, or additional braking is
+   * in effect.
+   */
+  state?:
+    | HostVehicleData_VehicleAutomatedDrivingFunction_State
+    | undefined;
+  /**
+   * Custom state.
+   *
+   * Only used if the state is set to STATE_OTHER.
+   */
+  custom_state?:
+    | string
+    | undefined;
+  /** Whether, and how, the driver has overridden this function. */
+  driver_override?:
+    | HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride
+    | undefined;
+  /**
+   * Custom detail.
+   *
+   * An opaque set of key-value pairs which capture any user specific
+   * details that may be relevant.  This could include details about
+   * how a warning was raised (dashboard, audible, etc.) or it could
+   * be about settings which would influence evaluation, such as
+   * sensitivity settings.
+   */
+  custom_detail?: KeyValuePair[] | undefined;
+}
+
+/**
+ * A list of possible automated driving features.
+ *
+ * \note This can span (in theory) from Level 0 all the way to Level 5.
+ *
+ * \par References:
+ * [1] CLEARING THE CONFUSION: Recommended Common Naming for Advanced Driver Assistance Technologies, SAE International, Retrieved October 22, 2021, from https://www.sae.org/binaries/content/assets/cm/content/miscellaneous/adas-nomenclature.pdf
+ * [2] Automated Driving, German Association of the Automotive Industry (VDA), Retrieved October 22, 2021, from https://www.vda.de/en/topics/innovation-and-technology/automated-driving/automated-driving
+ */
+export enum HostVehicleData_VehicleAutomatedDrivingFunction_Name {
+  /** UNKNOWN - Unknown feature, should not be used. */
+  UNKNOWN = 0,
+  /** OTHER - Custom feature, see custom_name. */
+  OTHER = 1,
+  /** BLIND_SPOT_WARNING - Blind spot warning. */
+  BLIND_SPOT_WARNING = 2,
+  /** FORWARD_COLLISION_WARNING - Forward collision warning. */
+  FORWARD_COLLISION_WARNING = 3,
+  /** LANE_DEPARTURE_WARNING - Lane departure warning. */
+  LANE_DEPARTURE_WARNING = 4,
+  /** PARKING_COLLISION_WARNING - Parking collision warning. */
+  PARKING_COLLISION_WARNING = 5,
+  /** REAR_CROSS_TRAFFIC_WARNING - Rear cross-traffic warning */
+  REAR_CROSS_TRAFFIC_WARNING = 6,
+  /** AUTOMATIC_EMERGENCY_BRAKING - Automatic emergency braking */
+  AUTOMATIC_EMERGENCY_BRAKING = 7,
+  /** AUTOMATIC_EMERGENCY_STEERING - Emergency steering */
+  AUTOMATIC_EMERGENCY_STEERING = 8,
+  /** REVERSE_AUTOMATIC_EMERGENCY_BRAKING - Reverse automatic emergency braking */
+  REVERSE_AUTOMATIC_EMERGENCY_BRAKING = 9,
+  /** ADAPTIVE_CRUISE_CONTROL - Adaptive cruise control */
+  ADAPTIVE_CRUISE_CONTROL = 10,
+  /** LANE_KEEPING_ASSIST - Lane keeping assist */
+  LANE_KEEPING_ASSIST = 11,
+  /** ACTIVE_DRIVING_ASSISTANCE - Active driving assistance */
+  ACTIVE_DRIVING_ASSISTANCE = 12,
+  /** BACKUP_CAMERA - Backup camera */
+  BACKUP_CAMERA = 13,
+  /** SURROUND_VIEW_CAMERA - Surround view camera */
+  SURROUND_VIEW_CAMERA = 14,
+  /** ACTIVE_PARKING_ASSISTANCE - Active parking assistance */
+  ACTIVE_PARKING_ASSISTANCE = 15,
+  /** REMOTE_PARKING_ASSISTANCE - Remote parking assistance */
+  REMOTE_PARKING_ASSISTANCE = 16,
+  /** TRAILER_ASSISTANCE - Trailer assistance */
+  TRAILER_ASSISTANCE = 17,
+  /** AUTOMATIC_HIGH_BEAMS - Automatic high beams */
+  AUTOMATIC_HIGH_BEAMS = 18,
+  /** DRIVER_MONITORING - Driver monitoring */
+  DRIVER_MONITORING = 19,
+  /** HEAD_UP_DISPLAY - Head up display */
+  HEAD_UP_DISPLAY = 20,
+  /** NIGHT_VISION - Night vision */
+  NIGHT_VISION = 21,
+  /** URBAN_DRIVING - Urban driving */
+  URBAN_DRIVING = 22,
+  /** HIGHWAY_AUTOPILOT - Highway autopilot. */
+  HIGHWAY_AUTOPILOT = 23,
+  /** CRUISE_CONTROL - Cruise control. */
+  CRUISE_CONTROL = 24,
+  /** SPEED_LIMIT_CONTROL - Speed limit control */
+  SPEED_LIMIT_CONTROL = 25,
+}
+
+/**
+ * The state that the feature is in.
+ *
+ * \note Not all of these will be applicable for all vehicles
+ * and features.
+ */
+export enum HostVehicleData_VehicleAutomatedDrivingFunction_State {
+  /** UNKNOWN - An unknown state, this should not be used. */
+  UNKNOWN = 0,
+  /**
+   * OTHER - Used for custom states not covered by the definitions below.
+   *
+   * A string state can be specified in custom_state.
+   */
+  OTHER = 1,
+  /** ERRORED - The function has thrown an error in some way that renders it ineffective. */
+  ERRORED = 2,
+  /**
+   * UNAVAILABLE - The function cannot be used due to unfulfilled preconditions,
+   * for example it is a highway only feature and the vehicle is in
+   * an urban environment.
+   */
+  UNAVAILABLE = 3,
+  /**
+   * AVAILABLE - The function can be used as all preconditions are satisfied, but
+   * it hasn't been enabled.
+   */
+  AVAILABLE = 4,
+  /**
+   * STANDBY - The function is available but conditions have not caused it to be
+   * triggered, for example, no vehicles in front to trigger a forward collision warning.
+   */
+  STANDBY = 5,
+  /**
+   * ACTIVE - The function is currently active, for example, a warning is being
+   * shown to the driver, or emergency braking is being applied/
+   */
+  ACTIVE = 6,
+}
+
+/**
+ * \brief Driver override information
+ *
+ * Information about whether and how and driver may have overridden
+ * an automated driving function.
+ */
+export interface HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride {
+  /**
+   * The feature has been overridden by a driver action.
+   *
+   * \note If false, the rest of this message should be ignored.
+   */
+  active?:
+    | boolean
+    | undefined;
+  /** What driver inputs have caused the override. */
+  override_reason?: HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride_Reason[] | undefined;
+}
+
+/** Ways in which a driver could override a driving function. */
+export enum HostVehicleData_VehicleAutomatedDrivingFunction_DriverOverride_Reason {
+  /** BRAKE_PEDAL - The driver has applied sufficient input via the break pedal. */
+  BRAKE_PEDAL = 0,
+  /** STEERING_INPUT - The driver has applied sufficient steering input. */
+  STEERING_INPUT = 1,
 }
