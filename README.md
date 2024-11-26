@@ -1,4 +1,4 @@
-# asam-osi-types
+# ASAM OSI Types
 
 This repository contains TypeScript definitions for the ASAM Open Simulation Interface (OSI). The OSI is a standardized interface for the environmental perception of automated driving functions in virtual scenarios.
 
