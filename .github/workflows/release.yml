@@ -37,7 +37,7 @@ jobs:
           echo "version=$VERSION >> $GITHUB_ENV"
       - name: Update Version
         run: |
-          jq --arg version "$version" '.version = $version' package.json > temp.json && mv temp.json package.json
+          sed -i "s/\"version\": \".*\"/\"version\":\"$version\"/" package.json
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
