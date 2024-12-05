@@ -17,7 +17,7 @@
   "scripts": {
     "setup": "cd open-simulation-interface && pip install ./ && cd .. && rm -rf open-simulation-interface/osi3 proto",
     "generate": "buf generate",
-    "build": "npm run setup && npm run generate && tsup index.ts --format cjs,esm --dts",
+    "build": "yarn run setup && yarn run generate && tsup index.ts --format cjs,esm --dts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "main": "dist/index.js",
