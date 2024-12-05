@@ -18,6 +18,8 @@
     "setup": "cd open-simulation-interface && pip install ./ && cd .. && rm -rf open-simulation-interface/osi3 proto",
     "generate": "buf generate",
     "build": "yarn run setup && yarn run generate && tsup index.ts --format cjs,esm --dts",
+    "lint:ci": "eslint --report-unused-disable-directives .",
+    "lint": "eslint --report-unused-disable-directives --fix .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "main": "dist/index.js",
@@ -27,7 +29,11 @@
     "@bufbuild/buf": "^1.45.0",
     "@bufbuild/protobuf": "^2.2.0",
     "@bufbuild/protoc-gen-es": "^2.2.0",
+    "@eslint/js": "^9.16.0",
+    "eslint": "^9.16.0",
+    "globals": "^15.13.0",
     "tsup": "^8.3.0",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.17.0"
   }
 }
