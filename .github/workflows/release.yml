@@ -35,7 +35,7 @@ jobs:
           VERSION="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
 
           echo "Current Version: $VERSION"
-          echo "version=$VERSION >> $GITHUB_ENV"
+          echo "version=$VERSION" >> $GITHUB_ENV
 
       - name: Update Version
         run: |
@@ -51,10 +51,6 @@ jobs:
 
       - name: Validate package.json
         run: node -e "JSON.parse(require('fs').readFileSync('package.json','utf8'))"
-
-      - name: Display WD
-        run: |
-          echo "Current WD: $(pwd)"
 
       - name: Clear Yarn Cache
         run: yarn cache clean
