@@ -53,8 +53,8 @@ jobs:
         run: node -e "JSON.parse(require('fs').readFileSync('package.json','utf8'))"
 
       - name: Display WD
-        run: echo "Current WD: $(pwd)"
-          
+        run: |
+          echo "Current WD: $(pwd)"
 
       - name: Clear Yarn Cache
         run: yarn cache clean
