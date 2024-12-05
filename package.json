@@ -1,5 +1,5 @@
 {
-  "name": "asam-osi-types",
+  "name": "@lichtblick/asam-osi-types",
   "version": "3.7.0",
   "license": "MPL-2.0",
   "productName": "ASAM OSI Types",
@@ -25,6 +25,11 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {"access": "public"},
   "devDependencies": {
     "@bufbuild/buf": "^1.45.0",
     "@bufbuild/protobuf": "^2.2.0",
