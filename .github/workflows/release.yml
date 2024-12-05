@@ -20,10 +20,26 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
         with:
-          submodules: true
-      - uses: actions/setup-node@v2
+          submodules: recursive
+      - name: Fetch and Parse Version
+        id: get-version
+        run: |
+          VERSION_FILE="./open-simulation-interface/VERSION"
+          VERSION_MAJOR=$(grep 'VERSION_MAJOR' $VERSION_FILE | cut -d '=' -f 2 | xargs)
+          VERSION_MINOR=$(grep 'VERSION_MINOR' $VERSION_FILE | cut -d '=' -f 2 | xargs)
+          VERSION_PATCH=$(grep 'VERSION_PATCH' $VERSION_FILE | cut -d '=' -f 2 | xargs)
+          VERSION="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
+
+          echo "Current Version: $VERSION"
+          echo "version=$VERSION >> $GITHUB_ENV"
+      - name: Update Version
+        run: |
+          jq --arg version "$version" '.version = $version' package.json > temp.json && mv temp.json package.json
+      - name: Setup Node
+        uses: actions/setup-node@v2
         with:
           node-version: 20.x
           registry-url: https://registry.npmjs.org
