@@ -1,0 +1,82 @@
+name: RELEASE
+
+on:
+  push:
+    branches: main
+    tags: v*
+  pull_request:
+    branches: "*"
+
+jobs:
+  release:
+    name: release
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    permissions:
+      # https://docs.npmjs.com/generating-provenance-statements#publishing-packages-with-provenance-via-github-actions
+      id-token: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Fetch and Parse Version
+        id: get-version
+        run: |
+          VERSION_FILE="./open-simulation-interface/VERSION"
+          VERSION_MAJOR=$(grep 'VERSION_MAJOR' $VERSION_FILE | cut -d '=' -f 2 | xargs)
+          VERSION_MINOR=$(grep 'VERSION_MINOR' $VERSION_FILE | cut -d '=' -f 2 | xargs)
+          VERSION_PATCH=$(grep 'VERSION_PATCH' $VERSION_FILE | cut -d '=' -f 2 | xargs)
+          VERSION="${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
+
+          echo "Current Version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_ENV
+
+      - name: Update Version
+        run: |
+          sed -i "s/\"version\": \".*\"/\"version\":\"$version\"/" package.json
+      - name: Display package.json
+        run: cat package.json
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          registry-url: https://registry.npmjs.org
+
+      - name: Validate package.json
+        run: node -e "JSON.parse(require('fs').readFileSync('package.json','utf8'))"
+
+      - name: Clear Yarn Cache
+        run: yarn cache clean
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build Project
+        run: yarn run build
+
+      - name: Check liniting
+        run: yarn run lint:ci
+
+      - name: Audit Dependencies
+        run: yarn audit
+
+      - name: Pack Project
+        run: yarn pack
+
+      - name: Publish to NPM (dry run)
+        run: npm publish lichtblick-asam-osi-types-*.tgz --provenance --access public --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+
+      - name: Publish to NPM
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        run: npm publish lichtblick-asam-osi-types-*.tgz --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
