@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-MPL--2.0-brightgreen)](https://github.com/Lichtblick-Suite/asam-osi-types/blob/main/LICENSE)
 [![GitHub Issues](https://img.shields.io/github/issues/Lichtblick-Suite/asam-osi-types)](https://github.com/Lichtblick-Suite/asam-osi-types/issues)
-[![NPM Version](https://img.shields.io/npm/v/asam-osi-types)](https://www.npmjs.com/package/asam-osi-types)
+[![NPM Version](https://img.shields.io/npm/v/asam-osi-types)](https://www.npmjs.com/package/@lichtblick/asam-osi-types)
 
 **ASAM OSI Types** provides TypeScript type definitions for the [Open Simulation Interface (OSI)](https://www.asam.net/standards/detail/osi/) specification. OSI facilitates the interoperability of simulation environments in automated driving and advanced driver-assistance systems (ADAS) development.
 
