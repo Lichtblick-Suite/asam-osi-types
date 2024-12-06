@@ -63,7 +63,7 @@ or
 yarn setup
 ```
 
-Install the OSI dependencies
+Installs the OSI dependencies
 
 ### Generate
 
@@ -77,7 +77,7 @@ or
 yarn generate
 ```
 
-Generate Protobuf files
+Generates **protobuf** files
 
 ### Lint
 
@@ -137,7 +137,7 @@ Formats the codebase using Prettier to maintain consistent styling.
 
 ## Usage
 
-Here’s how you can use the provided type definitions in your TypeScript project:
+Here’s how to use the provided type definitions in a TypeScript project:
 
 ```typescript
 import { OsiMessage } from "asam-osi-types";
