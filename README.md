@@ -140,7 +140,7 @@ Formats the codebase using Prettier to maintain consistent styling.
 Here’s how to use the provided type definitions in a TypeScript project:
 
 ```typescript
-import { OsiMessage } from "asam-osi-types";
+import { OsiMessage } from "@lichtblick/asam-osi-types";
 
 // Example: Define an OSI Message
 const message: OsiMessage = {
