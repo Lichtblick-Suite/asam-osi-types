@@ -30,3 +30,4 @@ export * from "./proto/osi_trafficlight";
 export * from "./proto/osi_trafficsign";
 export * from "./proto/osi_trafficupdate";
 export * from "./proto/osi_version";
+export { detectSchemaType, validateAsamOsiMessage } from "./utils/schemaUtils";
