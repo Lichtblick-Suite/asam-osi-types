@@ -1,6 +1,6 @@
 import { ASAM_OSI_SCHEMAS } from "../schemas/schemas";
 
-export const detectSchemaType = (message: Record<string, any>): string | undefined => {
+export const detectSchemaType = (message: Record<string, unknown>): string | undefined => {
   const hasKeys = (keys: string[]) => keys.some((key) => key in message);
 
   switch (true) {
@@ -56,15 +56,19 @@ export const detectSchemaType = (message: Record<string, any>): string | undefin
   }
 };
 
-export const validateAsamOsiMessage = (message: Record<string, any>): boolean => {
+export const validateAsamOsiMessage = (message: Record<string, unknown>): boolean => {
   const detectedType = detectSchemaType(message);
   console.info("Selected Schema type:", detectedType);
 
-  if (!detectedType) return false;
+  if (!detectedType) {
+    return false;
+  }
 
   const schemaKeys = ASAM_OSI_SCHEMAS[detectedType];
 
-  if (!schemaKeys) return false;
+  if (!schemaKeys) {
+    return false;
+  }
 
   const missingKeys = schemaKeys.filter(
     (key) => !Object.prototype.hasOwnProperty.call(message, key),

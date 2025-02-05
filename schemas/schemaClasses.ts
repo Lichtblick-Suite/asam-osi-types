@@ -1,14 +1,22 @@
-import { SensorView } from "../proto/osi_sensorview";
+import { DetectedMovingObject } from "../proto/osi_detectedobject";
 import { GroundTruth } from "../proto/osi_groundtruth";
 import { SensorData } from "../proto/osi_sensordata";
-import { DetectedMovingObject } from "../proto/osi_detectedobject";
-import { TrafficUpdate } from "../proto/osi_trafficupdate";
+import { SensorView } from "../proto/osi_sensorview";
 import { TrafficLight } from "../proto/osi_trafficlight";
+import { TrafficUpdate } from "../proto/osi_trafficupdate";
 
-type SchemaType = Record<string, any>;
+type SchemaType =
+  | SensorView
+  | GroundTruth
+  | SensorData
+  | DetectedMovingObject
+  | TrafficUpdate
+  | TrafficLight;
 
 function createClass<T extends SchemaType>(schema: T) {
   return class {
+    [key: string]: T[keyof T];
+
     constructor() {
       Object.assign(this, schema);
     }
