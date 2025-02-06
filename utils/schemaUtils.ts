@@ -1,5 +1,10 @@
 import { ASAM_OSI_SCHEMAS } from "../schemas/schemas";
 
+interface ValidateSchemaResult {
+  result: boolean;
+  missingKeys: string[];
+}
+
 export const detectSchemaType = (message: Record<string, unknown>): string | undefined => {
   const hasKeys = (keys: string[]) => keys.some((key) => key in message);
 
@@ -56,18 +61,18 @@ export const detectSchemaType = (message: Record<string, unknown>): string | und
   }
 };
 
-export const validateAsamOsiMessage = (message: Record<string, unknown>): boolean => {
+export const validateAsamOsiMessage = (message: Record<string, unknown>): ValidateSchemaResult => {
   const detectedType = detectSchemaType(message);
   console.info("Selected Schema type:", detectedType);
 
   if (!detectedType) {
-    return false;
+    return { result: false, missingKeys: [] };
   }
 
   const schemaKeys = ASAM_OSI_SCHEMAS[detectedType];
 
   if (!schemaKeys) {
-    return false;
+    return { result: false, missingKeys: [] };
   }
 
   const missingKeys = schemaKeys.filter(
@@ -76,5 +81,5 @@ export const validateAsamOsiMessage = (message: Record<string, unknown>): boolea
 
   console.info("Missing Keys:", missingKeys);
 
-  return missingKeys.length === 0;
+  return { result: missingKeys.length === 0, missingKeys };
 };
