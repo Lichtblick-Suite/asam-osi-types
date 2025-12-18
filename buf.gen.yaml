@@ -6,11 +6,12 @@ plugins:
   - remote: buf.build/community/stephenh-ts-proto
     out: proto
     opt:
-      - useOptionals=all
+      - useOptionals=none
       - exportCommonSymbols=false
       - snakeToCamel=false
-      - removeEnumPrefix=true
+      - removeEnumPrefix=false
       - unrecognizedEnum=false
-      - onlyTypes=true
+      - onlyTypes=false
+      - emitDefaultValues=json-methods
 inputs:
   - directory: open-simulation-interface
