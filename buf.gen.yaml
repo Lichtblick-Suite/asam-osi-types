@@ -1,17 +1,14 @@
 version: v2
 plugins:
-  # - local: protoc-gen-es
-  #   out: proto
-  #   opt: target=dts
   - remote: buf.build/community/stephenh-ts-proto
-    out: proto
+    out: generated/types
     opt:
       - useOptionals=none
       - exportCommonSymbols=false
       - snakeToCamel=false
       - removeEnumPrefix=false
       - unrecognizedEnum=false
-      - onlyTypes=false
+      - onlyTypes=true
       - emitDefaultValues=json-methods
 inputs:
   - directory: open-simulation-interface
