@@ -19,10 +19,14 @@ function parseVersionFile(contents: string): VersionInfo {
 
   for (const rawLine of contents.split(/\r?\n/)) {
     const line = rawLine.trim();
-    if (!line || line.startsWith("#")) continue;
+    if (!line || line.startsWith("#")) {
+      continue;
+    }
 
     const idx = line.indexOf("=");
-    if (idx === -1) continue;
+    if (idx === -1) {
+      continue;
+    }
 
     const key = line.slice(0, idx).trim();
     const value = line.slice(idx + 1).trim();
@@ -37,7 +41,7 @@ function parseVersionFile(contents: string): VersionInfo {
     throw new Error(
       `Missing required version keys. Need VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH. Got: ${[
         ...kv.keys(),
-      ].join(", ")}`
+      ].join(", ")}`,
     );
   }
 
@@ -47,12 +51,12 @@ function parseVersionFile(contents: string): VersionInfo {
 
   if ([major, minor, patch].some((n) => Number.isNaN(n))) {
     throw new Error(
-      `Invalid version numbers in VERSION file: major=${majorStr}, minor=${minorStr}, patch=${patchStr}`
+      `Invalid version numbers in VERSION file: major=${majorStr}, minor=${minorStr}, patch=${patchStr}`,
     );
   }
 
   const suffix = kv.get("VERSION_SUFFIX")?.trim();
-  return { major, minor, patch, suffix: suffix || undefined };
+  return { major, minor, patch, suffix: suffix === "" ? undefined : suffix };
 }
 
 function renderOsiVersionProto(template: string, v: VersionInfo): string {
@@ -82,7 +86,7 @@ async function main() {
   // Optional: log the configured version for visibility
   const suffix = v.suffix ?? "";
   console.log(
-    `Wrote ${path.relative(process.cwd(), outPath)} (version ${v.major}.${v.minor}.${v.patch}${suffix})`
+    `Wrote ${path.relative(process.cwd(), outPath)} (version ${v.major}.${v.minor}.${v.patch}${suffix})`,
   );
 }
 

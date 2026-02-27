@@ -19,121 +19,47 @@
 
 ## Installation
 
-Install the package using npm or yarn:
+Install the package using yarn:
 
 ```bash
-npm install asam-osi-types
-```
-
-or
-
-```bash
-yarn add asam-osi-types
+yarn add @lichtblick/asam-osi-types
 ```
 
 ---
 
 ## Build and Scripts
 
-Here are the available commands and scripts for working with the project:
+The repository uses Yarn scripts for generation and packaging:
 
-### Build
+### `yarn prepare`
 
-```bash
-npm run build
-```
+Runs `scripts/generate-version-proto.ts` to prepare version-specific proto inputs.
 
-or
+### `yarn clean`
 
-```bash
-yarn build
-```
+Removes generated outputs (`generated/` and `dist/`) and rewrites `index.ts` via `scripts/generate-index.ts` so the barrel stays valid after cleanup.
 
-Compiles the TypeScript code into JavaScript. The compiled output is stored in the dist/ folder.
+### `yarn generate`
 
-### Setup
+Runs the full generation pipeline:
 
-```bash
-npm run setup
-```
+1. `yarn clean`
+2. `yarn prepare`
+3. `buf generate` (TypeScript protobuf types into `generated/types`)
+4. `scripts/generate-schema-definitions.ts` (descriptor modules in `generated/type-descriptors`)
+5. `scripts/generate-index.ts` (auto-generated package barrel `index.ts`)
 
-or
+### `yarn build`
 
-```bash
-yarn setup
-```
+Runs `yarn generate` and then builds CJS + ESM + declaration output to `dist/` using `tsup`.
 
-Installs the OSI dependencies
+### `yarn lint` / `yarn lint:ci`
 
-### Generate
+Runs ESLint with repository rules (`lint` applies fixes, `lint:ci` does not).
 
-```bash
-npm run generate
-```
+### `yarn format`
 
-or
-
-```bash
-yarn generate
-```
-
-Generates **protobuf** files
-
-### Lint
-
-```bash
-npm run lint
-```
-
-or
-
-```bash
-yarn lint
-```
-
-Lints the project using ESLint to enforce consistent code style.
-
-### Test
-
-```bash
-npm run test
-```
-
-or
-
-```bash
-yarn test
-```
-
-Runs the test suite to ensure the code functions as expected.
-
-### Clean
-
-```bash
-npm run clean
-```
-
-or
-
-```bash
-yarn clean
-```
-
-Removes the build output (dist/) and cleans up the workspace.
-
-## Additional Commands
-
-```bash
-npm run format
-```
-
-or
-
-```bash
-yarn format
-```
-
-Formats the codebase using Prettier to maintain consistent styling.
+Formats files with Prettier.
 
 ## Usage
 
@@ -161,48 +87,40 @@ console.log(message);
 
 ---
 
-## API Documentation
-
-### Main Types
-
-- **`OsiMessage`**: Represents the base message format in OSI.
-- **`Header`**: Metadata for OSI messages, including timestamps and IDs.
-- **`Timestamp`**: Specifies time information.
-
-For detailed type definitions, explore the source files in the `src` folder.
-
----
-
 ## Local Testing
 
-To test the package locally, build the project and run the following command to create a symbolic link for the package
+To verify the package locally with `npm link`:
+
+1. Build this package:
+
+```bash
+yarn build
+```
+
+2. Register the local package globally from this repository:
 
 ```bash
 npm link
 ```
 
-Create a local typescript test project with an index.ts file
+3. In a separate folder, create a test project and initialize it:
 
 ```bash
-mkdir test-project && cd $_ && touch index.ts
-```
-
-Initialize project
-
-```bash
+mkdir test-project
+cd test-project
 npm init -y
 ```
 
-Link test project with the package
+4. Link the package into that test project:
 
 ```bash
-npm link asam-osi-types
+npm link @lichtblick/asam-osi-types
 ```
 
-Import types into the test-project
+5. Import types in your test project:
 
 ```typescript
-import * as types from "asam-osi-types";
+import * as types from "@lichtblick/asam-osi-types";
 ```
 
 ## Versioning

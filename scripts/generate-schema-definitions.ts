@@ -1,6 +1,6 @@
+import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { spawnSync } from "node:child_process";
 
 const repoRoot = process.cwd();
 const protoRoot = resolve(repoRoot, "open-simulation-interface");
@@ -35,7 +35,7 @@ function runProtoc(protoPath: string, outputPath: string): void {
   const result = spawnSync(
     "protoc",
     ["-I", protoRoot, "--include_imports", `--descriptor_set_out=${outputPath}`, protoPath],
-    { cwd: repoRoot, stdio: "inherit" }
+    { cwd: repoRoot, stdio: "inherit" },
   );
 
   if (result.error != null) {
