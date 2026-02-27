@@ -3,10 +3,10 @@ plugins:
   - remote: buf.build/community/stephenh-ts-proto
     out: generated/types
     opt:
-      - useOptionals=none
+      - useOptionals=all
       - exportCommonSymbols=false
       - snakeToCamel=false
-      - removeEnumPrefix=false
+      - removeEnumPrefix=true
       - unrecognizedEnum=false
       - onlyTypes=true
       - emitDefaultValues=json-methods

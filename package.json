@@ -16,12 +16,11 @@
   },
   "scripts": {
     "prepare": "ts-node scripts/generate-version-proto.ts",
-    "generate": "yarn clean && yarn prepare && buf generate",
-    "modify": "ts-node scripts/rewrite-scalars.ts generated/types generated/types_modified && prettier generated/types_modified --write",
-    "build": "yarn generate && yarn modify && tsup index.ts --format cjs,esm --dts",
+    "generate": "yarn clean && yarn prepare && buf generate && ts-node scripts/generate-schema-definitions.ts && ts-node scripts/generate-index.ts",
+    "build": "yarn generate && tsup index.ts --format cjs,esm --dts",
     "lint:ci": "eslint --report-unused-disable-directives .",
     "lint": "eslint --report-unused-disable-directives --fix .",
-    "clean": "rimraf generated/ dist/",
+    "clean": "rimraf generated/ dist/ && ts-node scripts/generate-index.ts",
     "format": "prettier --write \"./**/*.{ts,js,json,md}\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -58,7 +57,7 @@
     "tsup": "^8.3.0",
     "typescript": "^5.9.3"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "packageManager": "yarn@4.12.0",
   "dependencies": {
     "fs-extra": "^11.3.3"
   }
