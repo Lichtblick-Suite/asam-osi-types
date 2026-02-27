@@ -4,16 +4,17 @@
 [![GitHub Issues](https://img.shields.io/github/issues/Lichtblick-Suite/asam-osi-types)](https://github.com/Lichtblick-Suite/asam-osi-types/issues)
 [![NPM Version](https://img.shields.io/npm/v/@lichtblick/asam-osi-types)](https://www.npmjs.com/package/@lichtblick/asam-osi-types)
 
-**ASAM OSI Types** provides TypeScript type definitions for the [Open Simulation Interface (OSI)](https://www.asam.net/standards/detail/osi/) specification. OSI facilitates the interoperability of simulation environments in automated driving and advanced driver-assistance systems (ADAS) development.
+**ASAM OSI Types** provides generated TypeScript definitions and schema descriptor binaries for the [Open Simulation Interface (OSI)](https://www.asam.net/standards/detail/osi/) specification.
 
 ---
 
 ## Features
 
-- Comprehensive TypeScript type definitions for the OSI specification.
-- Simplifies development by enabling static type checking in TypeScript.
-- Maintains compatibility with the official OSI schema versions.
-- Designed for use in simulation and modeling projects involving OSI.
+- Generated TypeScript definitions from the official ASAM OSI protobuf schemas.
+- Descriptor definition modules exported as `Uint8Array` constants for runtime schema use.
+- Auto-generated package barrel (`index.ts`) that re-exports generated modules from one entry point.
+- Reproducible code generation workflow using the packaged Buf CLI (no global `protoc` required).
+- Aligned with upstream OSI schema updates through the repository generation pipeline.
 
 ---
 
@@ -60,30 +61,6 @@ Runs ESLint with repository rules (`lint` applies fixes, `lint:ci` does not).
 ### `yarn format`
 
 Formats files with Prettier.
-
-## Usage
-
-Here’s how to use the provided type definitions in a TypeScript project:
-
-```typescript
-import { OsiMessage } from "@lichtblick/asam-osi-types";
-
-// Example: Define an OSI Message
-const message: OsiMessage = {
-  header: {
-    timestamp: {
-      seconds: 1627500000,
-      nanos: 123456789,
-    },
-    frame_id: "example-frame",
-  },
-  content: {
-    exampleField: "value",
-  },
-};
-
-console.log(message);
-```
 
 ---
 
@@ -146,6 +123,8 @@ Please ensure all code adheres to the [Mozilla Public License 2.0](https://githu
 ## Related Projects
 
 - [Open Simulation Interface (OSI)](https://www.asam.net/standards/detail/osi/)
+- [Lichtblick](https://github.com/lichtblick-suite/lichtblick)
+- [ASAM OSI Converter Lichtblick Extension](https://github.com/lichtblick-suite/asam-osi-converter)
 - [ASAM Organization](https://www.asam.net/)
 
 ---
