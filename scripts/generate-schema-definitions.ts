@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const repoRoot = process.cwd();
@@ -32,9 +32,15 @@ const descriptorTargets: DescriptorTarget[] = [
 ];
 
 function runProtoc(protoPath: string, outputPath: string): void {
+  const bufScript = resolve(repoRoot, "node_modules/@bufbuild/buf/bin/buf");
+  if (!existsSync(bufScript)) {
+    throw new Error(`Buf CLI wrapper not found at ${bufScript}. Run 'yarn install' first.`);
+  }
+
+  console.log(`[generate-schema-definitions] Building descriptor set for ${protoPath}`);
   const result = spawnSync(
-    "protoc",
-    ["-I", protoRoot, "--include_imports", `--descriptor_set_out=${outputPath}`, protoPath],
+    process.execPath,
+    [bufScript, "build", protoPath, "--as-file-descriptor-set", "-o", outputPath],
     { cwd: repoRoot, stdio: "inherit" },
   );
 
@@ -43,7 +49,7 @@ function runProtoc(protoPath: string, outputPath: string): void {
   }
 
   if (result.status !== 0) {
-    throw new Error(`protoc failed with exit code ${result.status}`);
+    throw new Error(`buf build failed with exit code ${result.status}`);
   }
 }
 
@@ -61,8 +67,12 @@ function toUint8ArrayTs(constName: string, bytes: Buffer): string {
 }
 
 function main(): void {
+  console.log("[generate-schema-definitions] Starting schema descriptor generation");
   mkdirSync(generatedDir, { recursive: true });
   mkdirSync(descriptorDefinitionsDir, { recursive: true });
+  console.log(
+    `[generate-schema-definitions] Ensured output directories: ${generatedDir}, ${descriptorDefinitionsDir}`,
+  );
 
   for (const target of descriptorTargets) {
     runProtoc(join(protoRoot, target.proto), join(generatedDir, target.pb));
@@ -71,9 +81,19 @@ function main(): void {
   for (const target of descriptorTargets) {
     const descriptorBytes = readFileSync(join(generatedDir, target.pb));
     const outputPath = join(descriptorDefinitionsDir, target.pb.replace(/\.pb$/, ".ts"));
+    console.log(
+      `[generate-schema-definitions] Writing TypeScript descriptor ${outputPath} from ${target.pb}`,
+    );
     writeFileSync(outputPath, toUint8ArrayTs(target.constName, descriptorBytes), "utf8");
     rmSync(join(generatedDir, target.pb), { force: true });
+    console.log(
+      `[generate-schema-definitions] Removed temporary file ${join(generatedDir, target.pb)}`,
+    );
   }
+
+  console.log(
+    `[generate-schema-definitions] Completed ${descriptorTargets.length} descriptor definition(s)`,
+  );
 }
 
 main();

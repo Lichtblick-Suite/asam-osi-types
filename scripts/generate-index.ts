@@ -19,6 +19,8 @@ function main(): void {
   const typesPath = resolve(repoRoot, "generated/types");
   const descriptorsPath = resolve(repoRoot, "generated/type-descriptors");
 
+  console.log("[generate-index] Starting index generation");
+  console.log(`[generate-index] Reading exports from ${typesPath} and ${descriptorsPath}`);
   const typeExports = toExportLines(typesPath, "./generated/types");
   const descriptorExports = toExportLines(descriptorsPath, "./generated/type-descriptors");
 
@@ -31,6 +33,9 @@ function main(): void {
   }
 
   writeFileSync(outputPath, `${outputLines.join("\n")}\n`, "utf8");
+  console.log(
+    `[generate-index] Wrote ${outputPath} with ${typeExports.length} type export(s) and ${descriptorExports.length} descriptor export(s)`,
+  );
 }
 
 main();

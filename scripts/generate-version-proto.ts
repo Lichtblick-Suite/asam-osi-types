@@ -75,18 +75,26 @@ async function main() {
   const templatePath = path.join(osiDir, "osi_version.proto.in");
   const outPath = path.join(osiDir, "osi_version.proto");
 
+  console.log("[generate-version-proto] Starting version proto generation");
+  console.log(
+    `[generate-version-proto] Reading ${path.relative(process.cwd(), versionPath)} and ${path.relative(process.cwd(), templatePath)}`,
+  );
   const versionText = await readFile(versionPath, "utf8");
   const templateText = await readFile(templatePath, "utf8");
 
   const v = parseVersionFile(versionText);
+  console.log(
+    `[generate-version-proto] Parsed version ${v.major}.${v.minor}.${v.patch}${v.suffix ?? ""}`,
+  );
   const rendered = renderOsiVersionProto(templateText, v);
 
+  console.log(`[generate-version-proto] Writing ${path.relative(process.cwd(), outPath)}`);
   await writeFile(outPath, rendered, "utf8");
 
   // Optional: log the configured version for visibility
   const suffix = v.suffix ?? "";
   console.log(
-    `Wrote ${path.relative(process.cwd(), outPath)} (version ${v.major}.${v.minor}.${v.patch}${suffix})`,
+    `[generate-version-proto] Wrote ${path.relative(process.cwd(), outPath)} (version ${v.major}.${v.minor}.${v.patch}${suffix})`,
   );
 }
 
