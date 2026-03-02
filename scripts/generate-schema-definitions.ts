@@ -29,6 +29,41 @@ const descriptorTargets: DescriptorTarget[] = [
     pb: "osi3_sensordata_descriptor.pb",
     constName: "osi3SensorDataDescriptor",
   },
+  {
+    proto: "osi_sensorviewconfiguration.proto",
+    pb: "osi3_sensorviewconfiguration_descriptor.pb",
+    constName: "osi3SensorViewConfigurationDescriptor",
+  },
+  {
+    proto: "osi_hostvehicledata.proto",
+    pb: "osi3_hostvehicledata_descriptor.pb",
+    constName: "osi3HostVehicleDataDescriptor",
+  },
+  {
+    proto: "osi_trafficcommand.proto",
+    pb: "osi3_trafficcommand_descriptor.pb",
+    constName: "osi3TrafficCommandDescriptor",
+  },
+  {
+    proto: "osi_trafficcommandupdate.proto",
+    pb: "osi3_trafficcommandupdate_descriptor.pb",
+    constName: "osi3TrafficCommandUpdateDescriptor",
+  },
+  {
+    proto: "osi_trafficupdate.proto",
+    pb: "osi3_trafficupdate_descriptor.pb",
+    constName: "osi3TrafficUpdateDescriptor",
+  },
+  {
+    proto: "osi_motionrequest.proto",
+    pb: "osi3_motionrequest_descriptor.pb",
+    constName: "osi3MotionRequestDescriptor",
+  },
+  {
+    proto: "osi_streamingupdate.proto",
+    pb: "osi3_streamingupdate_descriptor.pb",
+    constName: "osi3StreamingUpdateDescriptor",
+  },
 ];
 
 function runProtoc(protoPath: string, outputPath: string): void {
