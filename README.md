@@ -4,13 +4,16 @@
 [![GitHub Issues](https://img.shields.io/github/issues/Lichtblick-Suite/asam-osi-types)](https://github.com/Lichtblick-Suite/asam-osi-types/issues)
 [![NPM Version](https://img.shields.io/npm/v/@lichtblick/asam-osi-types)](https://www.npmjs.com/package/@lichtblick/asam-osi-types)
 
-**ASAM OSI Types** provides generated TypeScript definitions and schema descriptor binaries for the [Open Simulation Interface (OSI)](https://www.asam.net/standards/detail/osi/) specification.
+**ASAM OSI Types** provides generated TypeScript type definitions and schema descriptor binaries for the [Open Simulation Interface (OSI)](https://www.asam.net/standards/detail/osi/) specification.
+
+The type/descriptor generation pipeline is built specifically around the interface contract between Lichtblick and Lichtblick message converter extensions that consume OSI messages (for example, [ASAM OSI Converter](https://github.com/lichtblick-suite/asam-osi-converter)).
+Accordingly, field-naming conventions and descriptor formats are dictated by the Lichtblick ecosystem contract.
 
 ---
 
 ## Features
 
-- Generated TypeScript definitions from the official ASAM OSI protobuf schemas.
+- Generated TypeScript type definitions from the official ASAM OSI protobuf schemas.
 - Descriptor definition modules exported as `Uint8Array` constants for runtime schema use.
 - Auto-generated package barrel (`index.ts`) that re-exports generated modules from one entry point.
 - Reproducible code generation workflow using the packaged Buf CLI (no global `protoc` required).
@@ -102,9 +105,14 @@ import * as types from "@lichtblick/asam-osi-types";
 
 ## Versioning
 
-The versioning for the project is handeled automatically via the github actions CI/CD workflow, it will always reflect **the current version of the OSI repository**.
+Project versioning mirrors the integrated Open Simulation Interface (OSI) version in its `major` and `minor` components; `patch` numbers are used only for technical releases in this repository that are based on the same OSI version.
 
-Local versioning can be applied to the project through the **package.json** file, but it will not be reflected in the npm package metadata since it is overwritten when publishing.
+## Release
+
+1. Manually update `version` in `package.json` and merge to `main`.
+   **Note:** Select the version number according to the rules in [Versioning](#versioning).
+2. Create a GitHub Release in the repository UI and create/select the matching tag (for example `v3.8.0`).
+3. The release workflow runs on `release.published`, validates that the tag and `package.json` version match, builds and packs the package, uploads the `.tgz` to release assets, and runs npm publish.
 
 ## Contributing
 
