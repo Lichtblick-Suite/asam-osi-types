@@ -1,0 +1,56 @@
+name: PR CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-package:
+    name: validate-package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install Dependencies
+        run: yarn install --immutable
+
+      - name: Lint
+        run: yarn run lint:ci
+
+      - name: Build Project
+        run: yarn run build
+
+      - name: Pack Project
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          yarn pack --out "lichtblick-asam-osi-types-${VERSION}.tgz"
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-package-tgz
+          path: lichtblick-asam-osi-types-*.tgz
+          if-no-files-found: error
+
+      - name: Publish to NPM (dry run)
+        run: npm publish lichtblick-asam-osi-types-*.tgz --dry-run --access public
