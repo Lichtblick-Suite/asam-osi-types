@@ -3,7 +3,7 @@ env:
 
 ignorePatterns:
   - dist
-  - proto
+  - generated
 
 extends:
   - plugin:@lichtblick/base

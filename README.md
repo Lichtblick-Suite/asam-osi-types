@@ -4,212 +4,115 @@
 [![GitHub Issues](https://img.shields.io/github/issues/Lichtblick-Suite/asam-osi-types)](https://github.com/Lichtblick-Suite/asam-osi-types/issues)
 [![NPM Version](https://img.shields.io/npm/v/@lichtblick/asam-osi-types)](https://www.npmjs.com/package/@lichtblick/asam-osi-types)
 
-**ASAM OSI Types** provides TypeScript type definitions for the [Open Simulation Interface (OSI)](https://www.asam.net/standards/detail/osi/) specification. OSI facilitates the interoperability of simulation environments in automated driving and advanced driver-assistance systems (ADAS) development.
+**ASAM OSI Types** provides generated TypeScript type definitions and schema descriptor binaries for the [Open Simulation Interface (OSI)](https://www.asam.net/standards/detail/osi/) specification.
+
+The type/descriptor generation pipeline is built specifically around the interface contract between Lichtblick and Lichtblick message converter extensions that consume OSI messages (for example, [ASAM OSI Converter](https://github.com/lichtblick-suite/asam-osi-converter)).
+Accordingly, field-naming conventions and descriptor formats are dictated by the Lichtblick ecosystem contract.
 
 ---
 
 ## Features
 
-- Comprehensive TypeScript type definitions for the OSI specification.
-- Simplifies development by enabling static type checking in TypeScript.
-- Maintains compatibility with the official OSI schema versions.
-- Designed for use in simulation and modeling projects involving OSI.
+- Generated TypeScript type definitions from the official ASAM OSI protobuf schemas.
+- Descriptor definition modules exported as `Uint8Array` constants for runtime schema use.
+- Auto-generated package barrel (`index.ts`) that re-exports generated modules from one entry point.
+- Reproducible code generation workflow using the packaged Buf CLI (no global `protoc` required).
+- Aligned with upstream OSI schema updates through the repository generation pipeline.
 
 ---
 
 ## Installation
 
-Install the package using npm or yarn:
+Install the package using yarn:
 
 ```bash
-npm install asam-osi-types
-```
-
-or
-
-```bash
-yarn add asam-osi-types
+yarn add @lichtblick/asam-osi-types
 ```
 
 ---
 
 ## Build and Scripts
 
-Here are the available commands and scripts for working with the project:
+The repository uses Yarn scripts for generation and packaging:
 
-### Build
+### `yarn prepare`
 
-```bash
-npm run build
-```
+Runs `scripts/generate-version-proto.ts` to prepare version-specific proto inputs.
 
-or
+### `yarn clean`
 
-```bash
-yarn build
-```
+Removes generated outputs (`generated/` and `dist/`) and rewrites `index.ts` via `scripts/generate-index.ts` so the barrel stays valid after cleanup.
 
-Compiles the TypeScript code into JavaScript. The compiled output is stored in the dist/ folder.
+### `yarn generate`
 
-### Setup
+Runs the full generation pipeline:
 
-```bash
-npm run setup
-```
+1. `yarn clean`
+2. `yarn prepare`
+3. `buf generate` (TypeScript protobuf types into `generated/types`)
+4. `scripts/generate-schema-definitions.ts` (descriptor modules in `generated/type-descriptors`)
+5. `scripts/generate-index.ts` (auto-generated package barrel `index.ts`)
 
-or
+### `yarn build`
 
-```bash
-yarn setup
-```
+Runs `yarn generate` and then builds CJS + ESM + declaration output to `dist/` using `tsup`.
 
-Installs the OSI dependencies
+### `yarn lint` / `yarn lint:ci`
 
-### Generate
+Runs ESLint with repository rules (`lint` applies fixes, `lint:ci` does not).
 
-```bash
-npm run generate
-```
+### `yarn format`
 
-or
-
-```bash
-yarn generate
-```
-
-Generates **protobuf** files
-
-### Lint
-
-```bash
-npm run lint
-```
-
-or
-
-```bash
-yarn lint
-```
-
-Lints the project using ESLint to enforce consistent code style.
-
-### Test
-
-```bash
-npm run test
-```
-
-or
-
-```bash
-yarn test
-```
-
-Runs the test suite to ensure the code functions as expected.
-
-### Clean
-
-```bash
-npm run clean
-```
-
-or
-
-```bash
-yarn clean
-```
-
-Removes the build output (dist/) and cleans up the workspace.
-
-## Additional Commands
-
-```bash
-npm run format
-```
-
-or
-
-```bash
-yarn format
-```
-
-Formats the codebase using Prettier to maintain consistent styling.
-
-## Usage
-
-Here’s how to use the provided type definitions in a TypeScript project:
-
-```typescript
-import { OsiMessage } from "@lichtblick/asam-osi-types";
-
-// Example: Define an OSI Message
-const message: OsiMessage = {
-  header: {
-    timestamp: {
-      seconds: 1627500000,
-      nanos: 123456789,
-    },
-    frame_id: "example-frame",
-  },
-  content: {
-    exampleField: "value",
-  },
-};
-
-console.log(message);
-```
-
----
-
-## API Documentation
-
-### Main Types
-
-- **`OsiMessage`**: Represents the base message format in OSI.
-- **`Header`**: Metadata for OSI messages, including timestamps and IDs.
-- **`Timestamp`**: Specifies time information.
-
-For detailed type definitions, explore the source files in the `src` folder.
+Formats files with Prettier.
 
 ---
 
 ## Local Testing
 
-To test the package locally, build the project and run the following command to create a symbolic link for the package
+To verify the package locally with `npm link`:
+
+1. Build this package:
+
+```bash
+yarn build
+```
+
+2. Register the local package globally from this repository:
 
 ```bash
 npm link
 ```
 
-Create a local typescript test project with an index.ts file
+3. In a separate folder, create a test project and initialize it:
 
 ```bash
-mkdir test-project && cd $_ && touch index.ts
-```
-
-Initialize project
-
-```bash
+mkdir test-project
+cd test-project
 npm init -y
 ```
 
-Link test project with the package
+4. Link the package into that test project:
 
 ```bash
-npm link asam-osi-types
+npm link @lichtblick/asam-osi-types
 ```
 
-Import types into the test-project
+5. Import types in your test project:
 
 ```typescript
-import * as types from "asam-osi-types";
+import * as types from "@lichtblick/asam-osi-types";
 ```
 
 ## Versioning
 
-The versioning for the project is handeled automatically via the github actions CI/CD workflow, it will always reflect **the current version of the OSI repository**.
+Project versioning mirrors the integrated Open Simulation Interface (OSI) version in its `major` and `minor` components; `patch` numbers are used only for technical releases in this repository that are based on the same OSI version.
 
-Local versioning can be applied to the project through the **package.json** file, but it will not be reflected in the npm package metadata since it is overwritten when publishing.
+## Release
+
+1. Manually update `version` in `package.json` and merge to `main`.
+   **Note:** Select the version number according to the rules in [Versioning](#versioning).
+2. Create a GitHub Release in the repository UI and create/select the matching tag (for example `v3.8.0`).
+3. The release workflow runs on `release.published`, validates that the tag and `package.json` version match, builds and packs the package, uploads the `.tgz` to release assets, and runs npm publish.
 
 ## Contributing
 
@@ -228,6 +131,8 @@ Please ensure all code adheres to the [Mozilla Public License 2.0](https://githu
 ## Related Projects
 
 - [Open Simulation Interface (OSI)](https://www.asam.net/standards/detail/osi/)
+- [Lichtblick](https://github.com/lichtblick-suite/lichtblick)
+- [ASAM OSI Converter Lichtblick Extension](https://github.com/lichtblick-suite/asam-osi-converter)
 - [ASAM Organization](https://www.asam.net/)
 
 ---
